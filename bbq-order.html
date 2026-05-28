@@ -1,56 +1,80 @@
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width,
-  initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-<link
-  rel="stylesheet"
-  href="css/style.css">
+  <title>BBQ予約確認</title>
 
-<title>BBQ予約確認</title>
+  <link
+    rel="stylesheet"
+    href="css/style.css">
 
 </head>
 
 <body>
 
-<h1>BBQ予約確認</h1>
+<header>
 
-<div id="bbqOrder"></div>
+  <div class="container">
 
-<h2>受取日選択</h2>
+    <h1>BBQ予約確認</h1>
 
-<div id="calendar"></div>
+  </div>
 
-<input
-  type="hidden"
-  id="pickupDate">
+</header>
 
-<input
-  type="text"
-  id="customerName"
-  placeholder="お名前">
+<section class="container">
 
-<input
-  type="tel"
-  id="customerTel"
-  placeholder="電話番号">
+  <h2>
+    ご予約日：
+    <span id="selectedDate"></span>
+  </h2>
 
-<textarea
-  id="memo"
-  placeholder="備考"></textarea>
+  <div id="bbqOrder"></div>
 
-<button onclick="sendBbqOrder()">
-  BBQ予約送信
-</button>
+  <input
+    type="text"
+    id="customerName"
+    placeholder="お名前">
+
+  <input
+    type="tel"
+    id="customerTel"
+    placeholder="電話番号">
+
+  <textarea
+    id="memo"
+    placeholder="備考"></textarea>
+
+  <button onclick="sendBbqOrder()">
+
+    BBQ予約送信
+
+  </button>
+
+  <div style="margin-top:20px;">
+
+    <a href="bbq.html">
+
+      <button>
+
+        戻る
+
+      </button>
+
+    </a>
+
+  </div>
+
+</section>
 
 <script src="js/config.js"></script>
-<script src="js/bbq-calendar.js"></script>
 <script src="js/bbq-order.js"></script>
 
 </body>
