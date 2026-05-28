@@ -1,9 +1,25 @@
+window.addEventListener(
+  'DOMContentLoaded',
+  () => {
+
+    const date =
+      localStorage.getItem(
+        'bbqDate'
+      );
+
+    document.getElementById(
+      'selectedDate'
+    ).innerText = date;
+
+  }
+);
+
 async function sendBbqOrder(){
 
   const pickupDate =
-    document.getElementById(
-      'pickupDate'
-    ).value;
+    localStorage.getItem(
+      'bbqDate'
+    );
 
   const name =
     document.getElementById(
@@ -13,6 +29,11 @@ async function sendBbqOrder(){
   const tel =
     document.getElementById(
       'customerTel'
+    ).value;
+
+  const memo =
+    document.getElementById(
+      'memo'
     ).value;
 
   await fetch(API_URL, {
@@ -32,7 +53,10 @@ async function sendBbqOrder(){
 
       tel,
 
-      orderText: 'BBQ予約',
+      memo,
+
+      orderText:
+        'BBQ予約',
 
       total: 0
 
@@ -41,5 +65,12 @@ async function sendBbqOrder(){
   });
 
   alert('BBQ予約完了');
+
+  localStorage.removeItem(
+    'bbqDate'
+  );
+
+  location.href =
+    'bbq.html';
 
 }
