@@ -53,13 +53,38 @@ async function loadCalendar() {
 
 function selectDate(date){
 
-  document.getElementById(
-    'pickupDate'
-  ).value = date;
+  localStorage.setItem(
+    'bbqDate',
+    date
+  );
+
+  document
+    .querySelectorAll(
+      '.calendar-day'
+    )
+    .forEach(btn => {
+
+      btn.classList.remove(
+        'selected'
+      );
+
+    });
 
   event.target.classList.add(
     'selected'
   );
+
+  document
+    .getElementById(
+      'goOrder'
+    )
+    .disabled = false;
+}
+
+function goOrder(){
+
+  location.href =
+    'bbq-order.html';
 }
 
 loadCalendar();
