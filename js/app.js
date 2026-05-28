@@ -53,3 +53,12 @@ async function loadProducts() {
 }
 
 loadProducts();
+
+window.addEventListener(
+  'pageshow',
+  () => {
+
+    updateCartCount();
+
+  }
+);
