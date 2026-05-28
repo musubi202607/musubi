@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おにぎり</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container header-inner">
+    <div>
+      <h1>おにぎり</h1>
+      <p>できたて手作りおにぎり</p>
+    </div>
+
+    <a href="cart.html" class="cart-button">
+      カート
+      <span id="cartCount">0</span>
+    </a>
+  </div>
+</header>
+
+<section class="hero">
+  <img src="images/tenpotop.jpg">
+
+</section>
+
+<section class="shop-gallery container">
+
+  <h2>店舗写真</h2>
+
+  <div class="gallery-grid">
+
+    <img src="images/shop1.jpg" alt="店舗写真1">
+
+    <img src="images/shop2.jpg" alt="店舗写真2">
+
+    <img src="images/shop3.jpg" alt="店舗写真3">
+
+  </div>
+
+</section>
+
+<section class="products container">
+
+  <div class="section-title">
+    <h2>商品一覧</h2>
+
+</div>
+
+  <div class="category-scroll" id="categoryButtons"></div>
+
+  <div class="product-grid" id="productGrid"></div>
+
+</section>
+
+<script src="js/config.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
+window.addEventListener('pageshow', () => {
+  updateCartCount();
+});

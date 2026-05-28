@@ -1,0 +1,57 @@
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1.0">
+
+<link
+  rel="stylesheet"
+  href="css/style.css">
+
+<title>BBQ予約確認</title>
+
+</head>
+
+<body>
+
+<h1>BBQ予約確認</h1>
+
+<div id="bbqOrder"></div>
+
+<h2>受取日選択</h2>
+
+<div id="calendar"></div>
+
+<input
+  type="hidden"
+  id="pickupDate">
+
+<input
+  type="text"
+  id="customerName"
+  placeholder="お名前">
+
+<input
+  type="tel"
+  id="customerTel"
+  placeholder="電話番号">
+
+<textarea
+  id="memo"
+  placeholder="備考"></textarea>
+
+<button onclick="sendBbqOrder()">
+  BBQ予約送信
+</button>
+
+<script src="js/config.js"></script>
+<script src="js/bbq-calendar.js"></script>
+<script src="js/bbq-order.js"></script>
+
+</body>
+</html>
