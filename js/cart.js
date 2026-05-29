@@ -14,6 +14,7 @@ function saveCart(cart) {
   );
 
   updateCartCount();
+
 }
 
 function addToCart(productId) {
@@ -41,6 +42,7 @@ function addToCart(productId) {
   saveCart(cart);
 
   alert('カートへ追加しました');
+
 }
 
 function updateCartCount() {
@@ -64,6 +66,7 @@ function updateCartCount() {
     target.innerText = count;
 
   }
+
 }
 
 async function displayCart() {
@@ -87,6 +90,22 @@ async function displayCart() {
   if(!cartItems) return;
 
   cartItems.innerHTML = '';
+
+  if(cart.length === 0){
+
+    cartItems.innerHTML = `
+
+      <h2>
+
+        カートは空です
+
+      </h2>
+
+    `;
+
+    return;
+
+  }
 
   let total = 0;
 
@@ -121,7 +140,9 @@ async function displayCart() {
           </p>
 
           <div class="price">
-            ¥${subtotal}
+
+            ¥${subtotal.toLocaleString()}
+
           </div>
 
         </div>
@@ -129,46 +150,37 @@ async function displayCart() {
       </div>
 
     `;
+
   });
 
   cartItems.innerHTML += `
 
-    <h2>
+    <h2 style="margin-top:20px;">
+
       合計 ¥${total.toLocaleString()}
+
     </h2>
 
-    <a href="order.html">
-      <button>
-        注文へ進む
-      </button>
-    </a>
-
-    <button onclick="clearCart()">
-      カートを空にする
-    </button>
-
   `;
+
 }
 
 function clearCart(){
 
-  localStorage.removeItem('cart');
+  localStorage.removeItem(
+    'cart'
+  );
+
+  updateCartCount();
 
   location.reload();
+
 }
-
-displayCart();
-
-updateCartCount();
 
 function goOrder(){
 
   const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'cart'
-      )
-    ) || [];
+    getCart();
 
   if(cart.length === 0){
 
@@ -177,9 +189,14 @@ function goOrder(){
     );
 
     return;
+
   }
 
   location.href =
     'order.html';
 
 }
+
+displayCart();
+
+updateCartCount();
