@@ -160,3 +160,26 @@ function clearCart(){
 displayCart();
 
 updateCartCount();
+
+function goOrder(){
+
+  const cart =
+    JSON.parse(
+      localStorage.getItem(
+        'cart'
+      )
+    ) || [];
+
+  if(cart.length === 0){
+
+    alert(
+      'カートが空です'
+    );
+
+    return;
+  }
+
+  location.href =
+    'order.html';
+
+}

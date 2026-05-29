@@ -1,27 +1,74 @@
-注文確認
-</h1>
+<!DOCTYPE html>
+<html lang="ja">
 
-<div id="orderItems"></div>
+<head>
 
-<input
-  type="text"
-  id="customerName"
-  placeholder="お名前">
+  <meta charset="UTF-8">
 
-<input
-  type="tel"
-  id="customerTel"
-  placeholder="電話番号">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-<textarea
-  id="memo"
-  placeholder="備考"></textarea>
+  <title>注文確認</title>
 
-<button onclick="sendOrder()">
-  注文送信
-</button>
+  <link
+    rel="stylesheet"
+    href="css/style.css">
 
-</div>
+</head>
+
+<body>
+
+<header>
+
+  <div class="container">
+
+    <h1>注文確認</h1>
+
+  </div>
+
+</header>
+
+<section class="container">
+
+  <div id="orderItems"></div>
+
+  <input
+    type="text"
+    id="customerName"
+    placeholder="お名前">
+
+  <input
+    type="tel"
+    id="customerTel"
+    placeholder="電話番号">
+
+  <textarea
+    id="memo"
+    placeholder="備考"></textarea>
+
+  <div class="cart-buttons">
+
+    <a href="cart.html">
+
+      <button>
+
+        戻る
+
+      </button>
+
+    </a>
+
+    <button
+      onclick="sendOrder()">
+
+      注文送信
+
+    </button>
+
+  </div>
+
+</section>
 
 <script src="js/config.js"></script>
 <script src="js/cart.js"></script>
