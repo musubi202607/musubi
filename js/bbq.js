@@ -1,3 +1,8 @@
+let calendarData = [];
+
+let currentMonth =
+  new Date();
+
 async function loadBbq() {
 
   const response =
@@ -93,8 +98,6 @@ function selectBbq(
     price
   );
 
-  loadCalendar();
-
   document
     .getElementById(
       'calendarSection'
@@ -105,15 +108,21 @@ function selectBbq(
 
 }
 
-async function loadCalendar() {
+async function loadCalendar(){
 
   const response =
     await fetch(
       API_URL + '?mode=calendar'
     );
 
-  const calendar =
+  calendarData =
     await response.json();
+
+  renderCalendar();
+
+}
+
+function renderCalendar(){
 
   const target =
     document.getElementById(
@@ -122,38 +131,168 @@ async function loadCalendar() {
 
   target.innerHTML = '';
 
-  calendar.forEach(day => {
+  const year =
+    currentMonth.getFullYear();
 
-    const disabled =
-      day.status === '×'
-      ? 'disabled'
-      : '';
+  const month =
+    currentMonth.getMonth();
+
+  const firstDay =
+    new Date(
+      year,
+      month,
+      1
+    );
+
+  const lastDay =
+    new Date(
+      year,
+      month + 1,
+      0
+    );
+
+  const startDay =
+    firstDay.getDay();
+
+  const totalDays =
+    lastDay.getDate();
+
+  target.innerHTML += `
+
+    <div class="calendar-header">
+
+      <button
+        onclick="prevMonth()">
+
+        ←
+
+      </button>
+
+      <h2>
+
+        ${year}年 ${month + 1}月
+
+      </h2>
+
+      <button
+        onclick="nextMonth()">
+
+        →
+
+      </button>
+
+    </div>
+
+    <div class="calendar-grid">
+
+      <div class="calendar-week">日</div>
+      <div class="calendar-week">月</div>
+      <div class="calendar-week">火</div>
+      <div class="calendar-week">水</div>
+      <div class="calendar-week">木</div>
+      <div class="calendar-week">金</div>
+      <div class="calendar-week">土</div>
+
+  `;
+
+  for(let i = 0; i < startDay; i++){
+
+    target.innerHTML += `
+      <div></div>
+    `;
+
+  }
+
+  for(let day = 1; day <= totalDays; day++){
+
+    const dateObj =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+    const dateStr =
+      formatDate(dateObj);
+
+    const item =
+      calendarData.find(
+        d => d.date === dateStr
+      );
+
+    if(!item){
+
+      target.innerHTML += `
+        <div></div>
+      `;
+
+      continue;
+
+    }
+
+    let className =
+      'calendar-day';
+
+    let disabled = '';
+
+    let statusText =
+      item.status;
+
+    if(item.status === '○'){
+
+      className +=
+        ' available';
+
+      statusText =
+        `あと${item.limit}枠`;
+
+    }
+
+    if(item.status === '△'){
+
+      className +=
+        ' few';
+
+      statusText =
+        `あと${item.limit}枠`;
+
+    }
+
+    if(item.status === '×'){
+
+      className +=
+        ' closed';
+
+      disabled =
+        'disabled';
+
+    }
 
     target.innerHTML += `
 
       <button
 
-        class="calendar-day"
+        class="${className}"
 
         ${disabled}
 
         onclick="
           selectDate(
-            '${day.date}'
+            '${dateStr}'
           )
         "
 
       >
 
-        <div>
+        <div class="calendar-date">
 
-          ${day.date}
+          ${day}
 
         </div>
 
-        <div>
+        <div class="calendar-status">
 
-          ${day.status}
+          ${statusText}
 
         </div>
 
@@ -161,7 +300,50 @@ async function loadCalendar() {
 
     `;
 
-  });
+  }
+
+  target.innerHTML += `
+    </div>
+  `;
+
+}
+
+function prevMonth(){
+
+  currentMonth.setMonth(
+    currentMonth.getMonth() - 1
+  );
+
+  renderCalendar();
+
+}
+
+function nextMonth(){
+
+  currentMonth.setMonth(
+    currentMonth.getMonth() + 1
+  );
+
+  renderCalendar();
+
+}
+
+function formatDate(date){
+
+  const y =
+    date.getFullYear();
+
+  const m =
+    String(
+      date.getMonth() + 1
+    ).padStart(2,'0');
+
+  const d =
+    String(
+      date.getDate()
+    ).padStart(2,'0');
+
+  return `${y}-${m}-${d}`;
 
 }
 
@@ -173,6 +355,24 @@ function selectDate(date){
   );
 
   document
+    .querySelectorAll(
+      '.calendar-day'
+    )
+    .forEach(btn => {
+
+      btn.classList.remove(
+        'selected'
+      );
+
+    });
+
+  event.target
+    .closest('button')
+    .classList.add(
+      'selected'
+    );
+
+  document
     .getElementById(
       'goOrder'
     )
@@ -182,39 +382,11 @@ function selectDate(date){
 
 function goOrder(){
 
-  const productId =
-    localStorage.getItem(
-      'bbqProductId'
-    );
-
-  const bbqDate =
-    localStorage.getItem(
-      'bbqDate'
-    );
-
-  if(!productId){
-
-    alert(
-      '商品を選択してください'
-    );
-
-    return;
-
-  }
-
-  if(!bbqDate){
-
-    alert(
-      '予約日を選択してください'
-    );
-
-    return;
-
-  }
-
   location.href =
     'bbq-order.html';
 
 }
 
 loadBbq();
+
+loadCalendar();

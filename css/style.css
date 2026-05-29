@@ -144,45 +144,6 @@ header {
   opacity: 0.9;
 }
 
-@media (max-width: 900px) {
-
-  .product-grid {
-    grid-template-columns: repeat(2,1fr);
-  }
-
-  .hero img {
-    height: 300px;
-  }
-}
-
-@media (max-width: 600px) {
-
-  .product-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero img {
-    height: 220px;
-  }
-
-  .section-title h2 {
-    font-size: 30px;
-  }
-
-  .product-content h3 {
-    font-size: 20px;
-  }
-
-  .price {
-    font-size: 24px;
-  }
-
-  .product-content button {
-    padding: 16px;
-    font-size: 18px;
-  }
-}
-
 .shop-gallery {
   padding: 60px 0;
 }
@@ -204,13 +165,6 @@ header {
   height: 260px;
   object-fit: cover;
   border-radius: 20px;
-}
-
-@media (max-width: 700px) {
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .clear-btn {
@@ -263,141 +217,7 @@ textarea {
   min-height: 120px;
 }
 
-#calendar{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:10px;
-
-  margin:20px 0;
-}
-
-.calendar-day{
-
-  padding:15px;
-
-  border:none;
-
-  border-radius:12px;
-
-  font-size:16px;
-}
-
-.calendar-day.selected{
-
-  border:3px solid #000;
-}
-
-.calendar-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(7,1fr);
-
-  gap:10px;
-
-  margin-top:20px;
-
-}
-
-.calendar-day{
-
-  border:none;
-
-  border-radius:12px;
-
-  padding:14px 6px;
-
-  background:#fff;
-
-  box-shadow:
-    0 2px 8px rgba(
-      0,0,0,0.08
-    );
-
-  min-height:90px;
-
-  cursor:pointer;
-
-  transition:0.2s;
-
-  font-size:14px;
-
-}
-
-.calendar-day:hover{
-
-  transform:translateY(-2px);
-
-}
-
-.calendar-day.selected{
-
-  background:#ff9800;
-
-  color:#fff;
-
-}
-
-.calendar-day:disabled{
-
-  background:#eee;
-
-  color:#999;
-
-  cursor:not-allowed;
-
-}
-
-.calendar-date{
-
-  font-size:18px;
-
-  font-weight:bold;
-
-  margin-bottom:8px;
-
-}
-
-.calendar-status{
-
-  font-size:16px;
-
-}
-
-.calendar-week{
-
-  text-align:center;
-
-  font-weight:bold;
-
-  padding:10px 0;
-
-}
-
-.calendar-day.available{
-
-  background:#e8f5e9;
-
-}
-
-.calendar-day.few{
-
-  background:#fff3e0;
-
-}
-
-.calendar-day.closed{
-
-  background:#efefef;
-
-}
-
-.calendar-header{
+.calendar-header {
 
   display:flex;
 
@@ -409,7 +229,7 @@ textarea {
 
 }
 
-.calendar-header button{
+.calendar-header button {
 
   width:44px;
 
@@ -423,7 +243,7 @@ textarea {
 
 }
 
-.calendar-grid{
+.calendar-grid {
 
   display:grid;
 
@@ -434,7 +254,7 @@ textarea {
 
 }
 
-.calendar-week{
+.calendar-week {
 
   text-align:center;
 
@@ -444,7 +264,7 @@ textarea {
 
 }
 
-.calendar-day{
+.calendar-day {
 
   border:none;
 
@@ -463,9 +283,17 @@ textarea {
 
   transition:0.2s;
 
+  cursor:pointer;
+
 }
 
-.calendar-day.selected{
+.calendar-day:hover {
+
+  transform:translateY(-2px);
+
+}
+
+.calendar-day.selected {
 
   background:#ff9800;
 
@@ -473,19 +301,19 @@ textarea {
 
 }
 
-.calendar-day.available{
+.calendar-day.available {
 
   background:#e8f5e9;
 
 }
 
-.calendar-day.few{
+.calendar-day.few {
 
   background:#fff3e0;
 
 }
 
-.calendar-day.closed{
+.calendar-day.closed {
 
   background:#efefef;
 
@@ -493,7 +321,7 @@ textarea {
 
 }
 
-.calendar-date{
+.calendar-date {
 
   font-size:20px;
 
@@ -503,21 +331,32 @@ textarea {
 
 }
 
-.calendar-status{
+.calendar-status {
 
   font-size:13px;
 
 }
 
-@media(max-width:768px){
+@media (max-width: 900px) {
 
-  .calendar-grid{
+  .product-grid {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .hero img {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px){
+
+  .calendar-grid {
 
     gap:4px;
 
   }
 
-  .calendar-day{
+  .calendar-day {
 
     min-height:72px;
 
@@ -525,16 +364,53 @@ textarea {
 
   }
 
-  .calendar-date{
+  .calendar-date {
 
     font-size:16px;
 
   }
 
-  .calendar-status{
+  .calendar-status {
 
     font-size:11px;
 
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero img {
+    height: 220px;
+  }
+
+  .section-title h2 {
+    font-size: 30px;
+  }
+
+  .product-content h3 {
+    font-size: 20px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+
+  .product-content button {
+    padding: 16px;
+    font-size: 18px;
   }
 
 }
