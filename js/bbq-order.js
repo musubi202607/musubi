@@ -7,9 +7,43 @@ window.addEventListener(
         'bbqDate'
       );
 
+    const productName =
+      localStorage.getItem(
+        'bbqProductName'
+      );
+
+    const price =
+      localStorage.getItem(
+        'bbqPrice'
+      );
+
     document.getElementById(
       'selectedDate'
     ).innerText = date;
+
+    document.getElementById(
+      'bbqOrder'
+    ).innerHTML = `
+
+      <div class="product-card">
+
+        <div class="product-content">
+
+          <h3>
+            ${productName}
+          </h3>
+
+          <div class="price">
+
+            ¥${price}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
 
   }
 );
@@ -19,6 +53,16 @@ async function sendBbqOrder(){
   const pickupDate =
     localStorage.getItem(
       'bbqDate'
+    );
+
+  const productName =
+    localStorage.getItem(
+      'bbqProductName'
+    );
+
+  const price =
+    localStorage.getItem(
+      'bbqPrice'
     );
 
   const name =
@@ -35,6 +79,33 @@ async function sendBbqOrder(){
     document.getElementById(
       'memo'
     ).value;
+
+  if(!pickupDate){
+
+    alert(
+      '予約日を選択してください'
+    );
+
+    return;
+  }
+
+  if(!name){
+
+    alert(
+      'お名前を入力してください'
+    );
+
+    return;
+  }
+
+  if(!tel){
+
+    alert(
+      '電話番号を入力してください'
+    );
+
+    return;
+  }
 
   await fetch(API_URL, {
 
@@ -56,18 +127,33 @@ async function sendBbqOrder(){
       memo,
 
       orderText:
-        'BBQ予約',
+        productName,
 
-      total: 0
+      total:
+        price
 
     })
 
   });
 
-  alert('BBQ予約完了');
+  alert(
+    'BBQ予約完了'
+  );
 
   localStorage.removeItem(
     'bbqDate'
+  );
+
+  localStorage.removeItem(
+    'bbqProductId'
+  );
+
+  localStorage.removeItem(
+    'bbqProductName'
+  );
+
+  localStorage.removeItem(
+    'bbqPrice'
   );
 
   location.href =

@@ -1,3 +1,5 @@
+let currentMonth = new Date();
+
 async function loadBbq() {
 
   const response =
@@ -39,9 +41,7 @@ async function loadBbq() {
           </p>
 
           <div class="price">
-
             ¥${product.price}
-
           </div>
 
           <button
@@ -108,6 +108,12 @@ async function loadCalendar() {
   const calendar =
     await response.json();
 
+  renderCalendar(calendar);
+
+}
+
+function renderCalendar(calendar){
+
   const target =
     document.getElementById(
       'calendar'
@@ -115,40 +121,214 @@ async function loadCalendar() {
 
   target.innerHTML = '';
 
-  calendar.forEach(day => {
+  const year =
+    currentMonth.getFullYear();
 
-    const disabled =
-      day.status === '×'
-      ? 'disabled'
-      : '';
+  const month =
+    currentMonth.getMonth();
+
+  const firstDay =
+    new Date(year, month, 1);
+
+  const lastDay =
+    new Date(year, month + 1, 0);
+
+  const startWeek =
+    firstDay.getDay();
+
+  const totalDays =
+    lastDay.getDate();
+
+  const monthTitle =
+    `${year}年 ${month + 1}月`;
+
+  target.innerHTML += `
+
+    <div class="calendar-header">
+
+      <button
+        onclick="prevMonth()">
+
+        ←
+
+      </button>
+
+      <h2>
+
+        ${monthTitle}
+
+      </h2>
+
+      <button
+        onclick="nextMonth()">
+
+        →
+
+      </button>
+
+    </div>
+
+  `;
+
+  target.innerHTML += `
+
+    <div class="calendar-grid">
+
+      <div class="calendar-week">日</div>
+      <div class="calendar-week">月</div>
+      <div class="calendar-week">火</div>
+      <div class="calendar-week">水</div>
+      <div class="calendar-week">木</div>
+      <div class="calendar-week">金</div>
+      <div class="calendar-week">土</div>
+
+  `;
+
+  for(let i = 0; i < startWeek; i++){
+
+    target.innerHTML += `
+      <div></div>
+    `;
+  }
+
+  for(let day = 1; day <= totalDays; day++){
+
+    const dateObj =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+    const dateStr =
+      formatDate(dateObj);
+
+    const item =
+      calendar.find(
+        d => d.date === dateStr
+      );
+
+    if(!item){
+
+      target.innerHTML += `
+        <div></div>
+      `;
+
+      continue;
+    }
+
+    let className =
+      'calendar-day';
+
+    let statusText =
+      item.status;
+
+    let disabled = '';
+
+    if(item.status === '○'){
+
+      className +=
+        ' available';
+
+      statusText =
+        `あと${item.limit}枠`;
+
+    }
+
+    if(item.status === '△'){
+
+      className +=
+        ' few';
+
+      statusText =
+        `あと${item.limit}枠`;
+
+    }
+
+    if(item.status === '×'){
+
+      className +=
+        ' closed';
+
+      disabled =
+        'disabled';
+
+    }
 
     target.innerHTML += `
 
       <button
 
-        class="calendar-day"
+        class="${className}"
 
         ${disabled}
 
         onclick="
           selectDate(
-            '${day.date}'
+            '${dateStr}'
           )
         "
 
       >
 
-        ${day.date}
+        <div class="calendar-date">
 
-        <br>
+          ${day}
 
-        ${day.status}
+        </div>
+
+        <div class="calendar-status">
+
+          ${statusText}
+
+        </div>
 
       </button>
 
     `;
-  });
+  }
 
+  target.innerHTML += `
+    </div>
+  `;
+}
+
+function prevMonth(){
+
+  currentMonth.setMonth(
+    currentMonth.getMonth() - 1
+  );
+
+  loadCalendar();
+
+}
+
+function nextMonth(){
+
+  currentMonth.setMonth(
+    currentMonth.getMonth() + 1
+  );
+
+  loadCalendar();
+
+}
+
+function formatDate(date){
+
+  const y =
+    date.getFullYear();
+
+  const m =
+    String(
+      date.getMonth() + 1
+    ).padStart(2,'0');
+
+  const d =
+    String(
+      date.getDate()
+    ).padStart(2,'0');
+
+  return `${y}-${m}-${d}`;
 }
 
 function selectDate(date){
@@ -170,9 +350,11 @@ function selectDate(date){
 
     });
 
-  event.target.classList.add(
-    'selected'
-  );
+  event.target
+    .closest('button')
+    .classList.add(
+      'selected'
+    );
 
   document
     .getElementById(

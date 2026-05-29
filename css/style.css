@@ -290,3 +290,251 @@ textarea {
 
   border:3px solid #000;
 }
+
+.calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(7,1fr);
+
+  gap:10px;
+
+  margin-top:20px;
+
+}
+
+.calendar-day{
+
+  border:none;
+
+  border-radius:12px;
+
+  padding:14px 6px;
+
+  background:#fff;
+
+  box-shadow:
+    0 2px 8px rgba(
+      0,0,0,0.08
+    );
+
+  min-height:90px;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+  font-size:14px;
+
+}
+
+.calendar-day:hover{
+
+  transform:translateY(-2px);
+
+}
+
+.calendar-day.selected{
+
+  background:#ff9800;
+
+  color:#fff;
+
+}
+
+.calendar-day:disabled{
+
+  background:#eee;
+
+  color:#999;
+
+  cursor:not-allowed;
+
+}
+
+.calendar-date{
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  margin-bottom:8px;
+
+}
+
+.calendar-status{
+
+  font-size:16px;
+
+}
+
+.calendar-week{
+
+  text-align:center;
+
+  font-weight:bold;
+
+  padding:10px 0;
+
+}
+
+.calendar-day.available{
+
+  background:#e8f5e9;
+
+}
+
+.calendar-day.few{
+
+  background:#fff3e0;
+
+}
+
+.calendar-day.closed{
+
+  background:#efefef;
+
+}
+
+.calendar-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin:20px 0;
+
+}
+
+.calendar-header button{
+
+  width:44px;
+
+  height:44px;
+
+  border:none;
+
+  border-radius:50%;
+
+  font-size:18px;
+
+}
+
+.calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(7,1fr);
+
+  gap:8px;
+
+}
+
+.calendar-week{
+
+  text-align:center;
+
+  font-weight:bold;
+
+  padding:10px 0;
+
+}
+
+.calendar-day{
+
+  border:none;
+
+  border-radius:14px;
+
+  padding:12px 4px;
+
+  min-height:90px;
+
+  background:#fff;
+
+  box-shadow:
+    0 2px 8px rgba(
+      0,0,0,0.08
+    );
+
+  transition:0.2s;
+
+}
+
+.calendar-day.selected{
+
+  background:#ff9800;
+
+  color:#fff;
+
+}
+
+.calendar-day.available{
+
+  background:#e8f5e9;
+
+}
+
+.calendar-day.few{
+
+  background:#fff3e0;
+
+}
+
+.calendar-day.closed{
+
+  background:#efefef;
+
+  color:#999;
+
+}
+
+.calendar-date{
+
+  font-size:20px;
+
+  font-weight:bold;
+
+  margin-bottom:8px;
+
+}
+
+.calendar-status{
+
+  font-size:13px;
+
+}
+
+@media(max-width:768px){
+
+  .calendar-grid{
+
+    gap:4px;
+
+  }
+
+  .calendar-day{
+
+    min-height:72px;
+
+    padding:8px 2px;
+
+  }
+
+  .calendar-date{
+
+    font-size:16px;
+
+  }
+
+  .calendar-status{
+
+    font-size:11px;
+
+  }
+
+}
