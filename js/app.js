@@ -8,6 +8,12 @@ async function loadProducts() {
   const products =
     await response.json();
 
+  const onigiri =
+    products.filter(
+      product =>
+        product.type === 'onigiri'
+    );
+
   const grid =
     document.getElementById(
       'productGrid'
@@ -15,7 +21,7 @@ async function loadProducts() {
 
   grid.innerHTML = '';
 
-  products.forEach(product => {
+  onigiri.forEach(product => {
 
     grid.innerHTML += `
 
@@ -34,13 +40,21 @@ async function loadProducts() {
           </p>
 
           <div class="price">
+
             ¥${product.price}
+
           </div>
 
           <button
-            onclick="addToCart(${product.id})"
+            onclick="
+              addToCart(
+                ${product.id}
+              )
+            "
           >
+
             カートに追加
+
           </button>
 
         </div>
