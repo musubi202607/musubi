@@ -142,155 +142,156 @@ function renderCalendar(calendar){
   const monthTitle =
     `${year}年 ${month + 1}月`;
 
+target.innerHTML = `
+
+  <div class="calendar-header">
+
+    <button
+      onclick="prevMonth()">
+
+      ←
+
+    </button>
+
+    <h2>
+
+      ${monthTitle}
+
+    </h2>
+
+    <button
+      onclick="nextMonth()">
+
+      →
+
+    </button>
+
+  </div>
+
+  <div class="calendar-grid">
+
+    <div class="calendar-week">日</div>
+    <div class="calendar-week">月</div>
+    <div class="calendar-week">火</div>
+    <div class="calendar-week">水</div>
+    <div class="calendar-week">木</div>
+    <div class="calendar-week">金</div>
+    <div class="calendar-week">土</div>
+
+`;
+
+for(let i = 0; i < startWeek; i++){
+
   target.innerHTML += `
-
-    <div class="calendar-header">
-
-      <button
-        onclick="prevMonth()">
-
-        ←
-
-      </button>
-
-      <h2>
-
-        ${monthTitle}
-
-      </h2>
-
-      <button
-        onclick="nextMonth()">
-
-        →
-
-      </button>
-
-    </div>
-
+    <div></div>
   `;
 
-  target.innerHTML += `
+}
 
-    <div class="calendar-grid">
+for(let day = 1; day <= totalDays; day++){
 
-      <div class="calendar-week">日</div>
-      <div class="calendar-week">月</div>
-      <div class="calendar-week">火</div>
-      <div class="calendar-week">水</div>
-      <div class="calendar-week">木</div>
-      <div class="calendar-week">金</div>
-      <div class="calendar-week">土</div>
+  const dateObj =
+    new Date(
+      year,
+      month,
+      day
+    );
 
-  `;
+  const dateStr =
+    formatDate(dateObj);
 
-  for(let i = 0; i < startWeek; i++){
+  const item =
+    calendar.find(
+      d => d.date === dateStr
+    );
+
+  if(!item){
 
     target.innerHTML += `
       <div></div>
     `;
+
+    continue;
+
   }
 
-  for(let day = 1; day <= totalDays; day++){
+  let className =
+    'calendar-day';
 
-    const dateObj =
-      new Date(
-        year,
-        month,
-        day
-      );
+  let statusText =
+    item.status;
 
-    const dateStr =
-      formatDate(dateObj);
+  let disabled = '';
 
-    const item =
-      calendar.find(
-        d => d.date === dateStr
-      );
+  if(item.status === '○'){
 
-    if(!item){
+    className +=
+      ' available';
 
-      target.innerHTML += `
-        <div></div>
-      `;
+    statusText =
+      `あと${item.limit}枠`;
 
-      continue;
-    }
+  }
 
-    let className =
-      'calendar-day';
+  if(item.status === '△'){
 
-    let statusText =
-      item.status;
+    className +=
+      ' few';
 
-    let disabled = '';
+    statusText =
+      `あと${item.limit}枠`;
 
-    if(item.status === '○'){
+  }
 
-      className +=
-        ' available';
+  if(item.status === '×'){
 
-      statusText =
-        `あと${item.limit}枠`;
+    className +=
+      ' closed';
 
-    }
+    disabled =
+      'disabled';
 
-    if(item.status === '△'){
-
-      className +=
-        ' few';
-
-      statusText =
-        `あと${item.limit}枠`;
-
-    }
-
-    if(item.status === '×'){
-
-      className +=
-        ' closed';
-
-      disabled =
-        'disabled';
-
-    }
-
-    target.innerHTML += `
-
-      <button
-
-        class="${className}"
-
-        ${disabled}
-
-        onclick="
-          selectDate(
-            '${dateStr}'
-          )
-        "
-
-      >
-
-        <div class="calendar-date">
-
-          ${day}
-
-        </div>
-
-        <div class="calendar-status">
-
-          ${statusText}
-
-        </div>
-
-      </button>
-
-    `;
   }
 
   target.innerHTML += `
-    </div>
+
+    <button
+
+      class="${className}"
+
+      ${disabled}
+
+      onclick="
+        selectDate(
+          '${dateStr}'
+        )
+      "
+
+    >
+
+      <div class="calendar-date">
+
+        ${day}
+
+      </div>
+
+      <div class="calendar-status">
+
+        ${statusText}
+
+      </div>
+
+    </button>
+
   `;
+
+}
+
+target.innerHTML += `
+
+  </div>
+
+`;
 }
 
 function prevMonth(){
