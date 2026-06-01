@@ -24,6 +24,8 @@ async function loadBbq() {
       'bbqProducts'
     );
 
+  if (!target) return;
+
   target.innerHTML = '';
 
   bbqProducts.forEach(
@@ -35,6 +37,7 @@ async function loadBbq() {
 
           <img
             src="${product.image}"
+            alt="${product.name}"
           >
 
           <div
@@ -113,7 +116,7 @@ function selectBbq(
     .getElementById(
       'calendarSection'
     )
-    .scrollIntoView({
+    ?.scrollIntoView({
       behavior:'smooth'
     });
 
@@ -130,6 +133,11 @@ async function loadCalendar(){
   calendarData =
     await response.json();
 
+  console.log(
+    'calendarData',
+    calendarData
+  );
+
   renderCalendar();
 
 }
@@ -140,6 +148,8 @@ function renderCalendar(){
     document.getElementById(
       'calendar'
     );
+
+  if(!target) return;
 
   target.innerHTML = '';
 
@@ -176,57 +186,31 @@ function renderCalendar(){
       <button
         onclick="prevMonth()"
       >
-
         ←
-
       </button>
 
       <h2>
-
         ${year}年
         ${month + 1}月
-
       </h2>
 
       <button
         onclick="nextMonth()"
       >
-
         →
-
       </button>
 
     </div>
 
     <div class="calendar-grid">
 
-      <div class="calendar-week">
-        日
-      </div>
-
-      <div class="calendar-week">
-        月
-      </div>
-
-      <div class="calendar-week">
-        火
-      </div>
-
-      <div class="calendar-week">
-        水
-      </div>
-
-      <div class="calendar-week">
-        木
-      </div>
-
-      <div class="calendar-week">
-        金
-      </div>
-
-      <div class="calendar-week">
-        土
-      </div>
+      <div class="calendar-week">日</div>
+      <div class="calendar-week">月</div>
+      <div class="calendar-week">火</div>
+      <div class="calendar-week">水</div>
+      <div class="calendar-week">木</div>
+      <div class="calendar-week">金</div>
+      <div class="calendar-week">土</div>
 
   `;
 
@@ -240,6 +224,13 @@ function renderCalendar(){
       '<div></div>';
 
   }
+
+  const today =
+    new Date();
+
+  today.setHours(
+    0,0,0,0
+  );
 
   for(
     let day = 1;
@@ -262,7 +253,13 @@ function renderCalendar(){
     const item =
       calendarData.find(
         d =>
-          d.date === dateStr
+          String(d.date)
+            .substring(0,10)
+            .replaceAll(
+              '/',
+              '-'
+            )
+          === dateStr
       );
 
     if(!item){
@@ -284,6 +281,20 @@ function renderCalendar(){
       item.status;
 
     if(
+      dateObj < today
+    ){
+
+      className +=
+        ' closed';
+
+      disabled =
+        'disabled';
+
+      statusText =
+        '受付終了';
+
+    }
+    else if(
       item.status === '○'
     ){
 
@@ -294,8 +305,7 @@ function renderCalendar(){
         `あと${item.limit}枠`;
 
     }
-
-    if(
+    else if(
       item.status === '△'
     ){
 
@@ -306,16 +316,16 @@ function renderCalendar(){
         `あと${item.limit}枠`;
 
     }
-
-    if(
-      item.status === '×'
-    ){
+    else{
 
       className +=
         ' closed';
 
       disabled =
         'disabled';
+
+      statusText =
+        '満席';
 
     }
 
@@ -329,7 +339,8 @@ function renderCalendar(){
 
         onclick="
           selectDate(
-            '${dateStr}'
+            '${dateStr}',
+            this
           )
         "
 
@@ -363,7 +374,8 @@ function renderCalendar(){
 }
 
 function selectDate(
-  date
+  date,
+  button
 ){
 
   localStorage.setItem(
@@ -382,17 +394,21 @@ function selectDate(
         )
     );
 
-  event.target
-    .closest('button')
-    .classList.add(
-      'selected'
+  button.classList.add(
+    'selected'
+  );
+
+  const goBtn =
+    document.getElementById(
+      'goOrder'
     );
 
-  document
-    .getElementById(
-      'goOrder'
-    )
-    .disabled = false;
+  if(goBtn){
+
+    goBtn.disabled =
+      false;
+
+  }
 
 }
 
@@ -444,6 +460,36 @@ function formatDate(
 }
 
 function goOrder(){
+
+  const bbqProduct =
+    localStorage.getItem(
+      'bbqProductId'
+    );
+
+  const bbqDate =
+    localStorage.getItem(
+      'bbqDate'
+    );
+
+  if(!bbqProduct){
+
+    alert(
+      'BBQ商品を選択してください'
+    );
+
+    return;
+
+  }
+
+  if(!bbqDate){
+
+    alert(
+      '予約日を選択してください'
+    );
+
+    return;
+
+  }
 
   location.href =
     'bbq-order.html';
