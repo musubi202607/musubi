@@ -1,4 +1,4 @@
-async function loadProducts() {
+async function loadBbqOptions(){
 
   const response =
     await fetch(
@@ -9,11 +9,11 @@ async function loadProducts() {
   const products =
     await response.json();
 
-  const onigiriProducts =
+  const bbqOptions =
     products.filter(
-      product =>
-        product.type ===
-        'onigiri'
+      p =>
+        p.type ===
+        'bbq-option'
     );
 
   const grid =
@@ -21,15 +21,9 @@ async function loadProducts() {
       'productGrid'
     );
 
-  if(!grid){
-
-    return;
-
-  }
-
   grid.innerHTML = '';
 
-  onigiriProducts.forEach(
+  bbqOptions.forEach(
     product => {
 
       grid.innerHTML += `
@@ -66,14 +60,18 @@ async function loadProducts() {
             </div>
 
             <button
+
               onclick="
-                addToCart(
-                  ${product.id}
+                addBbqOption(
+                  ${product.id},
+                  '${product.name}',
+                  ${product.price}
                 )
               "
+
             >
 
-              カートに追加
+              追加する
 
             </button>
 
@@ -88,13 +86,59 @@ async function loadProducts() {
 
 }
 
-window.addEventListener(
-  'pageshow',
-  () => {
+function addBbqOption(
+  id,
+  name,
+  price
+){
 
-    updateCartCount();
+  const cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  const existing =
+    cart.find(
+      item =>
+        item.id === id
+    );
+
+  if(existing){
+
+    existing.qty += 1;
+
+  }else{
+
+    cart.push({
+
+      id:id,
+
+      name:name,
+
+      price:price,
+
+      qty:1
+
+    });
 
   }
-);
 
-loadProducts();
+  localStorage.setItem(
+
+    'bbqOptionCart',
+
+    JSON.stringify(
+      cart
+    )
+
+  );
+
+  alert(
+    '追加しました'
+  );
+
+}
+
+loadBbqOptions();

@@ -1,202 +1,113 @@
 function getCart() {
-
-  return JSON.parse(
-    localStorage.getItem('cart')
-  ) || [];
-
+  return JSON.parse(localStorage.getItem('cart')) || [];
 }
 
 function saveCart(cart) {
-
-  localStorage.setItem(
-    'cart',
-    JSON.stringify(cart)
-  );
-
+  localStorage.setItem('cart', JSON.stringify(cart));
   updateCartCount();
-
 }
 
 function addToCart(productId) {
 
   const cart = getCart();
 
-  const existing =
-    cart.find(
-      item => item.id === productId
-    );
+  const existing = cart.find(item => item.id === productId);
 
-  if(existing){
-
+  if (existing) {
     existing.qty += 1;
-
   } else {
-
     cart.push({
       id: productId,
       qty: 1
     });
-
   }
 
   saveCart(cart);
 
   alert('カートへ追加しました');
-
 }
 
 function updateCartCount() {
 
   const cart = getCart();
 
-  const count =
-    cart.reduce(
-      (sum,item) =>
-        sum + item.qty,
-      0
-    );
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  const target =
-    document.getElementById(
-      'cartCount'
-    );
+  const target = document.getElementById('cartCount');
 
-  if(target){
-
+  if (target) {
     target.innerText = count;
-
   }
-
 }
 
+updateCartCount();
 async function displayCart() {
 
-  const response =
-    await fetch(
-      API_URL + '?mode=products'
-    );
+  const response = await fetch('data/products.json');
 
-  const products =
-    await response.json();
+  const products = await response.json();
 
-  const cart =
-    getCart();
+  const cart = getCart();
 
-  const cartItems =
-    document.getElementById(
-      'cartItems'
-    );
+  const cartItems = document.getElementById('cartItems');
 
-  if(!cartItems) return;
+  if (!cartItems) return;
 
   cartItems.innerHTML = '';
 
-  if(cart.length === 0){
+  if (cart.length === 0) {
 
     cartItems.innerHTML = `
-
-      <h2>
-
-        カートは空です
-
-      </h2>
-
+      <p>カートは空です</p>
     `;
 
     return;
-
   }
-
-  let total = 0;
 
   cart.forEach(item => {
 
-    const product =
-      products.find(
-        p => p.id == item.id
-      );
+    const product = products.find(p => p.id === item.id);
 
-    if(!product) return;
-
-    const subtotal =
-      product.price * item.qty;
-
-    total += subtotal;
+    if (!product) return;
 
     cartItems.innerHTML += `
-
       <div class="product-card">
 
         <img src="${product.image}">
 
         <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+          <h3>${product.name}</h3>
 
-          <p>
-            数量：${item.qty}
-          </p>
+          <p>数量：${item.qty}</p>
 
           <div class="price">
-
-            ¥${subtotal.toLocaleString()}
-
+            ¥${product.price * item.qty}
           </div>
 
         </div>
 
       </div>
-
     `;
-
   });
-
-  cartItems.innerHTML += `
-
-    <h2 style="margin-top:20px;">
-
-      合計 ¥${total.toLocaleString()}
-
-    </h2>
-
-  `;
-
 }
 
-function clearCart(){
+function clearCart() {
 
-  localStorage.removeItem(
-    'cart'
-  );
+  localStorage.removeItem('cart');
 
   updateCartCount();
 
+  alert('カートを空にしました');
+
   location.reload();
-
-}
-
-function goOrder(){
-
-  const cart =
-    getCart();
-
-  if(cart.length === 0){
-
-    alert(
-      'カートが空です'
-    );
-
-    return;
-
-  }
-
-  location.href =
-    'order.html';
-
 }
 
 displayCart();
-
 updateCartCount();
+
+displayCart();
+
+window.addEventListener('pageshow', () => {
+  updateCartCount();
+});

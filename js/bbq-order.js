@@ -1,59 +1,4 @@
-window.addEventListener(
-  'DOMContentLoaded',
-  () => {
-
-    const date =
-      localStorage.getItem(
-        'bbqDate'
-      );
-
-    const productName =
-      localStorage.getItem(
-        'bbqProductName'
-      );
-
-    const price =
-      localStorage.getItem(
-        'bbqPrice'
-      );
-
-    document.getElementById(
-      'selectedDate'
-    ).innerText = date;
-
-    document.getElementById(
-      'bbqOrder'
-    ).innerHTML = `
-
-      <div class="product-card">
-
-        <div class="product-content">
-
-          <h3>
-            ${productName}
-          </h3>
-
-          <div class="price">
-
-            ¥${price}
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-);
-
-async function sendBbqOrder(){
-
-  const pickupDate =
-    localStorage.getItem(
-      'bbqDate'
-    );
+async function displayOrder(){
 
   const productName =
     localStorage.getItem(
@@ -65,98 +10,196 @@ async function sendBbqOrder(){
       'bbqPrice'
     );
 
-  const name =
-    document.getElementById(
-      'customerName'
-    ).value;
-
-  const tel =
-    document.getElementById(
-      'customerTel'
-    ).value;
-
-  const memo =
-    document.getElementById(
-      'memo'
-    ).value;
-
-  if(!pickupDate){
-
-    alert(
-      '予約日を選択してください'
+  const bbqDate =
+    localStorage.getItem(
+      'bbqDate'
     );
 
-    return;
-  }
-
-  if(!name){
-
-    alert(
-      'お名前を入力してください'
+  const target =
+    document.getElementById(
+      'orderItems'
     );
 
-    return;
-  }
+  target.innerHTML = `
 
-  if(!tel){
+    <div class="product-card">
 
-    alert(
-      '電話番号を入力してください'
-    );
+      <div class="product-content">
 
-    return;
-  }
+        <h2>
 
-  await fetch(API_URL, {
+          ${productName}
 
-    method: 'POST',
+        </h2>
 
-    headers: {
-      'Content-Type':
-      'application/json'
-    },
+        <p>
 
-    body: JSON.stringify({
+          予約日：
+          ${bbqDate}
 
-      pickupDate,
+        </p>
 
-      name,
+        <div class="price">
 
-      tel,
+          ¥${Number(
+            price
+          ).toLocaleString()}
 
-      memo,
+        </div>
 
-      orderText:
-        productName,
+      </div>
 
-      total:
-        price
+    </div>
 
-    })
-
-  });
-
-  alert(
-    'BBQ予約完了'
-  );
-
-  localStorage.removeItem(
-    'bbqDate'
-  );
-
-  localStorage.removeItem(
-    'bbqProductId'
-  );
-
-  localStorage.removeItem(
-    'bbqProductName'
-  );
-
-  localStorage.removeItem(
-    'bbqPrice'
-  );
-
-  location.href =
-    'bbq.html';
+  `;
 
 }
+
+async function sendBbqOrder(){
+
+  const customerName =
+    document
+      .getElementById(
+        'customerName'
+      )
+      .value
+      .trim();
+
+  const customerTel =
+    document
+      .getElementById(
+        'customerTel'
+      )
+      .value
+      .trim();
+
+  const people =
+    document
+      .getElementById(
+        'people'
+      )
+      .value;
+
+  const memo =
+    document
+      .getElementById(
+        'memo'
+      )
+      .value;
+
+  if(
+    !customerName ||
+    !customerTel ||
+    !people
+  ){
+
+    alert(
+      '必須項目を入力してください'
+    );
+
+    return;
+
+  }
+
+  const orderData = {
+
+    orderType:
+      'BBQ',
+
+    orderDate:
+      localStorage.getItem(
+        'bbqDate'
+      ),
+
+    productName:
+      localStorage.getItem(
+        'bbqProductName'
+      ),
+
+    price:
+      localStorage.getItem(
+        'bbqPrice'
+      ),
+
+    people:
+      people,
+
+    customerName:
+      customerName,
+
+    customerTel:
+      customerTel,
+
+    memo:
+      memo
+
+  };
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+
+          method:'POST',
+
+          body:
+            JSON.stringify(
+              orderData
+            )
+
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if(result.success){
+
+      alert(
+        '予約完了しました'
+      );
+
+      localStorage.removeItem(
+        'bbqProductId'
+      );
+
+      localStorage.removeItem(
+        'bbqProductName'
+      );
+
+      localStorage.removeItem(
+        'bbqPrice'
+      );
+
+      localStorage.removeItem(
+        'bbqDate'
+      );
+
+      location.href =
+        'index.html';
+
+    }else{
+
+      alert(
+        '送信エラー'
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+    alert(
+      '通信エラー'
+    );
+
+  }
+
+}
+
+displayOrder();

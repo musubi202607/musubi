@@ -10,7 +10,7 @@
   >
 
   <title>
-    BBQ予約確認
+    BBQ追加注文確認
   </title>
 
   <link
@@ -29,7 +29,7 @@
     <div>
 
       <h1>
-        BBQ予約確認
+        BBQ追加注文確認
       </h1>
 
     </div>
@@ -41,7 +41,7 @@
 <div class="container">
 
   <a
-    href="bbq.html"
+    href="bbq-option.html"
     class="back-btn"
   >
 
@@ -54,22 +54,20 @@
   </div>
 
   <input
+    type="date"
+    id="bbqDate"
+  >
+
+  <input
     type="text"
     id="customerName"
-    placeholder="お名前"
+    placeholder="予約者名"
   >
 
   <input
     type="tel"
     id="customerTel"
     placeholder="電話番号"
-  >
-
-  <input
-    type="number"
-    id="people"
-    placeholder="人数"
-    min="1"
   >
 
   <textarea
@@ -79,10 +77,10 @@
 
   <button
     class="order-btn"
-    onclick="sendBbqOrder()"
+    onclick="sendBbqOptionOrder()"
   >
 
-    BBQ予約を送信
+    追加注文を送信
 
   </button>
 
@@ -90,7 +88,7 @@
 
 <script src="js/config.js"></script>
 
-<script src="js/bbq-order.js"></script>
+<script src="js/bbq-option-order.js"></script>
 
 </body>
 </html>

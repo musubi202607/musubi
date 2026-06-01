@@ -1,69 +1,28 @@
-<!DOCTYPE html>
-<html lang="ja">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
-  <title>カート</title>
-
-  <link
-    rel="stylesheet"
-    href="css/style.css">
-
 </head>
-
 <body>
 
-<header>
+<div class="container">
 
-  <div class="container">
-
-    <h1>カート</h1>
-
-  </div>
-
-</header>
-
-<section class="container">
+  <h1 style="margin:30px 0;">
+    カート内容
+  </h1>
+  
+  <a href="index.html" class="back-btn">
+  トップへ戻る
+</a>
 
   <div id="cartItems"></div>
+  
+  <a href="order.html" class="order-btn">
+  注文へ進む
+</a>
 
-  <div class="cart-buttons">
+  <button onclick="clearCart()" class="clear-btn">
+    カートを空にする
+  </button>
 
-    <a href="index.html">
+</div>
 
-      <button>
-
-        戻る
-
-      </button>
-
-    </a>
-
-    <button
-      onclick="clearCart()">
-
-      カートを空にする
-
-    </button>
-
-    <button
-      onclick="goOrder()">
-
-      注文確認へ進む
-
-    </button>
-
-  </div>
-
-</section>
-
-<script src="js/config.js"></script>
 <script src="js/cart.js"></script>
 
 </body>

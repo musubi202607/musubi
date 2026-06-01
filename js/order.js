@@ -1,119 +1,96 @@
 async function loadOrder() {
 
-  const response =
-    await fetch(
-      API_URL + '?mode=products'
-    );
+  const response = await fetch('data/products.json');
+  const products = await response.json();
 
-  const products =
-    await response.json();
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  const cart =
-    JSON.parse(
-      localStorage.getItem('cart')
-    ) || [];
-
-  const orderItems =
-    document.getElementById(
-      'orderItems'
-    );
+  const orderItems = document.getElementById('orderItems');
 
   let total = 0;
 
   orderItems.innerHTML = '';
 
-  let orderText = '';
-
   cart.forEach(item => {
 
-    const product =
-      products.find(
-        p => p.id == item.id
-      );
+    const product = products.find(
+      p => p.id === item.id
+    );
 
-    if(!product) return;
+    if (!product) return;
 
-    const subtotal =
-      product.price * item.qty;
-
-    total += subtotal;
-
-    orderText +=
-      `${product.name} × ${item.qty}\n`;
+    total += product.price * item.qty;
 
     orderItems.innerHTML += `
-
       <div class="product-card">
 
-        <img src="${product.image}">
+        <img src="${product.image}" alt="${product.name}">
 
         <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+          <h3>${product.name}</h3>
 
-          <p>
-            数量：${item.qty}
-          </p>
+          <p>数量：${item.qty}</p>
 
           <div class="price">
-            ¥${subtotal}
+            ¥${product.price * item.qty}
           </div>
 
         </div>
 
       </div>
-
     `;
   });
 
   orderItems.innerHTML += `
-
-    <h2>
+    <h2 style="margin-top:20px;">
       合計 ¥${total.toLocaleString()}
     </h2>
-
   `;
 }
 
-async function sendOrder(){
+async function sendOrder() {
 
   const name =
-    document.getElementById(
-      'customerName'
-    ).value;
+    document.getElementById('customerName').value.trim();
 
   const tel =
-    document.getElementById(
-      'customerTel'
-    ).value;
+    document.getElementById('customerTel').value.trim();
 
-  const response =
-    await fetch(
-      API_URL + '?mode=products'
-    );
+  const memo =
+    document.getElementById('memo').value.trim();
 
-  const products =
-    await response.json();
+  if (!name) {
+    alert('お名前を入力してください');
+    return;
+  }
+
+  if (!tel) {
+    alert('電話番号を入力してください');
+    return;
+  }
+
+  const response = await fetch('data/products.json');
+  const products = await response.json();
 
   const cart =
-    JSON.parse(
-      localStorage.getItem('cart')
-    ) || [];
+    JSON.parse(localStorage.getItem('cart')) || [];
 
-  let total = 0;
+  if (cart.length === 0) {
+    alert('カートが空です');
+    return;
+  }
 
   let orderText = '';
+  let total = 0;
 
   cart.forEach(item => {
 
-    const product =
-      products.find(
-        p => p.id == item.id
-      );
+    const product = products.find(
+      p => p.id === item.id
+    );
 
-    if(!product) return;
+    if (!product) return;
 
     const subtotal =
       product.price * item.qty;
@@ -121,48 +98,53 @@ async function sendOrder(){
     total += subtotal;
 
     orderText +=
-      `${product.name} × ${item.qty}\n`;
+      `${product.name} × ${item.qty} = ¥${subtotal.toLocaleString()}\n`;
 
   });
 
   orderText +=
-`\n合計金額：¥${total}`;
+    `\n------------------\n`;
 
-  await fetch(API_URL, {
+  orderText +=
+    `合計金額：¥${total.toLocaleString()}\n`;
 
+  if (memo) {
+
+    orderText +=
+      `\n備考：${memo}`;
+  }
+
+  const formUrl =
+    'https://docs.google.com/forms/d/e/1FAIpQLSfW6b_V0k1mxets8qiIom_Dkru81Vx9V3PpU7F9FUDF92600A/formResponse';
+
+  const formData = new FormData();
+
+  formData.append(
+    'entry.1710034436',
+    name
+  );
+
+  formData.append(
+    'entry.1139535215',
+    tel
+  );
+
+  formData.append(
+    'entry.827273850',
+    orderText
+  );
+
+  await fetch(formUrl, {
     method: 'POST',
-
-    headers: {
-      'Content-Type':
-        'application/json'
-    },
-
-    body: JSON.stringify({
-
-      pickupDate: '',
-
-      name,
-
-      tel,
-
-      orderText,
-
-      total
-
-    })
-
+    mode: 'no-cors',
+    body: formData
   });
 
-  alert(
-    '注文ありがとうございました'
-  );
+  alert('ご注文ありがとうございました');
 
-  localStorage.removeItem(
-    'cart'
-  );
+  localStorage.removeItem('cart');
 
-  location.href =
-    'index.html';
+  location.href = 'index.html';
 }
 
 loadOrder();

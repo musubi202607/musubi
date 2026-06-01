@@ -7,13 +7,14 @@ async function loadBbq() {
 
   const response =
     await fetch(
-      API_URL + '?mode=products'
+      API_URL +
+      '?mode=products'
     );
 
   const products =
     await response.json();
 
-  const bbq =
+  const bbqProducts =
     products.filter(
       p => p.type === 'bbq'
     );
@@ -25,55 +26,65 @@ async function loadBbq() {
 
   target.innerHTML = '';
 
-  bbq.forEach(product => {
+  bbqProducts.forEach(
+    product => {
 
-    target.innerHTML += `
+      target.innerHTML += `
 
-      <div class="product-card">
+        <div class="product-card">
 
-        <img src="${product.image}">
+          <img
+            src="${product.image}"
+          >
 
-        <div class="product-content">
+          <div
+            class="product-content"
+          >
 
-          <h3>
+            <h3>
 
-            ${product.name}
+              ${product.name}
 
-          </h3>
+            </h3>
 
-          <p>
+            <p>
 
-            ${product.description}
+              ${product.description}
 
-          </p>
+            </p>
 
-          <div class="price">
+            <div class="price">
 
-            ¥${product.price}
+              ¥${Number(
+                product.price
+              ).toLocaleString()}
+
+            </div>
+
+            <button
+
+              onclick="
+                selectBbq(
+                  ${product.id},
+                  '${product.name}',
+                  ${product.price}
+                )
+              "
+
+            >
+
+              この商品を予約
+
+            </button>
 
           </div>
 
-          <button
-            onclick="
-              selectBbq(
-                ${product.id},
-                '${product.name}',
-                ${product.price}
-              )
-            "
-          >
-
-            この商品を予約する
-
-          </button>
-
         </div>
 
-      </div>
+      `;
 
-    `;
-
-  });
+    }
+  );
 
 }
 
@@ -112,7 +123,8 @@ async function loadCalendar(){
 
   const response =
     await fetch(
-      API_URL + '?mode=calendar'
+      API_URL +
+      '?mode=calendar'
     );
 
   calendarData =
@@ -162,7 +174,8 @@ function renderCalendar(){
     <div class="calendar-header">
 
       <button
-        onclick="prevMonth()">
+        onclick="prevMonth()"
+      >
 
         ←
 
@@ -170,12 +183,14 @@ function renderCalendar(){
 
       <h2>
 
-        ${year}年 ${month + 1}月
+        ${year}年
+        ${month + 1}月
 
       </h2>
 
       <button
-        onclick="nextMonth()">
+        onclick="nextMonth()"
+      >
 
         →
 
@@ -185,25 +200,52 @@ function renderCalendar(){
 
     <div class="calendar-grid">
 
-      <div class="calendar-week">日</div>
-      <div class="calendar-week">月</div>
-      <div class="calendar-week">火</div>
-      <div class="calendar-week">水</div>
-      <div class="calendar-week">木</div>
-      <div class="calendar-week">金</div>
-      <div class="calendar-week">土</div>
+      <div class="calendar-week">
+        日
+      </div>
+
+      <div class="calendar-week">
+        月
+      </div>
+
+      <div class="calendar-week">
+        火
+      </div>
+
+      <div class="calendar-week">
+        水
+      </div>
+
+      <div class="calendar-week">
+        木
+      </div>
+
+      <div class="calendar-week">
+        金
+      </div>
+
+      <div class="calendar-week">
+        土
+      </div>
 
   `;
 
-  for(let i = 0; i < startDay; i++){
+  for(
+    let i = 0;
+    i < startDay;
+    i++
+  ){
 
-    target.innerHTML += `
-      <div></div>
-    `;
+    target.innerHTML +=
+      '<div></div>';
 
   }
 
-  for(let day = 1; day <= totalDays; day++){
+  for(
+    let day = 1;
+    day <= totalDays;
+    day++
+  ){
 
     const dateObj =
       new Date(
@@ -213,18 +255,20 @@ function renderCalendar(){
       );
 
     const dateStr =
-      formatDate(dateObj);
+      formatDate(
+        dateObj
+      );
 
     const item =
       calendarData.find(
-        d => d.date === dateStr
+        d =>
+          d.date === dateStr
       );
 
     if(!item){
 
-      target.innerHTML += `
-        <div></div>
-      `;
+      target.innerHTML +=
+        '<div></div>';
 
       continue;
 
@@ -233,12 +277,15 @@ function renderCalendar(){
     let className =
       'calendar-day';
 
-    let disabled = '';
+    let disabled =
+      '';
 
     let statusText =
       item.status;
 
-    if(item.status === '○'){
+    if(
+      item.status === '○'
+    ){
 
       className +=
         ' available';
@@ -248,7 +295,9 @@ function renderCalendar(){
 
     }
 
-    if(item.status === '△'){
+    if(
+      item.status === '△'
+    ){
 
       className +=
         ' few';
@@ -258,7 +307,9 @@ function renderCalendar(){
 
     }
 
-    if(item.status === '×'){
+    if(
+      item.status === '×'
+    ){
 
       className +=
         ' closed';
@@ -284,13 +335,17 @@ function renderCalendar(){
 
       >
 
-        <div class="calendar-date">
+        <div
+          class="calendar-date"
+        >
 
           ${day}
 
         </div>
 
-        <div class="calendar-status">
+        <div
+          class="calendar-status"
+        >
 
           ${statusText}
 
@@ -302,9 +357,42 @@ function renderCalendar(){
 
   }
 
-  target.innerHTML += `
-    </div>
-  `;
+  target.innerHTML +=
+    '</div>';
+
+}
+
+function selectDate(
+  date
+){
+
+  localStorage.setItem(
+    'bbqDate',
+    date
+  );
+
+  document
+    .querySelectorAll(
+      '.calendar-day'
+    )
+    .forEach(
+      btn =>
+        btn.classList.remove(
+          'selected'
+        )
+    );
+
+  event.target
+    .closest('button')
+    .classList.add(
+      'selected'
+    );
+
+  document
+    .getElementById(
+      'goOrder'
+    )
+    .disabled = false;
 
 }
 
@@ -328,7 +416,9 @@ function nextMonth(){
 
 }
 
-function formatDate(date){
+function formatDate(
+  date
+){
 
   const y =
     date.getFullYear();
@@ -336,47 +426,20 @@ function formatDate(date){
   const m =
     String(
       date.getMonth() + 1
-    ).padStart(2,'0');
+    ).padStart(
+      2,
+      '0'
+    );
 
   const d =
     String(
       date.getDate()
-    ).padStart(2,'0');
-
-  return `${y}-${m}-${d}`;
-
-}
-
-function selectDate(date){
-
-  localStorage.setItem(
-    'bbqDate',
-    date
-  );
-
-  document
-    .querySelectorAll(
-      '.calendar-day'
-    )
-    .forEach(btn => {
-
-      btn.classList.remove(
-        'selected'
-      );
-
-    });
-
-  event.target
-    .closest('button')
-    .classList.add(
-      'selected'
+    ).padStart(
+      2,
+      '0'
     );
 
-  document
-    .getElementById(
-      'goOrder'
-    )
-    .disabled = false;
+  return `${y}-${m}-${d}`;
 
 }
 
