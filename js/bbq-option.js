@@ -226,14 +226,15 @@ function changeOrderQty(
 
   const item =
     cart.find(
-      p => p.id === id
+      p => String(p.id) === String(id)
     );
 
   if(!item){
     return;
   }
 
-  item.qty += diff;
+  item.qty =
+    Number(item.qty) + diff;
 
   if(
     item.qty <= 0
@@ -241,7 +242,8 @@ function changeOrderQty(
 
     cart =
       cart.filter(
-        p => p.id !== id
+        p =>
+          String(p.id) !== String(id)
       );
 
   }
@@ -250,9 +252,7 @@ function changeOrderQty(
 
     'bbqOptionCart',
 
-    JSON.stringify(
-      cart
-    )
+    JSON.stringify(cart)
 
   );
 
