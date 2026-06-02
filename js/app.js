@@ -1,100 +1,90 @@
-async function loadProducts() {
+<div class="qty-area">
 
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=products'
-    );
+  <button
+    class="qty-btn"
+    onclick="
+      changeQty(
+        ${product.id},
+        -1
+      )
+    "
+  >
+    －
+  </button>
 
-  const products =
-    await response.json();
+  <span
+    id="qty-${product.id}"
+    class="qty-value"
+  >
+    1
+  </span>
 
-  const onigiriProducts =
-    products.filter(
-      product =>
-        product.type ===
-        'onigiri'
-    );
+  <button
+    class="qty-btn"
+    onclick="
+      changeQty(
+        ${product.id},
+        1
+      )
+    "
+  >
+    ＋
+  </button>
 
-  const grid =
+</div>
+
+<button
+  onclick="
+    addToCartQty(
+      ${product.id}
+    )
+  "
+>
+  カートに追加
+</button>
+
+function changeQty(
+  productId,
+  diff
+){
+
+  const target =
     document.getElementById(
-      'productGrid'
+      `qty-${productId}`
     );
 
-  if(!grid){
+  let qty =
+    Number(
+      target.innerText
+    );
 
-    return;
+  qty += diff;
 
+  if(
+    qty < 1
+  ){
+    qty = 1;
   }
 
-  grid.innerHTML = '';
-
-  onigiriProducts.forEach(
-    product => {
-
-      grid.innerHTML += `
-
-        <div class="product-card">
-
-          <img
-            src="${product.image}"
-            alt="${product.name}"
-          >
-
-          <div
-            class="product-content"
-          >
-
-            <h3>
-
-              ${product.name}
-
-            </h3>
-
-            <p>
-
-              ${product.description}
-
-            </p>
-
-            <div class="price">
-
-              ¥${Number(
-                product.price
-              ).toLocaleString()}
-
-            </div>
-
-            <button
-              onclick="
-                addToCart(
-                  ${product.id}
-                )
-              "
-            >
-
-              カートに追加
-
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-  );
+  target.innerText =
+    qty;
 
 }
 
-window.addEventListener(
-  'pageshow',
-  () => {
+function addToCartQty(
+  productId
+){
 
-    updateCartCount();
+  const qty =
+    Number(
+      document.getElementById(
+        `qty-${productId}`
+      ).innerText
+    );
 
-  }
-);
+  addToCart(
+    productId,
+    qty
+  );
 
-loadProducts();
+}

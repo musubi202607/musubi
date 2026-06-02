@@ -325,7 +325,7 @@ function renderCalendar(){
         'disabled';
 
       statusText =
-        '満席';
+        '予約不可';
 
     }
 

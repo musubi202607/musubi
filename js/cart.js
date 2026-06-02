@@ -17,7 +17,10 @@ function saveCart(cart) {
 
 }
 
-function addToCart(productId) {
+function addToCart(
+  productId,
+  qty = 1
+){
 
   const cart = getCart();
 
@@ -28,13 +31,13 @@ function addToCart(productId) {
 
   if(existing){
 
-    existing.qty += 1;
+    existing.qty += qty;
 
   } else {
 
     cart.push({
       id: productId,
-      qty: 1
+      qty: qty
     });
 
   }
