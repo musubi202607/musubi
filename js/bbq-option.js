@@ -59,21 +59,56 @@ async function loadBbqOptions(){
 
             </div>
 
-            <button
+           <div class="qty-area">
 
-              onclick="
-                addBbqOption(
-                  ${product.id},
-                  '${product.name}',
-                  ${product.price}
-                )
-              "
+  <button
+    class="qty-btn"
+    onclick="
+      changeBbqQty(
+        ${product.id},
+        -1
+      )
+    "
+  >
+    －
+  </button>
 
-            >
+  <span
+    id="qty-${product.id}"
+    class="qty-value"
+  >
+    1
+  </span>
 
-              追加する
+  <button
+    class="qty-btn"
+    onclick="
+      changeBbqQty(
+        ${product.id},
+        1
+      )
+    "
+  >
+    ＋
+  </button>
 
-            </button>
+</div>
+
+<button
+
+  onclick="
+    addBbqOption(
+      ${product.id},
+      '${product.name}',
+      ${product.price}
+    )
+  "
+
+>
+
+  カートへ追加
+
+</button>
 
           </div>
 
@@ -105,25 +140,31 @@ function addBbqOption(
         item.id === id
     );
 
-  if(existing){
+  const qty = Number(
+  document.getElementById(
+    `qty-${id}`
+  ).innerText
+);
 
-    existing.qty += 1;
+if(existing){
 
-  }else{
+  existing.qty += qty;
 
-    cart.push({
+}else{
 
-      id:id,
+  cart.push({
 
-      name:name,
+    id:id,
 
-      price:price,
+    name:name,
 
-      qty:1
+    price:price,
 
-    });
+    qty:qty
 
-  }
+  });
+
+}
 
   localStorage.setItem(
 
@@ -142,3 +183,79 @@ function addBbqOption(
 }
 
 loadBbqOptions();
+
+function changeBbqQty(
+  productId,
+  diff
+){
+
+  const target =
+    document.getElementById(
+      `qty-${productId}`
+    );
+
+  let qty =
+    Number(
+      target.innerText
+    );
+
+  qty += diff;
+
+  if(
+    qty < 1
+  ){
+    qty = 1;
+  }
+
+  target.innerText =
+    qty;
+
+}
+
+function changeOrderQty(
+  id,
+  diff
+){
+
+  let cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  const item =
+    cart.find(
+      p => p.id === id
+    );
+
+  if(!item){
+    return;
+  }
+
+  item.qty += diff;
+
+  if(
+    item.qty <= 0
+  ){
+
+    cart =
+      cart.filter(
+        p => p.id !== id
+      );
+
+  }
+
+  localStorage.setItem(
+
+    'bbqOptionCart',
+
+    JSON.stringify(
+      cart
+    )
+
+  );
+
+  displayBbqOptionOrder();
+
+}

@@ -12,22 +12,30 @@ async function displayBbqOptionOrder(){
       'orderItems'
     );
 
-  if(cart.length === 0){
+if(cart.length === 0){
 
-    target.innerHTML = `
+  target.innerHTML = `
 
-      <h2>
+    <h2>
 
-        商品がありません
+      商品がありません
 
-      </h2>
+    </h2>
 
-    `;
+    <a
+      href="bbq-option.html"
+      class="order-btn"
+    >
 
-    return;
+      商品を選ぶ
 
-  }
+    </a>
 
+  `;
+
+  return;
+
+}
   let total = 0;
 
   target.innerHTML = '';
@@ -52,12 +60,39 @@ async function displayBbqOptionOrder(){
 
           </h3>
 
-          <p>
+          <div class="qty-area">
 
-            数量：
-            ${item.qty}
+  <button
+    class="qty-btn"
+    onclick="
+      changeOrderQty(
+        ${item.id},
+        -1
+      )
+    "
+  >
+    －
+  </button>
 
-          </p>
+  <span
+    class="qty-value"
+  >
+    ${item.qty}
+  </span>
+
+  <button
+    class="qty-btn"
+    onclick="
+      changeOrderQty(
+        ${item.id},
+        1
+      )
+    "
+  >
+    ＋
+  </button>
+
+</div>
 
           <div class="price">
 
@@ -72,6 +107,80 @@ async function displayBbqOptionOrder(){
     `;
 
   });
+
+target.innerHTML += `
+
+  <div class="product-card">
+
+    <div class="product-content">
+
+      <h3>
+
+        ${item.name}
+
+      </h3>
+
+      <div class="qty-area">
+
+        <button
+          class="qty-btn"
+          onclick="
+            changeOrderQty(
+              ${item.id},
+              -1
+            )
+          "
+        >
+          －
+        </button>
+
+        <span
+          class="qty-value"
+        >
+          ${item.qty}
+        </span>
+
+        <button
+          class="qty-btn"
+          onclick="
+            changeOrderQty(
+              ${item.id},
+              1
+            )
+          "
+        >
+          ＋
+        </button>
+
+      </div>
+
+      <div class="price">
+
+        ¥${subtotal.toLocaleString()}
+
+      </div>
+
+      <button
+
+        class="clear-btn"
+
+        onclick="
+          removeOptionItem(
+            ${item.id}
+          )
+        "
+
+      >
+
+        削除
+
+      </button>
+
+    </div>
+
+  </div>
+
+`;
 
   target.innerHTML += `
 
@@ -227,3 +336,52 @@ async function sendBbqOptionOrder(){
 }
 
 displayBbqOptionOrder();
+
+function clearBbqOptionCart(){
+
+  if(
+    !confirm(
+      '追加注文をすべて削除しますか？'
+    )
+  ){
+    return;
+  }
+
+  localStorage.removeItem(
+    'bbqOptionCart'
+  );
+
+  location.reload();
+
+}
+
+function removeOptionItem(
+  id
+){
+
+  let cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  cart =
+    cart.filter(
+      item =>
+        item.id !== id
+    );
+
+  localStorage.setItem(
+
+    'bbqOptionCart',
+
+    JSON.stringify(
+      cart
+    )
+
+  );
+
+  displayBbqOptionOrder();
+
+}
