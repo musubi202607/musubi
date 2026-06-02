@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BBQ予約</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="container header-inner">
+
+    <div>
+
+      <h1>BBQ予約</h1>
+
+      <p>
+        ご希望日を選択してください
+      </p>
+
+    </div>
+
+    <div>
+
+      <a
+        href="index.html"
+        class="cart-button"
+      >
+        おにぎり
+      </a>
+
+      <a
+        href="bbq-option.html"
+        class="cart-button"
+      >
+        BBQ追加注文
+      </a>
+
+    </div>
+
+  </div>
+
+</header>
+
+<section class="products container">
+
+  <div class="section-title">
+
+    <h2>
+      BBQセット
+    </h2>
+
+  </div>
+
+  <div
+    class="product-grid"
+    id="bbqProducts"
+  >
+  </div>
+
+</section>
+
+<div class="container">
+
+  <a
+    href="index.html"
+    class="back-btn"
+  >
+    ← トップページへ戻る
+  </a>
+
+</div>
+
+<section
+  class="container"
+  id="calendarSection"
+>
+
+  <div class="section-title">
+
+    <h2>
+      予約可能日
+    </h2>
+
+  </div>
+
+  <div id="calendar"></div>
+
+  <button
+    id="goOrder"
+    class="order-btn"
+    onclick="goOrder()"
+    disabled
+  >
+
+    予約へ進む
+
+  </button>
+
+</section>
+
+<script src="js/config.js"></script>
+
+<script src="js/bbq.js"></script>
+
+</body>
+</html>
