@@ -7,13 +7,17 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <title>注文確認</title>
+  <title>
+    注文確認
+  </title>
 
   <link
     rel="stylesheet"
-    href="css/style.css">
+    href="css/style.css"
+  >
 
 </head>
 
@@ -21,58 +25,75 @@
 
 <header>
 
-  <div class="container">
+  <div class="container header-inner">
 
-    <h1>注文確認</h1>
+    <div>
+
+      <h1>
+        注文確認
+      </h1>
+
+    </div>
 
   </div>
 
 </header>
 
-<section class="container">
+<div class="container">
 
-  <div id="orderItems"></div>
+  <a
+    href="cart.html"
+    class="back-btn"
+  >
+    ← カートへ戻る
+  </a>
+
+  <a
+    href="index.html"
+    class="back-btn"
+  >
+    ← トップページへ戻る
+  </a>
+
+  <div
+    id="orderItems"
+  >
+  </div>
 
   <input
     type="text"
     id="customerName"
-    placeholder="お名前">
+    placeholder="お名前"
+  >
 
   <input
     type="tel"
     id="customerTel"
-    placeholder="電話番号">
+    placeholder="電話番号"
+  >
 
   <textarea
     id="memo"
-    placeholder="備考"></textarea>
+    placeholder="備考（任意）"
+  ></textarea>
 
-  <div class="cart-buttons">
+  <button
+    class="order-btn"
+    onclick="sendOrder()"
+  >
 
-    <a href="cart.html">
+    注文を送信する
 
-      <button>
+  </button>
 
-        戻る
-
-      </button>
-
-    </a>
-
-    <button
-      onclick="sendOrder()">
-
-      注文送信
-
-    </button>
-
-  </div>
-
-</section>
+</div>
 
 <script src="js/config.js"></script>
+
 <script src="js/cart.js"></script>
+
 <script src="js/order.js"></script>
 
 </body>
+
 </html>

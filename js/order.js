@@ -79,19 +79,25 @@ async function loadOrder() {
 
 async function sendOrder(){
 
-  const name =
+  const customerName =
     document.getElementById(
       'customerName'
     ).value;
 
-  const tel =
+  const customerTel =
     document.getElementById(
       'customerTel'
     ).value;
 
+  const memo =
+    document.getElementById(
+      'memo'
+    )?.value || '';
+
   const response =
     await fetch(
-      API_URL + '?mode=products'
+      API_URL +
+      '?mode=products'
     );
 
   const products =
@@ -99,12 +105,22 @@ async function sendOrder(){
 
   const cart =
     JSON.parse(
-      localStorage.getItem('cart')
+      localStorage.getItem(
+        'cart'
+      )
     ) || [];
 
-  let total = 0;
+  if(cart.length === 0){
 
-  let orderText = '';
+    alert(
+      '商品がありません'
+    );
+
+    return;
+
+  }
+
+  const items = [];
 
   cart.forEach(item => {
 
@@ -115,54 +131,88 @@ async function sendOrder(){
 
     if(!product) return;
 
-    const subtotal =
-      product.price * item.qty;
+    items.push({
 
-    total += subtotal;
+      id:
+        product.id,
 
-    orderText +=
-      `${product.name} × ${item.qty}\n`;
+      name:
+        product.name,
 
-  });
+      price:
+        product.price,
 
-  orderText +=
-`\n合計金額：¥${total}`;
+      qty:
+        item.qty
 
-  await fetch(API_URL, {
-
-    method: 'POST',
-
-    headers: {
-      'Content-Type':
-        'application/json'
-    },
-
-    body: JSON.stringify({
-
-      pickupDate: '',
-
-      name,
-
-      tel,
-
-      orderText,
-
-      total
-
-    })
+    });
 
   });
 
-  alert(
-    '注文ありがとうございました'
-  );
+  const orderData = {
 
-  localStorage.removeItem(
-    'cart'
-  );
+    orderType:
+      'ONIGIRI',
 
-  location.href =
-    'index.html';
+    pickupDate:
+      '',
+
+    items:
+      items,
+
+    customerName:
+      customerName,
+
+    customerTel:
+      customerTel,
+
+    memo:
+      memo
+
+  };
+
+  const result =
+    await fetch(
+      API_URL,
+      {
+
+        method:'POST',
+
+        headers:{
+          'Content-Type':
+            'application/json'
+        },
+
+        body:
+          JSON.stringify(
+            orderData
+          )
+
+      }
+    );
+
+  const json =
+    await result.json();
+
+  if(json.success){
+
+    alert(
+      '注文ありがとうございました'
+    );
+
+    localStorage.removeItem(
+      'cart'
+    );
+
+    location.href =
+      'index.html';
+
+  }else{
+
+    alert(
+      '注文送信エラー'
+    );
+
+  }
+
 }
-
-loadOrder();
