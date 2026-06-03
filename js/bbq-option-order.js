@@ -1,247 +1,3 @@
-async function displayBbqOptionOrder(){
-
-  const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
-
-  const target =
-    document.getElementById(
-      'orderItems'
-    );
-
-  if(cart.length === 0){
-
-    target.innerHTML = `
-
-      <h2>
-
-        商品がありません
-
-      </h2>
-
-      <a
-        href="bbq-option.html"
-        class="order-btn"
-      >
-
-        商品を選ぶ
-
-      </a>
-
-    `;
-
-    return;
-
-  }
-
-  let total = 0;
-
-  target.innerHTML = '';
-
-  cart.forEach(item => {
-
-    const subtotal =
-      Number(item.price) *
-      Number(item.qty);
-
-    total += subtotal;
-
-    target.innerHTML += `
-
-      <div class="product-card">
-
-        <div class="product-content">
-
-          <h3>
-
-            ${item.name}
-
-          </h3>
-
-          <div class="qty-area">
-
-            <button
-              class="qty-btn"
-              onclick="
-                changeOrderQty(
-                  ${item.id},
-                  -1
-                )
-              "
-            >
-              －
-            </button>
-
-            <span
-              class="qty-value"
-            >
-              ${item.qty}
-            </span>
-
-            <button
-              class="qty-btn"
-              onclick="
-                changeOrderQty(
-                  ${item.id},
-                  1
-                )
-              "
-            >
-              ＋
-            </button>
-
-          </div>
-
-          <div class="price">
-
-            ¥${subtotal.toLocaleString()}
-
-          </div>
-
-          <button
-
-            class="clear-btn"
-
-            onclick="
-              removeOptionItem(
-                ${item.id}
-              )
-            "
-
-          >
-
-            削除
-
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-  });
-
-  target.innerHTML += `
-
-    <h2>
-
-      合計
-      ¥${total.toLocaleString()}
-
-    </h2>
-
-  `;
-
-}
-
-function changeOrderQty(
-  id,
-  diff
-){
-
-  let cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
-
-  const item =
-    cart.find(
-      p =>
-        String(p.id) ===
-        String(id)
-    );
-
-  if(!item){
-    return;
-  }
-
-  item.qty =
-    Number(item.qty) +
-    Number(diff);
-
-  if(
-    item.qty <= 0
-  ){
-
-    cart =
-      cart.filter(
-        p =>
-          String(p.id) !==
-          String(id)
-      );
-
-  }
-
-  localStorage.setItem(
-
-    'bbqOptionCart',
-
-    JSON.stringify(
-      cart
-    )
-
-  );
-
-  displayBbqOptionOrder();
-
-}
-
-function removeOptionItem(
-  id
-){
-
-  let cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
-
-  cart =
-    cart.filter(
-      item =>
-        String(item.id) !==
-        String(id)
-    );
-
-  localStorage.setItem(
-
-    'bbqOptionCart',
-
-    JSON.stringify(
-      cart
-    )
-
-  );
-
-  displayBbqOptionOrder();
-
-}
-
-function clearBbqOptionCart(){
-
-  if(
-    !confirm(
-      '追加注文をすべて削除しますか？'
-    )
-  ){
-    return;
-  }
-
-  localStorage.removeItem(
-    'bbqOptionCart'
-  );
-
-  location.reload();
-
-}
-
 async function sendBbqOptionOrder(){
 
   const cart =
@@ -266,7 +22,8 @@ async function sendBbqOptionOrder(){
       .getElementById(
         'bbqDate'
       )
-      .value;
+      .value
+      .trim();
 
   const customerName =
     document
@@ -289,16 +46,53 @@ async function sendBbqOptionOrder(){
       .getElementById(
         'memo'
       )
-      .value;
+      .value
+      .trim();
+
+  // BBQ利用日チェック
+  if(!bbqDate){
+
+    alert(
+      'BBQ利用日を入力してください'
+    );
+
+    return;
+
+  }
+
+  // お名前チェック
+  if(!customerName){
+
+    alert(
+      'お名前を入力してください'
+    );
+
+    return;
+
+  }
+
+  // 電話番号チェック
+  if(!customerTel){
+
+    alert(
+      '電話番号を入力してください'
+    );
+
+    return;
+
+  }
+
+  const telPattern =
+    /^[0-9\-]+$/;
 
   if(
-    !bbqDate ||
-    !customerName ||
-    !customerTel
+    !telPattern.test(
+      customerTel
+    )
   ){
 
     alert(
-      '必須項目を入力してください'
+      '電話番号を正しく入力してください'
     );
 
     return;
@@ -333,11 +127,20 @@ async function sendBbqOptionOrder(){
       await fetch(
         API_URL,
         {
-          method:'POST',
+
+          method:
+            'POST',
+
+          headers:{
+            'Content-Type':
+              'application/json'
+          },
+
           body:
             JSON.stringify(
               orderData
             )
+
         }
       );
 
@@ -372,11 +175,9 @@ async function sendBbqOptionOrder(){
     );
 
     alert(
-      '通信エラー'
+      '通信エラーが発生しました'
     );
 
   }
 
 }
-
-displayBbqOptionOrder();

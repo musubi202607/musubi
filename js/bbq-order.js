@@ -55,7 +55,7 @@ async function displayOrder(){
 
 }
 
-async function sendBbqOrder(){
+async function sendBbqOrder() {
 
   const customerName =
     document
@@ -78,23 +78,73 @@ async function sendBbqOrder(){
       .getElementById(
         'people'
       )
-      .value;
+      .value
+      .trim();
 
   const memo =
     document
       .getElementById(
         'memo'
       )
-      .value;
+      .value
+      .trim();
 
-  if(
-    !customerName ||
-    !customerTel ||
-    !people
-  ){
+  // お名前チェック
+  if (!customerName) {
 
     alert(
-      '必須項目を入力してください'
+      'お名前を入力してください'
+    );
+
+    return;
+
+  }
+
+  // 電話番号チェック
+  if (!customerTel) {
+
+    alert(
+      '電話番号を入力してください'
+    );
+
+    return;
+
+  }
+
+  const telPattern =
+    /^[0-9\-]+$/;
+
+  if (
+    !telPattern.test(
+      customerTel
+    )
+  ) {
+
+    alert(
+      '電話番号を正しく入力してください'
+    );
+
+    return;
+
+  }
+
+  // 人数チェック
+  if (!people) {
+
+    alert(
+      '人数を入力してください'
+    );
+
+    return;
+
+  }
+
+  if (
+    Number(people) <= 0
+  ) {
+
+    alert(
+      '人数は1名以上で入力してください'
     );
 
     return;
@@ -135,14 +185,20 @@ async function sendBbqOrder(){
 
   };
 
-  try{
+  try {
 
     const response =
       await fetch(
         API_URL,
         {
 
-          method:'POST',
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
 
           body:
             JSON.stringify(
@@ -155,7 +211,9 @@ async function sendBbqOrder(){
     const result =
       await response.json();
 
-    if(result.success){
+    if (
+      result.success
+    ) {
 
       alert(
         '予約完了しました'
@@ -180,7 +238,7 @@ async function sendBbqOrder(){
       location.href =
         'index.html';
 
-    }else{
+    } else {
 
       alert(
         '送信エラー'
@@ -188,18 +246,16 @@ async function sendBbqOrder(){
 
     }
 
-  }catch(error){
+  } catch (error) {
 
     console.error(
       error
     );
 
     alert(
-      '通信エラー'
+      '通信エラーが発生しました'
     );
 
   }
 
 }
-
-displayOrder();
