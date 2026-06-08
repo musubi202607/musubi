@@ -99,27 +99,32 @@ async function sendBbqOptionOrder(){
 
   }
 
-  const orderData = {
+ const orderData = {
 
-    orderType:
-      'BBQ_OPTION',
+  orderType:
+    'BBQ_OPTION',
 
-    orderDate:
-      bbqDate,
+  reservationNo:
+    localStorage.getItem(
+      'reservationNo'
+    ) || '',
 
-    items:
-      cart,
+  orderDate:
+    bbqDate,
 
-    customerName:
-      customerName,
+  items:
+    cart,
 
-    customerTel:
-      customerTel,
+  customerName:
+    customerName,
 
-    memo:
-      memo
+  customerTel:
+    customerTel,
 
-  };
+  memo:
+    memo
+
+};
 
   try{
 
