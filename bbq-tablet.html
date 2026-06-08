@@ -5,19 +5,47 @@
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>
-    BBQ追加注文
-  </title>
+  <title>BBQ追加注文</title>
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      margin: 5px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn-checkin {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-order {
+      background: #007bff;
+      color: white;
+    }
+
+    .reservation-card {
+      background: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    #currentReservation {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
 
 </head>
 
@@ -29,13 +57,9 @@
 
     <div>
 
-      <h1>
-        BBQ追加注文
-      </h1>
+      <h1>BBQ追加注文</h1>
 
-      <p>
-        当日追加オーダー
-      </p>
+      <p>当日追加オーダー</p>
 
     </div>
 
@@ -43,92 +67,75 @@
 
 </header>
 
+<!-- =========================
+  現在選択中の予約
+========================= -->
 <section class="container">
 
-  <h2>
-    予約番号検索
-  </h2>
+  <h2>選択中の予約</h2>
 
-  <input
-    type="text"
-    id="reservationNo"
-    placeholder="予約番号を入力"
-  >
+  <div id="currentReservation">
+    予約を選択してください
+  </div>
 
-  <button
-    class="order-btn"
-    onclick="searchReservation()"
-  >
+</section>
 
+<!-- =========================
+  予約番号検索
+========================= -->
+<section class="container">
+
+  <h2>予約番号検索</h2>
+
+  <input type="text" id="reservationNo" placeholder="予約番号を入力">
+
+  <button class="order-btn" onclick="searchReservation()">
     検索
-
   </button>
 
-  <div
-    id="reservationDetail"
-  >
-  </div>
+  <div id="reservationDetail"></div>
 
 </section>
 
+<!-- =========================
+  本日の予約一覧（ここが重要）
+========================= -->
 <section class="container">
 
-  <h2>
-    本日のご予約
-  </h2>
+  <h2>本日のご予約</h2>
 
-  <div
-    id="reservationList"
-  >
-  </div>
+  <div id="reservationList"></div>
 
 </section>
 
+<!-- =========================
+  商品
+========================= -->
 <section class="products container">
 
   <div class="section-title">
-
-    <h2>
-      追加メニュー
-    </h2>
-
+    <h2>追加メニュー</h2>
   </div>
 
-  <div
-    class="product-grid"
-    id="productGrid"
-  >
-  </div>
+  <div class="product-grid" id="productGrid"></div>
 
 </section>
 
+<!-- =========================
+  カート
+========================= -->
 <section class="container">
 
-  <h2>
-    注文内容
-  </h2>
+  <h2>注文内容</h2>
 
-  <div
-    id="cartArea"
-  >
-  </div>
+  <div id="cartArea"></div>
 
-  <button
-    class="clear-btn"
-    onclick="clearCart()"
-  >
-
+  <button class="clear-btn" onclick="clearCart()">
     カートを空にする
-
   </button>
 
-  <button
-    class="order-btn"
-    onclick="sendTabletOrder()"
-  >
-
+  <button class="order-btn" onclick="sendTabletOrder()">
     追加注文を送信
-
   </button>
 
 </section>
@@ -137,6 +144,59 @@
 
 <script src="js/bbq-tablet.js"></script>
 
-</body>
+<!-- =========================
+  追加：予約操作用スクリプト
+========================= -->
+<script>
 
+let currentReservation = null;
+
+// 予約選択
+function selectReservation(res) {
+  currentReservation = res;
+
+  document.getElementById("currentReservation").innerHTML = `
+    <b>予約番号：</b> ${res.no}<br>
+    <b>名前：</b> ${res.name}<br>
+    <b>人数：</b> ${res.people}<br>
+    <b>時間：</b> ${res.time}
+  `;
+}
+
+// 受付（チェックイン）
+function checkIn(no) {
+  fetch(`${API_URL}?mode=checkin&no=${no}`)
+    .then(res => res.json())
+    .then(data => {
+      alert("受付完了");
+      location.reload();
+    });
+}
+
+// 予約カード描画（bbq-tablet.jsから呼ぶ想定）
+function renderReservationCard(r) {
+  return `
+    <div class="reservation-card">
+
+      <b>${r.name}</b><br>
+      予約番号：${r.no}<br>
+      人数：${r.people}<br>
+      時間：${r.time}<br>
+      状態：${r.status || '予約'}<br>
+
+      <button class="btn btn-order" onclick='selectReservation(${JSON.stringify(r)})'>
+        この予約で注文
+      </button>
+
+      <button class="btn btn-checkin" onclick="checkIn('${r.no}')">
+        受付
+      </button>
+
+    </div>
+  `;
+}
+
+</script>
+
+</body>
 </html>
