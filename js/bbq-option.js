@@ -1,188 +1,143 @@
+let bbqCart = [];
+
 async function loadBbqOptions(){
 
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=products'
-    );
+  try{
 
-  const products =
-    await response.json();
+    const response =
+      await fetch(
+        API_URL +
+        '?mode=products'
+      );
 
-  const bbqOptions =
-    products.filter(
-      p =>
-        p.type ===
-        'bbq-option'
-    );
+    const products =
+      await response.json();
 
-  const grid =
-    document.getElementById(
-      'productGrid'
-    );
+    const bbqOptions =
+      products.filter(
+        p =>
+          p.type ===
+          'bbq-option'
+      );
 
-  grid.innerHTML = '';
+    const grid =
+      document.getElementById(
+        'productGrid'
+      );
 
-  bbqOptions.forEach(
-    product => {
+    grid.innerHTML = '';
 
-      grid.innerHTML += `
+    bbqOptions.forEach(
+      product => {
 
-        <div class="product-card">
+        grid.innerHTML += `
 
-          <img
-            src="${product.image}"
-            alt="${product.name}"
-          >
+          <div class="product-card">
 
-          <div
-            class="product-content"
-          >
+            <img
+              src="${product.image}"
+              alt="${product.name}"
+            >
 
-            <h3>
+            <div class="product-content">
 
-              ${product.name}
+              <h3>
 
-            </h3>
+                ${product.name}
 
-            <p>
+              </h3>
 
-              ${product.description}
+              <p>
 
-            </p>
+                ${product.description}
 
-            <div class="price">
+              </p>
 
-              ¥${Number(
-                product.price
-              ).toLocaleString()}
+              <div class="price">
+
+                ¥${Number(
+                  product.price
+                ).toLocaleString()}
+
+              </div>
+
+              <div class="qty-area">
+
+                <button
+                  class="qty-btn"
+                  onclick="
+                    changeBbqQty(
+                      ${product.id},
+                      -1
+                    )
+                  "
+                >
+
+                  －
+
+                </button>
+
+                <span
+                  id="qty-${product.id}"
+                  class="qty-value"
+                >
+
+                  1
+
+                </span>
+
+                <button
+                  class="qty-btn"
+                  onclick="
+                    changeBbqQty(
+                      ${product.id},
+                      1
+                    )
+                  "
+                >
+
+                  ＋
+
+                </button>
+
+              </div>
+
+              <button
+
+                onclick="
+                  addBbqOption(
+                    ${product.id},
+                    '${product.name}',
+                    ${product.price}
+                  )
+                "
+
+              >
+
+                カートへ追加
+
+              </button>
 
             </div>
 
-           <div class="qty-area">
-
-  <button
-    class="qty-btn"
-    onclick="
-      changeBbqQty(
-        ${product.id},
-        -1
-      )
-    "
-  >
-    －
-  </button>
-
-  <span
-    id="qty-${product.id}"
-    class="qty-value"
-  >
-    1
-  </span>
-
-  <button
-    class="qty-btn"
-    onclick="
-      changeBbqQty(
-        ${product.id},
-        1
-      )
-    "
-  >
-    ＋
-  </button>
-
-</div>
-
-<button
-
-  onclick="
-    addBbqOption(
-      ${product.id},
-      '${product.name}',
-      ${product.price}
-    )
-  "
-
->
-
-  カートへ追加
-
-</button>
-
           </div>
 
-        </div>
+        `;
 
-      `;
-
-    }
-  );
-
-}
-
-function addBbqOption(
-  id,
-  name,
-  price
-){
-
-  const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
-
-  const existing =
-    cart.find(
-      item =>
-        item.id === id
+      }
     );
 
-  const qty = Number(
-  document.getElementById(
-    `qty-${id}`
-  ).innerText
-);
+  }catch(error){
 
-if(existing){
+    console.error(error);
 
-  existing.qty += qty;
+    alert(
+      '商品取得エラー'
+    );
 
-}else{
-
-  cart.push({
-
-    id:id,
-
-    name:name,
-
-    price:price,
-
-    qty:qty
-
-  });
+  }
 
 }
-
-  localStorage.setItem(
-
-    'bbqOptionCart',
-
-    JSON.stringify(
-      cart
-    )
-
-  );
-
-  alert(
-    '追加しました'
-  );
-
-}
-
-loadBbqOptions();
 
 function changeBbqQty(
   productId,
@@ -204,11 +159,198 @@ function changeBbqQty(
   if(
     qty < 1
   ){
+
     qty = 1;
+
   }
 
   target.innerText =
     qty;
+
+}
+
+function addBbqOption(
+  id,
+  name,
+  price
+){
+
+  let cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  const qty =
+    Number(
+      document.getElementById(
+        `qty-${id}`
+      ).innerText
+    );
+
+  const existing =
+    cart.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(existing){
+
+    existing.qty += qty;
+
+  }else{
+
+    cart.push({
+
+      id:
+        id,
+
+      name:
+        name,
+
+      price:
+        price,
+
+      qty:
+        qty
+
+    });
+
+  }
+
+  localStorage.setItem(
+
+    'bbqOptionCart',
+
+    JSON.stringify(cart)
+
+  );
+
+  renderCart();
+
+  alert(
+    '追加しました'
+  );
+
+}
+
+function renderCart(){
+
+  const cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  const target =
+    document.getElementById(
+      'cartArea'
+    );
+
+  let total = 0;
+
+  target.innerHTML = '';
+
+  if(cart.length === 0){
+
+    target.innerHTML = `
+
+      <p>
+
+        商品がありません
+
+      </p>
+
+    `;
+
+    return;
+
+  }
+
+  cart.forEach(item => {
+
+    const subtotal =
+      Number(item.price) *
+      Number(item.qty);
+
+    total += subtotal;
+
+    target.innerHTML += `
+
+      <div class="product-card">
+
+        <div class="product-content">
+
+          <h3>
+
+            ${item.name}
+
+          </h3>
+
+          <p>
+
+            数量：
+            ${item.qty}
+
+          </p>
+
+          <div class="price">
+
+            ¥${subtotal.toLocaleString()}
+
+          </div>
+
+          <button
+
+            onclick="
+              changeOrderQty(
+                '${item.id}',
+                -1
+              )
+            "
+
+          >
+
+            －
+
+          </button>
+
+          <button
+
+            onclick="
+              changeOrderQty(
+                '${item.id}',
+                1
+              )
+            "
+
+          >
+
+            ＋
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  target.innerHTML += `
+
+    <h2>
+
+      合計
+      ¥${total.toLocaleString()}
+
+    </h2>
+
+  `;
 
 }
 
@@ -226,15 +368,20 @@ function changeOrderQty(
 
   const item =
     cart.find(
-      p => String(p.id) === String(id)
+      p =>
+        String(p.id) ===
+        String(id)
     );
 
   if(!item){
+
     return;
+
   }
 
   item.qty =
-    Number(item.qty) + diff;
+    Number(item.qty) +
+    diff;
 
   if(
     item.qty <= 0
@@ -243,7 +390,8 @@ function changeOrderQty(
     cart =
       cart.filter(
         p =>
-          String(p.id) !== String(id)
+          String(p.id) !==
+          String(id)
       );
 
   }
@@ -256,6 +404,24 @@ function changeOrderQty(
 
   );
 
-  displayBbqOptionOrder();
+  renderCart();
 
 }
+
+function clearCart(){
+
+  localStorage.removeItem(
+    'bbqOptionCart'
+  );
+
+  renderCart();
+
+}
+
+window.onload = function(){
+
+  loadBbqOptions();
+
+  renderCart();
+
+};

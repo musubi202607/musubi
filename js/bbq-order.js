@@ -212,16 +212,59 @@ async function sendBbqOrder() {
       await response.json();
 
     if (
-      result.success
-    ) {
+  result.success
+) {
 
-      alert(
-        '予約完了しました'
-      );
+  if(
+    result.reservationNo
+  ){
 
-      localStorage.removeItem(
-        'bbqProductId'
-      );
+    localStorage.setItem(
+
+      'reservationNo',
+
+      result.reservationNo
+
+    );
+
+  }
+
+  alert(
+
+    '予約番号：' +
+
+    result.reservationNo +
+
+    '\n予約完了しました'
+
+  );
+
+  localStorage.removeItem(
+    'bbqProductId'
+  );
+
+  localStorage.removeItem(
+    'bbqProductName'
+  );
+
+  localStorage.removeItem(
+    'bbqPrice'
+  );
+
+  localStorage.removeItem(
+    'bbqDate'
+  );
+
+  location.href =
+    'index.html';
+
+} else {
+
+  alert(
+    '送信エラー'
+  );
+
+}
 
       localStorage.removeItem(
         'bbqProductName'
