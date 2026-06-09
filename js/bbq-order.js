@@ -58,247 +58,63 @@ async function displayOrder(){
 async function sendBbqOrder() {
 
   const customerName =
-    document
-      .getElementById(
-        'customerName'
-      )
-      .value
-      .trim();
+    document.getElementById('customerName').value.trim();
 
   const customerTel =
-    document
-      .getElementById(
-        'customerTel'
-      )
-      .value
-      .trim();
+    document.getElementById('customerTel').value.trim();
 
   const people =
-    document
-      .getElementById(
-        'people'
-      )
-      .value
-      .trim();
+    document.getElementById('people').value.trim();
 
   const memo =
-    document
-      .getElementById(
-        'memo'
-      )
-      .value
-      .trim();
+    document.getElementById('memo').value.trim();
 
-  // お名前チェック
-  if (!customerName) {
-
-    alert(
-      'お名前を入力してください'
-    );
-
-    return;
-
-  }
-
-  // 電話番号チェック
-  if (!customerTel) {
-
-    alert(
-      '電話番号を入力してください'
-    );
-
-    return;
-
-  }
-
-  const telPattern =
-    /^[0-9\-]+$/;
-
-  if (
-    !telPattern.test(
-      customerTel
-    )
-  ) {
-
-    alert(
-      '電話番号を正しく入力してください'
-    );
-
-    return;
-
-  }
-
-  // 人数チェック
-  if (!people) {
-
-    alert(
-      '人数を入力してください'
-    );
-
-    return;
-
-  }
-
-  if (
-    Number(people) <= 0
-  ) {
-
-    alert(
-      '人数は1名以上で入力してください'
-    );
-
-    return;
-
-  }
+  if (!customerName) return alert('お名前を入力してください');
+  if (!customerTel) return alert('電話番号を入力してください');
+  if (!people || Number(people) <= 0) return alert('人数を正しく入力してください');
 
   const orderData = {
-
-    orderType:
-      'BBQ',
-
-    orderDate:
-      localStorage.getItem(
-        'bbqDate'
-      ),
-
-    productName:
-      localStorage.getItem(
-        'bbqProductName'
-      ),
-
-    price:
-      localStorage.getItem(
-        'bbqPrice'
-      ),
-
-    people:
-      people,
-
-    customerName:
-      customerName,
-
-    customerTel:
-      customerTel,
-
-    memo:
-      memo
-
+    orderType: 'BBQ',
+    orderDate: localStorage.getItem('bbqDate'),
+    productName: localStorage.getItem('bbqProductName'),
+    price: localStorage.getItem('bbqPrice'),
+    people,
+    customerName,
+    customerTel,
+    memo
   };
 
   try {
 
-    const response =
-      await fetch(
-        API_URL,
-        {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
 
-          method:
-            'POST',
+    const result = await response.json();
 
-          headers: {
-            'Content-Type':
-              'application/json'
-          },
+    if (result.success) {
 
-          body:
-            JSON.stringify(
-              orderData
-            )
+      if (result.reservationNo) {
+        localStorage.setItem('reservationNo', result.reservationNo);
+      }
 
-        }
-      );
+      alert('予約番号：' + result.reservationNo + '\n予約完了しました');
 
-    const result =
-      await response.json();
+      localStorage.removeItem('bbqProductId');
+      localStorage.removeItem('bbqProductName');
+      localStorage.removeItem('bbqPrice');
+      localStorage.removeItem('bbqDate');
 
-    if (
-  result.success
-) {
-
-  if(
-    result.reservationNo
-  ){
-
-    localStorage.setItem(
-
-      'reservationNo',
-
-      result.reservationNo
-
-    );
-
-  }
-
-  alert(
-
-    '予約番号：' +
-
-    result.reservationNo +
-
-    '\n予約完了しました'
-
-  );
-
-  localStorage.removeItem(
-    'bbqProductId'
-  );
-
-  localStorage.removeItem(
-    'bbqProductName'
-  );
-
-  localStorage.removeItem(
-    'bbqPrice'
-  );
-
-  localStorage.removeItem(
-    'bbqDate'
-  );
-
-  location.href =
-    'index.html';
-
-} else {
-
-  alert(
-    '送信エラー'
-  );
-
-}
-
-      localStorage.removeItem(
-        'bbqProductName'
-      );
-
-      localStorage.removeItem(
-        'bbqPrice'
-      );
-
-      localStorage.removeItem(
-        'bbqDate'
-      );
-
-      location.href =
-        'index.html';
+      location.href = 'index.html';
 
     } else {
-
-      alert(
-        '送信エラー'
-      );
-
+      alert('送信エラー');
     }
 
   } catch (error) {
-
-    console.error(
-      error
-    );
-
-    alert(
-      '通信エラーが発生しました'
-    );
-
+    console.error(error);
+    alert('通信エラーが発生しました');
   }
-
 }
