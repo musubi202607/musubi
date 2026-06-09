@@ -1,237 +1,137 @@
 let currentReservation = null;
 
 // =========================
-// 本日の予約一覧
+// 本日の予約一覧（2件想定・選択式）
 // =========================
 async function loadReservations(){
 
-try{
+  try{
 
-```
-const response =
-  await fetch(
-    API_URL +
-    '?mode=reservations'
-  );
+    const response =
+      await fetch(
+        API_URL + '?mode=reservations'
+      );
 
-const data =
-  await response.json();
+    const data =
+      await response.json();
 
-const target =
-  document.getElementById(
-    'reservationList'
-  );
+    const target =
+      document.getElementById('reservationList');
 
-if(!target){
-  return;
-}
+    if(!target) return;
 
-target.innerHTML = '';
+    target.innerHTML = '';
 
-if(data.length === 0){
+    if(data.length === 0){
 
-  target.innerHTML = `
+      target.innerHTML = `
+        <div class="product-card">
+          <div class="product-content">
+            <h3>本日の予約はありません</h3>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
-    <div class="product-card">
+    // ★最大2件表示
+    data.slice(0,2).forEach(item => {
 
-      <div class="product-content">
+      const isSelected =
+        currentReservation &&
+        currentReservation.reservationNo === item.reservationNo;
 
-        <h3>
-          本日の予約はありません
-        </h3>
+      target.innerHTML += `
 
-      </div>
-
-    </div>
-
-  `;
-
-  return;
-
-}
-
-data.forEach(item => {
-
-  target.innerHTML += `
-
-    <div class="product-card">
-
-      <div class="product-content">
-
-        <h3>
-          ${item.customerName}
-        </h3>
-
-        <p>
-          予約番号：
-          ${item.reservationNo}
-        </p>
-
-        <p>
-          ${item.people}名
-        </p>
-
-        <p>
-          ${item.plan}
-        </p>
-
-        <p>
-          会計：
-          ${item.paid || '未'}
-        </p>
-
-        <button
-          class="btn btn-order"
-          onclick="searchReservationByNo('${item.reservationNo}')"
+        <div class="reservation-card"
+          style="border: ${isSelected ? '2px solid #28a745' : '1px solid #ddd'}"
         >
-          この予約を選択
-        </button>
 
-        <button
-          class="btn btn-checkin"
-          onclick="checkInReservation('${item.reservationNo}')"
-        >
-          受付
-        </button>
+          <div class="product-content">
 
-      </div>
+            <h3>${item.customerName}</h3>
 
-    </div>
+            <p>予約番号：${item.reservationNo}</p>
+            <p>電話：${item.customerTel || '-'}</p>
+            <p>${item.people}名 / ${item.plan}</p>
 
-  `;
+            <button
+              class="btn btn-checkin"
+              onclick="selectReservation('${item.reservationNo}')"
+            >
+              この予約を選択
+            </button>
 
-});
-```
+            <button
+              class="btn btn-order"
+              onclick="checkInReservation('${item.reservationNo}')"
+            >
+              受付
+            </button>
 
-}catch(error){
+          </div>
 
-```
-console.error(error);
+        </div>
 
-alert(
-  '予約一覧取得エラー'
-);
-```
+      `;
+    });
+
+  }catch(error){
+
+    console.error(error);
+    alert('予約一覧取得エラー');
+
+  }
 
 }
 
+// =========================
+// 予約選択（検索廃止の代替）
+// =========================
+async function selectReservation(no){
+
+  await searchReservationByNo(no);
+
 }
+
 
 // =========================
 // 来店受付
 // =========================
-async function checkInReservation(
-reservationNo
-){
+async function checkInReservation(reservationNo){
 
-if(
-!confirm(
-'来店受付しますか？'
-)
-){
-return;
-}
+  if(!confirm('来店受付しますか？')) return;
 
-try{
+  try{
 
-```
-const response =
-  await fetch(
-
-    API_URL +
-    '?mode=checkin&no=' +
-    encodeURIComponent(
-      reservationNo
-    )
-
-  );
-
-const result =
-  await response.json();
-
-if(result.success){
-
-  alert(
-    '受付完了'
-  );
-
-  loadReservations();
-
-  if(
-    currentReservation &&
-    currentReservation.reservationNo === reservationNo
-  ){
-
-    const updated =
+    const response =
       await fetch(
-
         API_URL +
-        '?mode=reservation&no=' +
-        encodeURIComponent(
-          reservationNo
-        )
-
+        '?mode=checkin&no=' +
+        encodeURIComponent(reservationNo)
       );
 
-    const reservation =
-      await updated.json();
+    const result =
+      await response.json();
 
-    displayReservation(
-      reservation
-    );
+    if(result.success){
+
+      alert('受付完了');
+
+      loadReservations();
+
+    }else{
+
+      alert(result.message || '受付エラー');
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+    alert('通信エラー');
 
   }
-
-}else{
-
-  alert(
-    result.message ||
-    '受付エラー'
-  );
-
-}
-```
-
-}catch(error){
-
-```
-console.error(error);
-
-alert(
-  '通信エラー'
-);
-```
-
-}
-
-}
-
-// =========================
-// 予約番号検索
-// =========================
-async function searchReservation(){
-
-const no =
-document
-.getElementById(
-'reservationNo'
-)
-.value
-.trim();
-
-if(!no){
-
-```
-alert(
-  '予約番号を入力してください'
-);
-
-return;
-```
-
-}
-
-await searchReservationByNo(no);
 
 }
 
@@ -240,45 +140,31 @@ await searchReservationByNo(no);
 // =========================
 async function searchReservationByNo(no){
 
-try{
+  try{
 
-```
-const response =
-  await fetch(
+    const response =
+      await fetch(
+        API_URL +
+        '?mode=reservation&no=' +
+        encodeURIComponent(no)
+      );
 
-    API_URL +
-    '?mode=reservation&no=' +
-    encodeURIComponent(no)
+    const data =
+      await response.json();
 
-  );
+    if(!data){
+      alert('予約が見つかりません');
+      return;
+    }
 
-const data =
-  await response.json();
+    displayReservation(data);
 
-if(!data){
+  }catch(error){
 
-  alert(
-    '予約が見つかりません'
-  );
+    console.error(error);
+    alert('検索エラー');
 
-  return;
-
-}
-
-displayReservation(data);
-```
-
-}catch(error){
-
-```
-console.error(error);
-
-alert(
-  '検索エラー'
-);
-```
-
-}
+  }
 
 }
 
@@ -287,104 +173,54 @@ alert(
 // =========================
 function displayReservation(data){
 
-currentReservation = data;
+  currentReservation = data;
 
-localStorage.setItem(
-'reservationNo',
-data.reservationNo
-);
+  localStorage.setItem('reservationNo', data.reservationNo);
+  localStorage.setItem('customerName', data.customerName);
+  localStorage.setItem('customerTel', data.customerTel);
+  localStorage.setItem('bbqDate', data.useDate);
 
-localStorage.setItem(
-'customerName',
-data.customerName
-);
+  const current =
+    document.getElementById('currentReservation');
 
-localStorage.setItem(
-'customerTel',
-data.customerTel
-);
+  if(current){
 
-localStorage.setItem(
-'bbqDate',
-data.useDate
-);
+    current.innerHTML = `
+      <div class="reservation-card">
 
-const current =
-document.getElementById(
-'currentReservation'
-);
+        <b>選択中</b><br><br>
 
-if(current){
+        <b>予約番号：</b>${data.reservationNo}<br>
+        <b>氏名：</b>${data.customerName}<br>
+        <b>人数：</b>${data.people}名<br>
+        <b>プラン：</b>${data.plan}
 
-```
-current.innerHTML = `
+      </div>
+    `;
 
-  <b>予約番号：</b>
-  ${data.reservationNo}
-  <br>
+  }
 
-  <b>氏名：</b>
-  ${data.customerName}
-  <br>
+  const target =
+    document.getElementById('reservationDetail');
 
-  <b>人数：</b>
-  ${data.people}名
-  <br>
+  if(target){
 
-  <b>プラン：</b>
-  ${data.plan}
+    target.innerHTML = `
+      <div class="product-card">
+        <div class="product-content">
 
-`;
-```
+          <h2>${data.customerName}</h2>
 
-}
+          <p>電話：${data.customerTel}</p>
+          <p>利用日：${data.useDate}</p>
+          <p>状態：${data.status}</p>
+          <p>会計：${data.paid}</p>
 
-const target =
-document.getElementById(
-'reservationDetail'
-);
+        </div>
+      </div>
+    `;
 
-if(target){
-
-```
-target.innerHTML = `
-
-  <div class="product-card">
-
-    <div class="product-content">
-
-      <h2>
-        ${data.customerName}
-      </h2>
-
-      <p>
-        電話：
-        ${data.customerTel}
-      </p>
-
-      <p>
-        利用日：
-        ${data.useDate}
-      </p>
-
-      <p>
-        状態：
-        ${data.status}
-      </p>
-
-      <p>
-        会計：
-        ${data.paid}
-      </p>
-
-    </div>
-
-  </div>
-
-`;
-```
-
-}
+  }
 
 }
 
@@ -395,79 +231,47 @@ target.innerHTML = `
 async function loadBbqOptions(){
 
   const response =
-    await fetch(
-      API_URL +
-      '?mode=products'
-    );
+    await fetch(API_URL + '?mode=products');
 
   const products =
     await response.json();
 
   const bbqOptions =
-    products.filter(
-      p =>
-        p.type ===
-        'bbq-option'
-    );
+    products.filter(p => p.type === 'bbq-option');
 
   const grid =
-    document.getElementById(
-      'productGrid'
-    );
+    document.getElementById('productGrid');
 
-  if(!grid){
-    return;
-  }
+  if(!grid) return;
 
   grid.innerHTML = '';
 
   bbqOptions.forEach(product => {
 
     grid.innerHTML += `
-
       <div class="product-card">
 
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-        >
+        <img src="${product.image}" alt="${product.name}">
 
         <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+          <h3>${product.name}</h3>
 
-          <p>
-            ${product.description}
-          </p>
+          <p>${product.description}</p>
 
           <div class="price">
-
-            ¥${Number(
-              product.price
-            ).toLocaleString()}
-
+            ¥${Number(product.price).toLocaleString()}
           </div>
 
           <button
-            onclick="
-              addBbqOption(
-                ${product.id},
-                '${product.name}',
-                ${product.price}
-              )
-            "
+            onclick="addBbqOption(${product.id}, '${product.name}', ${product.price})"
           >
-
             追加
-
           </button>
 
         </div>
 
       </div>
-
     `;
 
   });
@@ -475,121 +279,59 @@ async function loadBbqOptions(){
 }
 
 // =========================
-// カート追加
+// カート処理（以下そのまま）
 // =========================
-function addBbqOption(
-  id,
-  name,
-  price
-){
+function addBbqOption(id, name, price){
 
   let cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
+    JSON.parse(localStorage.getItem('bbqOptionCart')) || [];
 
   const existing =
-    cart.find(
-      item =>
-        item.id == id
-    );
+    cart.find(item => item.id == id);
 
   if(existing){
-
     existing.qty++;
-
   }else{
-
-    cart.push({
-
-      id:id,
-      name:name,
-      price:price,
-      qty:1
-
-    });
-
+    cart.push({id, name, price, qty:1});
   }
 
-  localStorage.setItem(
-    'bbqOptionCart',
-    JSON.stringify(cart)
-  );
+  localStorage.setItem('bbqOptionCart', JSON.stringify(cart));
 
   renderCart();
 
 }
 
-// =========================
-// 数量変更
-// =========================
-function changeCartQty(
-  id,
-  diff
-){
+function changeCartQty(id, diff){
 
   let cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
+    JSON.parse(localStorage.getItem('bbqOptionCart')) || [];
 
   const item =
-    cart.find(
-      p =>
-        String(p.id) ===
-        String(id)
-    );
+    cart.find(p => String(p.id) === String(id));
 
-  if(!item){
-    return;
-  }
+  if(!item) return;
 
   item.qty += diff;
 
   if(item.qty <= 0){
-
-    cart =
-      cart.filter(
-        p =>
-          String(p.id) !==
-          String(id)
-      );
-
+    cart = cart.filter(p => String(p.id) !== String(id));
   }
 
-  localStorage.setItem(
-    'bbqOptionCart',
-    JSON.stringify(cart)
-  );
+  localStorage.setItem('bbqOptionCart', JSON.stringify(cart));
 
   renderCart();
 
 }
 
-// =========================
-// カート表示
-// =========================
 function renderCart(){
 
   const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
+    JSON.parse(localStorage.getItem('bbqOptionCart')) || [];
 
   const target =
-    document.getElementById(
-      'cartArea'
-    );
+    document.getElementById('cartArea');
 
-  if(!target){
-    return;
-  }
+  if(!target) return;
 
   let total = 0;
 
@@ -598,37 +340,21 @@ function renderCart(){
   cart.forEach(item => {
 
     const subtotal =
-      Number(item.price) *
-      Number(item.qty);
+      Number(item.price) * Number(item.qty);
 
     total += subtotal;
 
     target.innerHTML += `
-
       <div class="product-card">
 
         <div class="product-content">
 
-          <h3>
-            ${item.name}
-          </h3>
+          <h3>${item.name}</h3>
 
           <div>
-
-            <button
-              onclick="changeCartQty('${item.id}',-1)"
-            >
-              －
-            </button>
-
+            <button onclick="changeCartQty('${item.id}',-1)">－</button>
             ${item.qty}
-
-            <button
-              onclick="changeCartQty('${item.id}',1)"
-            >
-              ＋
-            </button>
-
+            <button onclick="changeCartQty('${item.id}',1)">＋</button>
           </div>
 
           <div class="price">
@@ -638,129 +364,73 @@ function renderCart(){
         </div>
 
       </div>
-
     `;
 
   });
 
   target.innerHTML += `
-
-    <h2>
-
-      合計
-      ¥${total.toLocaleString()}
-
-    </h2>
-
+    <h2>合計 ¥${total.toLocaleString()}</h2>
   `;
 
 }
 
-// =========================
-// カートクリア
-// =========================
 function clearCart(){
 
-  localStorage.removeItem(
-    'bbqOptionCart'
-  );
+  localStorage.removeItem('bbqOptionCart');
 
   renderCart();
 
 }
 
 // =========================
-// 店舗追加注文送信
+// 送信
 // =========================
 async function sendTabletOrder(){
 
   if(!currentReservation){
-
-    alert(
-      '予約を選択してください'
-    );
-
+    alert('予約を選択してください');
     return;
-
   }
 
   const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
+    JSON.parse(localStorage.getItem('bbqOptionCart')) || [];
 
   if(cart.length === 0){
-
-    alert(
-      '商品がありません'
-    );
-
+    alert('商品がありません');
     return;
-
   }
 
   const orderData = {
 
-    orderType:
-      'BBQ_OPTION',
+    orderType:'BBQ_OPTION',
 
-    reservationNo:
-      currentReservation
-        .reservationNo,
+    reservationNo: currentReservation.reservationNo,
+    orderDate: currentReservation.useDate,
+    customerName: currentReservation.customerName,
+    customerTel: currentReservation.customerTel,
 
-    orderDate:
-      currentReservation
-        .useDate,
-
-    customerName:
-      currentReservation
-        .customerName,
-
-    customerTel:
-      currentReservation
-        .customerTel,
-
-    items:
-      cart,
-
+    items: cart,
     memo:''
-
   };
 
   const response =
-    await fetch(
-      API_URL,
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':
-            'application/json'
-        },
-        body:
-          JSON.stringify(
-            orderData
-          )
-      }
-    );
+    await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(orderData)
+    });
 
   const result =
     await response.json();
 
   if(result.success){
 
-    alert(
-      '追加注文完了'
-    );
-
+    alert('追加注文完了');
     clearCart();
 
   }else{
 
-    alert(
-      '送信エラー'
-    );
+    alert('送信エラー');
 
   }
 
@@ -772,9 +442,7 @@ async function sendTabletOrder(){
 window.onload = function(){
 
   loadReservations();
-
   loadBbqOptions();
-
   renderCart();
 
 };

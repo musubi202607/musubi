@@ -340,3 +340,8 @@ textarea {
   font-weight:bold;
 
 }
+
+.reservation-card.checked-in {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
