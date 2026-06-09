@@ -5,83 +5,27 @@
 
 <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
+<title>BBQ店舗端末（POS）</title>
 
-  BBQ店舗端末
+<link rel="stylesheet" href="css/style.css">
 
-</title>
+<!-- =========================
+  iOS / iPad アプリ化設定
+========================= -->
 
-<link
-  rel="stylesheet"
-  href="css/style.css"
->
+<!-- ホーム画面追加でアプリ化 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
 
-<style>
+<!-- ステータスバーを黒に -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-#currentReservation{
+<!-- アプリ名 -->
+<meta name="apple-mobile-web-app-title" content="BBQ POS">
 
-  background:#fff3cd;
-
-  padding:15px;
-
-  border-radius:10px;
-
-  margin-bottom:20px;
-
-}
-
-.reservation-card{
-
-  background:#fff;
-
-  padding:15px;
-
-  margin:10px 0;
-
-  border-radius:10px;
-
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-
-}
-
-.btn{
-
-  display:inline-block;
-
-  padding:10px 15px;
-
-  margin:5px;
-
-  border:none;
-
-  border-radius:8px;
-
-  cursor:pointer;
-
-}
-
-.btn-order{
-
-  background:#007bff;
-
-  color:#fff;
-
-}
-
-.btn-checkin{
-
-  background:#28a745;
-
-  color:#fff;
-
-}
-
-</style>
+<!-- アイコン -->
+<link rel="apple-touch-icon" href="icon.png">
 
 </head>
 
@@ -89,135 +33,78 @@
 
 <header>
 
-<div class="container header-inner">
+  <div class="container header-inner">
 
-<div>
+    <div>
+      <h1>BBQ店舗端末</h1>
+      <p>予約選択・受付・追加注文</p>
+    </div>
 
-<h1>
-
-BBQ店舗端末
-
-</h1>
-
-<p>
-
-予約確認・追加注文
-
-</p>
-
-</div>
-
-</div>
+  </div>
 
 </header>
 
-<section class="container">
+<!-- =========================
+  POSメインレイアウト
+========================= -->
+<div class="layout container">
 
-<h2>
+  <!-- =========================
+    左：予約一覧（2組）
+  ========================= -->
+  <section>
 
-選択中の予約
+    <h2>本日の予約</h2>
 
-</h2>
+    <div id="reservationList"></div>
 
-<div id="currentReservation">
+  </section>
 
-予約を選択してください
+  <!-- =========================
+    中央：選択中＋商品
+  ========================= -->
+  <section>
 
-</div>
+    <h2>選択中の予約</h2>
 
-</section>
+    <div id="currentReservation">
+      予約を選択してください
+    </div>
 
-<section class="container">
+    <h2 style="margin-top:20px;">追加メニュー</h2>
 
-<h2>
+    <div class="product-grid" id="productGrid"></div>
 
-予約番号検索
-
-</h2>
-
-<input
-  type="text"
-  id="reservationNo"
-  placeholder="予約番号"
->
-
-<button
-  class="order-btn"
-  onclick="searchReservation()"
->
-
-検索
-
-</button>
-
-<div id="reservationDetail"></div>
-
-</section>
-
-<section class="container">
-
-<h2>
-
-本日の予約
-
-</h2>
-
-<div id="reservationList"></div>
-
-</section>
-
-<section class="products container">
-
-<div class="section-title">
-
-<h2>
-
-追加メニュー
-
-</h2>
+  </section>
 
 </div>
 
-<div
-  class="product-grid"
-  id="productGrid"
->
+<!-- =========================
+  カート（固定運用想定）
+========================= -->
+<div class="pos-layout">
+
+  <section class="pos-panel">
+    <h2>本日の予約</h2>
+    <div id="reservationList"></div>
+  </section>
+
+  <section class="pos-panel">
+    <h2>選択中</h2>
+    <div id="currentReservation"></div>
+  </section>
+
+  <section class="pos-panel">
+    <h2>追加メニュー</h2>
+    <div id="productGrid"></div>
+  </section>
+
 </div>
 
-</section>
-
-<section class="container">
-
-<h2>
-
-注文内容
-
-</h2>
-
-<div id="cartArea"></div>
-
-<button
-  class="clear-btn"
-  onclick="clearCart()"
->
-
-カートを空にする
-
-</button>
-
-<button
-  class="order-btn"
-  onclick="sendTabletOrder()"
->
-
-追加注文を送信
-
-</button>
-
-</section>
-
+<!-- =========================
+  スクリプト
+========================= -->
 <script src="js/config.js"></script>
-
 <script src="js/bbq-tablet.js"></script>
 
 </body>
