@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BBQ店舗端末（POS）</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- =========================
+  iOS / iPad アプリ化設定
+========================= -->
+
+<!-- ホーム画面追加でアプリ化 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<!-- ステータスバーを黒に -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<!-- アプリ名 -->
+<meta name="apple-mobile-web-app-title" content="BBQ POS">
+
+<!-- アイコン -->
+<link rel="apple-touch-icon" href="icon.png">
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="container header-inner">
+
+    <div>
+      <h1>BBQ店舗端末</h1>
+      <p>予約選択・受付・追加注文</p>
+    </div>
+
+  </div>
+
+</header>
+
+<!-- =========================
+  POSメインレイアウト
+========================= -->
+<div class="layout container">
+
+  <!-- =========================
+    左：予約一覧（2組）
+  ========================= -->
+  <section>
+
+    <h2>本日の予約</h2>
+
+    <div id="reservationList"></div>
+
+  </section>
+
+  <!-- =========================
+    中央：選択中＋商品
+  ========================= -->
+  <section>
+
+    <h2>選択中の予約</h2>
+
+    <div id="currentReservation">
+      予約を選択してください
+    </div>
+
+    <h2 style="margin-top:20px;">追加メニュー</h2>
+
+    <div class="product-grid" id="productGrid"></div>
+
+  </section>
+
+</div>
+
+<!-- =========================
+  カート（固定運用想定）
+========================= -->
+<div class="pos-layout">
+
+  <section class="pos-panel">
+    <h2>本日の予約</h2>
+    <div id="reservationList"></div>
+  </section>
+
+  <section class="pos-panel">
+    <h2>選択中</h2>
+    <div id="currentReservation"></div>
+  </section>
+
+  <section class="pos-panel">
+    <h2>追加メニュー</h2>
+    <div id="productGrid"></div>
+  </section>
+
+</div>
+
+<!-- =========================
+  スクリプト
+========================= -->
+<script src="js/config.js"></script>
+<script src="js/bbq-tablet.js"></script>
+
+</body>
+
+</html>

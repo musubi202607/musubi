@@ -17,6 +17,11 @@ async function sendBbqOptionOrder(){
 
   }
 
+  const reservationNo =
+    localStorage.getItem(
+      'reservationNo'
+    ) || '';
+
   const bbqDate =
     document
       .getElementById(
@@ -49,7 +54,16 @@ async function sendBbqOptionOrder(){
       .value
       .trim();
 
-  // BBQ利用日チェック
+  if(!reservationNo){
+
+    alert(
+      '予約を選択してください'
+    );
+
+    return;
+
+  }
+
   if(!bbqDate){
 
     alert(
@@ -60,7 +74,6 @@ async function sendBbqOptionOrder(){
 
   }
 
-  // お名前チェック
   if(!customerName){
 
     alert(
@@ -71,7 +84,6 @@ async function sendBbqOptionOrder(){
 
   }
 
-  // 電話番号チェック
   if(!customerTel){
 
     alert(
@@ -99,32 +111,30 @@ async function sendBbqOptionOrder(){
 
   }
 
- const orderData = {
+  const orderData = {
 
-  orderType:
-    'BBQ_OPTION',
+    orderType:
+      'BBQ_OPTION',
 
-  reservationNo:
-    localStorage.getItem(
-      'reservationNo'
-    ) || '',
+    reservationNo:
+      reservationNo,
 
-  orderDate:
-    bbqDate,
+    orderDate:
+      bbqDate,
 
-  items:
-    cart,
+    customerName:
+      customerName,
 
-  customerName:
-    customerName,
+    customerTel:
+      customerTel,
 
-  customerTel:
-    customerTel,
+    items:
+      cart,
 
-  memo:
-    memo
+    memo:
+      memo
 
-};
+  };
 
   try{
 

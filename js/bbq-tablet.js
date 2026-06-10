@@ -1,328 +1,225 @@
-async function loadReservations(){
+let currentReservation = null;
+let reservationCache = []; // ★キャッシュ追加（重要）
 
-  try{
+// =========================
+// 起動
+// =========================
+window.onload = function () {
+
+  loadReservations();
+  loadBbqOptions();
+  renderCart();
+
+};
+
+// =========================
+// 予約一覧（POS最適化版）
+// =========================
+async function loadReservations() {
+
+  try {
 
     const response =
-      await fetch(
-        API_URL +
-        '?mode=reservations'
-      );
+      await fetch(API_URL + '?mode=reservations');
 
     const data =
       await response.json();
 
-    const target =
-      document.getElementById(
-        'reservationList'
-      );
+    reservationCache = data;
 
-    target.innerHTML = '';
+    renderReservationList(data);
 
-    if(data.length === 0){
-
-      target.innerHTML = `
-
-        <div class="product-card">
-
-          <div class="product-content">
-
-            <h3>
-
-              本日の予約はありません
-
-            </h3>
-
-          </div>
-
-        </div>
-
-      `;
-
-      return;
-
-    }
-
-    data.forEach(item => {
-
-      target.innerHTML += `
-
-        <div class="product-card">
-
-          <div class="product-content">
-
-            <h3>
-
-              ${item.reservationNo}
-
-            </h3>
-
-            <p>
-
-              ${item.customerName}
-
-            </p>
-
-            <p>
-
-              ${item.people}名
-
-            </p>
-
-            <p>
-
-              ${item.plan}
-
-            </p>
-
-            <p>
-
-              会計：
-              ${item.paid || '未'}
-
-            </p>
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
-
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
-
-    alert(
-      '予約一覧取得エラー'
-    );
+    alert('予約一覧取得エラー');
 
   }
 
 }
 
-async function searchReservation(){
+// =========================
+// 予約描画（分離して高速化）
+// =========================
+function renderReservationList(data) {
 
-  const no =
-    document
-      .getElementById(
-        'reservationNo'
-      )
-      .value
-      .trim();
+  const target =
+    document.getElementById('reservationList');
 
-  if(!no){
+  if (!target) return;
 
-    alert(
-      '予約番号を入力してください'
-    );
+  target.innerHTML = '';
 
+  if (!data || data.length === 0) {
+
+    target.innerHTML = `
+      <div class="reservation-card">
+        <h3>本日の予約はありません</h3>
+      </div>
+    `;
     return;
 
   }
 
-  try{
+  // ★最大2組固定
+  data.slice(0, 2).forEach(item => {
+
+    const isSelected =
+      currentReservation &&
+      currentReservation.reservationNo === item.reservationNo;
+
+    const isCheckedIn =
+      item.status === "CHECKIN";
+
+    const div = document.createElement("div");
+
+    div.className =
+      "reservation-card" +
+      (isSelected ? " selected" : "") +
+      (isCheckedIn ? " checked-in" : "");
+
+    div.innerHTML = `
+      <h3>${item.customerName}</h3>
+      <p>予約番号：${item.reservationNo}</p>
+      <p>${item.people}名 / ${item.plan}</p>
+      <p>状態：${item.status || "未"}</p>
+
+      <button
+        class="btn btn-checkin"
+        onclick="selectReservation('${item.reservationNo}')"
+        ${isCheckedIn ? "disabled" : ""}
+      >
+        選択
+      </button>
+
+      <button
+        class="btn btn-order"
+        onclick="checkInReservation('${item.reservationNo}')"
+        ${isCheckedIn ? "disabled" : ""}
+      >
+        受付
+      </button>
+    `;
+
+    target.appendChild(div);
+
+  });
+
+}
+
+// =========================
+// 予約選択（統一処理）
+// =========================
+async function selectReservation(no) {
+
+  const reservation =
+    reservationCache.find(r => r.reservationNo === no);
+
+  if (!reservation) {
+    alert("予約が見つかりません");
+    return;
+  }
+
+  currentReservation = reservation;
+
+  renderCurrentReservation();
+
+  // UI再描画（選択状態更新）
+  renderReservationList(reservationCache);
+
+}
+
+// =========================
+// 選択中表示
+// =========================
+function renderCurrentReservation() {
+
+  const target =
+    document.getElementById('currentReservation');
+
+  if (!target || !currentReservation) return;
+
+  target.innerHTML = `
+    <div class="reservation-card selected">
+
+      <h2>${currentReservation.customerName}</h2>
+
+      <p>予約番号：${currentReservation.reservationNo}</p>
+      <p>電話：${currentReservation.customerTel || "-"}</p>
+      <p>人数：${currentReservation.people}名</p>
+      <p>プラン：${currentReservation.plan}</p>
+
+      <p><b>状態：${currentReservation.status}</b></p>
+
+    </div>
+  `;
+
+}
+
+// =========================
+// 受付処理（安定版）
+// =========================
+async function checkInReservation(no) {
+
+  if (!confirm("来店受付しますか？")) return;
+
+  try {
 
     const response =
-      await fetch(
+      await fetch(API_URL + '?mode=checkin&no=' + encodeURIComponent(no));
 
-        API_URL +
-        '?mode=reservation&no=' +
-        encodeURIComponent(no)
-
-      );
-
-    const data =
+    const result =
       await response.json();
 
-    if(!data){
+    if (result.success) {
 
-      alert(
-        '予約が見つかりません'
-      );
+      alert("受付完了");
 
-      return;
+      // ★状態更新だけ再取得
+      loadReservations();
+
+    } else {
+
+      alert(result.message || "受付エラー");
 
     }
 
-    displayReservation(
-      data
-    );
-
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
-
-    alert(
-      '検索エラー'
-    );
+    alert("通信エラー");
 
   }
 
 }
 
-function displayReservation(data){
+// =========================
+// 予約詳細検索（互換用）
+// =========================
+async function searchReservationByNo(no) {
 
-  const target =
-    document.getElementById(
-      'reservationDetail'
-    );
+  try {
 
-  target.innerHTML = `
+    const response =
+      await fetch(API_URL + '?mode=reservation&no=' + encodeURIComponent(no));
 
-    <div class="product-card">
+    const data =
+      await response.json();
 
-      <div class="product-content">
+    if (!data) {
+      alert("予約なし");
+      return;
+    }
 
-        <h2>
+    currentReservation = data;
 
-          予約番号
-          ${data.reservationNo}
+    renderCurrentReservation();
 
-        </h2>
+  } catch (error) {
 
-        <p>
+    console.error(error);
+    alert("検索エラー");
 
-          氏名：
-          ${data.customerName}
-
-        </p>
-
-        <p>
-
-          電話：
-          ${data.customerTel}
-
-        </p>
-
-        <p>
-
-          利用日：
-          ${data.useDate}
-
-        </p>
-
-        <p>
-
-          人数：
-          ${data.people}名
-
-        </p>
-
-        <p>
-
-          プラン：
-          ${data.plan}
-
-        </p>
-
-        <p>
-
-          金額：
-          ¥${Number(
-            data.price
-          ).toLocaleString()}
-
-        </p>
-
-        <p>
-
-          状態：
-          ${data.status}
-
-        </p>
-
-        <p>
-
-          会計：
-          ${data.paid}
-
-        </p>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-window.onload = function(){
-
-  loadReservations();
-
-};
-
-let currentReservation = null;
-
-function renderCart(){
-
-  const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'bbqOptionCart'
-      )
-    ) || [];
-
-  const target =
-    document.getElementById(
-      'cartArea'
-    );
-
-  let total = 0;
-
-  target.innerHTML = '';
-
-  cart.forEach(item => {
-
-    const subtotal =
-      Number(item.price) *
-      Number(item.qty);
-
-    total += subtotal;
-
-    target.innerHTML += `
-
-      <div class="product-card">
-
-        <div class="product-content">
-
-          <h3>
-
-            ${item.name}
-
-          </h3>
-
-          <p>
-
-            数量：
-            ${item.qty}
-
-          </p>
-
-          <div class="price">
-
-            ¥${subtotal.toLocaleString()}
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-  });
-
-  target.innerHTML += `
-
-    <h2>
-
-      合計
-      ¥${total.toLocaleString()}
-
-    </h2>
-
-  `;
+  }
 
 }
