@@ -93,8 +93,7 @@
     検索
   </button>
 
-  <div id="reservationDetail"></div>
-
+  
 </section>
 
 <!-- =========================
@@ -149,54 +148,7 @@
 ========================= -->
 <script>
 
-let currentReservation = null;
 
-// 予約選択
-function selectReservation(res) {
-  currentReservation = res;
-
-  document.getElementById("currentReservation").innerHTML = `
-    <b>予約番号：</b> ${res.no}<br>
-    <b>名前：</b> ${res.name}<br>
-    <b>人数：</b> ${res.people}<br>
-    <b>時間：</b> ${res.time}
-  `;
-}
-
-// 受付（チェックイン）
-function checkIn(no) {
-  fetch(`${API_URL}?mode=checkin&no=${no}`)
-    .then(res => res.json())
-    .then(data => {
-      alert("受付完了");
-      location.reload();
-    });
-}
-
-// 予約カード描画（bbq-tablet.jsから呼ぶ想定）
-function renderReservationCard(r) {
-  return `
-    <div class="reservation-card">
-
-      <b>${r.name}</b><br>
-      予約番号：${r.no}<br>
-      人数：${r.people}<br>
-      時間：${r.time}<br>
-      状態：${r.status || '予約'}<br>
-
-      <button class="btn btn-order" onclick='selectReservation(${JSON.stringify(r)})'>
-        この予約で注文
-      </button>
-
-      <button class="btn btn-checkin" onclick="checkIn('${r.no}')">
-        受付
-      </button>
-
-    </div>
-  `;
-}
-
-</script>
 
 </body>
 </html>
