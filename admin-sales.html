@@ -194,84 +194,115 @@ class="back-btn"
 
   <div class="sales-grid">
 
-```
-<div class="sales-card">
+  <div class="sales-card">
 
-  <h2>
-    BBQ売上
-  </h2>
+    <h2>
+      おにぎり売上
+    </h2>
 
-  <div
-    class="sales-value"
-    id="bbqSales"
-  >
-    ¥0
+    <div
+      class="sales-value"
+      id="onigiriSales"
+    >
+      ¥0
+    </div>
+
+  </div>
+
+  <div class="sales-card">
+
+    <h2>
+      BBQ売上
+    </h2>
+
+    <div
+      class="sales-value"
+      id="bbqSales"
+    >
+      ¥0
+    </div>
+
+  </div>
+
+  <div class="sales-card">
+
+    <h2>
+      追加注文売上
+    </h2>
+
+    <div
+      class="sales-value"
+      id="optionSales"
+    >
+      ¥0
+    </div>
+
+  </div>
+
+  <div class="sales-card">
+
+    <h2>
+      総売上
+    </h2>
+
+    <div
+      class="sales-value"
+      id="totalSales"
+    >
+      ¥0
+    </div>
+
   </div>
 
 </div>
 
-<div class="sales-card">
+<div class="summary">
 
   <h2>
-    追加注文売上
+    集計情報
   </h2>
 
-  <div
-    class="sales-value"
-    id="optionSales"
-  >
-    ¥0
-  </div>
+  <p>
+
+    おにぎり注文：
+    <span id="onigiriCount">
+      0
+    </span>
+    件
+
+  </p>
+
+  <p>
+
+    BBQ予約：
+    <span id="bbqCount">
+      0
+    </span>
+    件
+
+  </p>
+
+  <p>
+
+    会計済：
+    <span id="paidCount">
+      0
+    </span>
+    件
+
+  </p>
+
+  <p>
+
+    未会計：
+    <span id="unpaidCount">
+      0
+    </span>
+    件
+
+  </p>
 
 </div>
-
-<div class="sales-card">
-
-  <h2>
-    総売上
-  </h2>
-
-  <div
-    class="sales-value"
-    id="totalSales"
-  >
-    ¥0
-  </div>
-
-</div>
-```
-
-  </div>
-
-  <div class="summary">
-
-```
-<h2>
-  会計状況
-</h2>
-
-<p>
-
-  会計済：
-  <span id="paidCount">
-    0
-  </span>
-  件
-
-</p>
-
-<p>
-
-  未会計：
-  <span id="unpaidCount">
-    0
-  </span>
-  件
-
-</p>
-```
-
-  </div>
 
 </div>
 
@@ -378,7 +409,7 @@ function setLastMonth(){
   ).value =
     formatDate(end);
 
-  setThisMonth();
+  loadSales();
 
 }
 
@@ -408,7 +439,15 @@ async function loadSales(){
 
   const data =
     await response.json();
-
+  
+  document.getElementById(
+  'onigiriSales'
+).innerText =
+  '¥' +
+  Number(
+    data.onigiriSales || 0
+  ).toLocaleString();
+  
   document.getElementById(
     'bbqSales'
   ).innerText =
@@ -442,7 +481,16 @@ async function loadSales(){
     'unpaidCount'
   ).innerText =
     data.unpaidCount || 0;
+  
+  document.getElementById(
+  'onigiriCount'
+).innerText =
+  data.onigiriCount || 0;
 
+  document.getElementById(
+  'bbqCount'
+).innerText =
+  data.bbqCount || 0;
 }
 
 window.onload = function(){
