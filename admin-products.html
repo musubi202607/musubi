@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+商品管理
+</title>
+
+<link
+rel="stylesheet"
+href="css/style.css">
+
+<style>
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  background:#fff;
+
+}
+
+th,
+td{
+
+  border:1px solid #ddd;
+
+  padding:10px;
+
+}
+
+th{
+
+  background:#f5f5f5;
+
+}
+
+input{
+
+  width:100%;
+
+  box-sizing:border-box;
+
+}
+
+.save-btn{
+
+  background:#28a745;
+
+  color:#fff;
+
+  border:none;
+
+  padding:8px 15px;
+
+  border-radius:5px;
+
+  cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="container header-inner">
+
+```
+<div>
+
+  <h1>
+    商品管理
+  </h1>
+
+  <p>
+    商品マスタ編集
+  </p>
+
+</div>
+```
+
+  </div>
+
+</header>
+
+<div class="container">
+
+<a
+ href="admin.html"
+ class="back-btn">
+
+```
+← 管理画面へ戻る
+```
+
+  </a>
+
+<br><br>
+
+  <table>
+
+```
+<thead>
+
+  <tr>
+
+    <th>
+      ID
+    </th>
+
+    <th>
+      商品名
+    </th>
+
+    <th>
+      価格
+    </th>
+
+    <th>
+      説明
+    </th>
+
+    <th>
+      画像
+    </th>
+    
+    <th>
+      種類
+    </th>
+
+    <th>
+      販売状態
+    </th>
+  
+    <th>
+      表示順
+    </th>
+
+    <th>
+      保存
+    </th>
+    
+    <th>
+      削除
+    </th>
+  </tr>
+
+</thead>
+
+<tbody id="productList">
+
+</tbody>
+```
+
+  <div class="card">
+
+  <h2>
+    商品追加
+  </h2>
+
+  <input
+    id="newName"
+    placeholder="商品名"
+  >
+
+  <br><br>
+
+  <input
+    id="newPrice"
+    type="number"
+    placeholder="価格"
+  >
+
+  <br><br>
+
+  <input
+    id="newDescription"
+    placeholder="説明"
+  >
+
+  <br><br>
+
+  <select id="newType">
+
+  <option value="onigiri">
+    onigiri
+  </option>
+
+  <option value="bbq">
+    bbq
+  </option>
+
+  <option value="bbq-option">
+    bbq-option
+  </option>
+
+  <option value="drink">
+    drink
+  </option>
+
+</select>
+
+  <br><br>
+
+  <input
+    id="newSort"
+    type="number"
+    placeholder="表示順"
+  >
+
+  <br><br>
+
+  <button onclick="addProduct()">
+
+    商品追加
+
+  </button>
+
+</div>
+
+<br>
+
+  </table>
+
+</div>
+
+<script src="js/config.js"></script>
+
+<script>
+
+async function loadProducts(){
+
+  const response =
+    await fetch(
+      API_URL +
+      '?mode=productsAdmin'
+    );
+
+  const data =
+    await response.json();
+
+  let html='';
+
+  data.forEach(item=>{
+
+    html += `
+
+    <tr>
+
+      <td>
+
+        ${item.id}
+
+      </td>
+
+      <td>
+
+        <input
+          id="name_${item.row}"
+          value="${item.name}">
+
+      </td>
+      
+      <td>
+
+      <select id="status_${item.row}">
+
+         <option
+          value="ON"
+            ${item.status==='ON'?'selected':''}
+       >
+           ON
+         </option>
+
+         <option
+           value="OFF"
+            ${item.status==='OFF'?'selected':''}
+       >
+        OFF
+       </option>
+
+       </select>
+
+      </td>
+      
+      <td>
+
+        <input
+          type="number"
+          id="price_${item.row}"
+          value="${item.price}">
+
+      </td>
+
+      <td>
+
+        <input
+          id="desc_${item.row}"
+          value="${item.description}">
+
+      </td>
+      
+      <td>
+
+        <input
+          id="desc_${item.row}"
+          value="${item.description}">
+
+      </td>
+      
+      <td>
+
+<select id="type_${item.row}">
+
+  <option value="onigiri"
+    ${item.type === 'onigiri'
+      ? 'selected'
+      : ''}>
+
+    onigiri
+
+  </option>
+
+  <option value="bbq"
+    ${item.type === 'bbq'
+      ? 'selected'
+      : ''}>
+
+    bbq
+
+  </option>
+
+  <option value="bbq-option"
+    ${item.type === 'bbq-option'
+      ? 'selected'
+      : ''}>
+
+    bbq-option
+
+  </option>
+  
+  <option value="drink"
+  ${item.type==='drink'
+      ?'selected'
+      :''}>
+  
+    drink
+  
+  </option>
+
+</select>
+
+      </td>
+
+      <td>
+
+        <input
+          type="number"
+          id="sort_${item.row}"
+          value="${item.sort}">
+
+      </td>
+
+      <td>
+
+        <button
+          class="save-btn"
+          onclick="saveProduct(${item.row})">
+
+          保存
+
+        </button>
+        
+        <button
+          onclick="deleteProduct(${item.row})">
+
+          削除
+
+        </button>
+      
+      </td>
+
+    </tr>
+
+    `;
+
+  });
+
+  document
+    .getElementById(
+      'productList'
+    )
+    .innerHTML = html;
+
+}
+
+async function saveProduct(row){
+
+  const name =
+    document.getElementById(
+      'name_' + row
+    ).value;
+
+  const price =
+    document.getElementById(
+      'price_' + row
+    ).value;
+
+  const description =
+    document.getElementById(
+      'desc_' + row
+    ).value;
+
+  const image =
+    document.getElementById(
+      'image_' + row
+    ).value;
+  
+  const type =
+  document.getElementById(
+    'type_' + row
+  ).value;
+  
+  const status =
+  document.getElementById(
+    'status_' + row
+  ).value;
+  
+  const sort =
+    document.getElementById(
+      'sort_' + row
+    ).value;
+
+  const response =
+  await fetch(
+
+    API_URL +
+
+    '?mode=productUpdate' +
+
+    '&row=' +
+    encodeURIComponent(row) +
+
+    '&name=' +
+    encodeURIComponent(name) +
+
+    '&price=' +
+    encodeURIComponent(price) +
+
+    '&description=' +
+    encodeURIComponent(description) +
+
+    '&image=' +
+    encodeURIComponent(image)
+
+    '&type=' +
+    encodeURIComponent(type) +
+
+    '&status=' +
+    encodeURIComponent(status) +
+
+    '&sort=' +
+    encodeURIComponent(sort)
+
+  );
+
+  const result =
+    await response.json();
+
+  if(result.success){
+
+    alert(
+      '保存しました'
+    );
+
+  }else{
+
+    alert(
+      '保存失敗'
+    );
+
+  }
+
+}
+
+async function deleteProduct(row){
+
+  if(
+    !confirm(
+      '削除しますか？'
+    )
+  ){
+    return;
+  }
+
+  await fetch(
+
+    API_URL +
+
+    '?mode=productDelete' +
+
+    '&row=' +
+
+    row
+
+  );
+
+  loadProducts();
+
+}
+
+async function addProduct(){
+
+  const name =
+    document.getElementById(
+      'newName'
+    ).value;
+
+  const price =
+    document.getElementById(
+      'newPrice'
+    ).value;
+
+  const description =
+    document.getElementById(
+      'newDescription'
+    ).value;
+
+  const type =
+    document.getElementById(
+      'newType'
+    ).value;
+
+  const sort =
+    document.getElementById(
+      'newSort'
+    ).value;
+
+  const response =
+    await fetch(
+
+      API_URL +
+
+      '?mode=productAdd' +
+
+      '&name=' +
+      encodeURIComponent(name) +
+
+      '&price=' +
+      encodeURIComponent(price) +
+
+      '&description=' +
+      encodeURIComponent(description) +
+
+      '&type=' +
+      encodeURIComponent(type) +
+
+      '&sort=' +
+      encodeURIComponent(sort)
+
+    );
+
+  const result =
+    await response.json();
+
+  if(result.success){
+
+    alert(
+      '追加しました'
+    );
+
+    loadProducts();
+
+  }
+
+}
+loadProducts();
+
+</script>
+
+</body>
+
+</html>

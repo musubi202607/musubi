@@ -14,11 +14,22 @@ async function loadBbqOptions(){
       await response.json();
 
     const bbqOptions =
-      products.filter(
-        p =>
-          p.type ===
-          'bbq-option'
-      );
+  products
+    .filter(
+      p =>
+
+        p.type ===
+        'bbq-option'
+
+        ||
+
+        p.type ===
+        'drink'
+    )
+    .sort(
+      (a,b)=>
+      a.sort - b.sort
+    );
 
     const grid =
       document.getElementById(
