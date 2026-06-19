@@ -2,153 +2,161 @@ let bbqCart = [];
 
 async function loadBbqOptions(){
 
-  try{
+try{
 
-    const response =
-      await fetch(
-        API_URL +
-        '?mode=products'
-      );
+```
+const response =
+  await fetch(
+    API_URL +
+    '?mode=products'
+  );
 
-    const products =
-      await response.json();
+const products =
+  await response.json();
 
-    const bbqOptions =
-  products
-    .filter(
-      p =>
+const optionGrid =
+  document.getElementById(
+    'optionGrid'
+  );
 
-        p.type ===
-        'bbq-option'
+const drinkGrid =
+  document.getElementById(
+    'drinkGrid'
+  );
 
-        ||
+optionGrid.innerHTML = '';
 
-        p.type ===
-        'drink'
-    )
-    .sort(
-      (a,b)=>
-      a.sort - b.sort
-    );
+drinkGrid.innerHTML = '';
 
-    const grid =
-      document.getElementById(
-        'productGrid'
-      );
+products
+  .sort(
+    (a,b)=>
+      Number(a.sort || 9999) -
+      Number(b.sort || 9999)
+  )
+  .forEach(product=>{
 
-    grid.innerHTML = '';
+    if(
+      product.type !== 'bbq-option'
+      &&
+      product.type !== 'drink'
+    ){
+      return;
+    }
 
-    bbqOptions.forEach(
-      product => {
+    const card = `
 
-        grid.innerHTML += `
+      <div class="product-card">
 
-          <div class="product-card">
+        <img
+          src="${product.image}"
+          alt="${product.name}"
+        >
 
-            <img
-              src="${product.image}"
-              alt="${product.name}"
-            >
+        <div class="product-content">
 
-            <div class="product-content">
+          <h3>
+            ${product.name}
+          </h3>
 
-              <h3>
+          <p>
+            ${product.description}
+          </p>
 
-                ${product.name}
+          <div class="price">
 
-              </h3>
-
-              <p>
-
-                ${product.description}
-
-              </p>
-
-              <div class="price">
-
-                ¥${Number(
-                  product.price
-                ).toLocaleString()}
-
-              </div>
-
-              <div class="qty-area">
-
-                <button
-                  class="qty-btn"
-                  onclick="
-                    changeBbqQty(
-                      ${product.id},
-                      -1
-                    )
-                  "
-                >
-
-                  －
-
-                </button>
-
-                <span
-                  id="qty-${product.id}"
-                  class="qty-value"
-                >
-
-                  1
-
-                </span>
-
-                <button
-                  class="qty-btn"
-                  onclick="
-                    changeBbqQty(
-                      ${product.id},
-                      1
-                    )
-                  "
-                >
-
-                  ＋
-
-                </button>
-
-              </div>
-
-              <button
-
-                onclick="
-                  addBbqOption(
-                    ${product.id},
-                    '${product.name}',
-                    ${product.price}
-                  )
-                "
-
-              >
-
-                カートへ追加
-
-              </button>
-
-            </div>
+            ¥${Number(
+              product.price
+            ).toLocaleString()}
 
           </div>
 
-        `;
+          <div class="qty-area">
 
-      }
-    );
+            <button
+              class="qty-btn"
+              onclick="
+                changeBbqQty(
+                  ${product.id},
+                  -1
+                )
+              "
+            >
+              －
+            </button>
 
-  }catch(error){
+            <span
+              id="qty-${product.id}"
+              class="qty-value"
+            >
+              1
+            </span>
 
-    console.error(error);
+            <button
+              class="qty-btn"
+              onclick="
+                changeBbqQty(
+                  ${product.id},
+                  1
+                )
+              "
+            >
+              ＋
+            </button>
 
-    alert(
-      '商品取得エラー'
-    );
+          </div>
 
-  }
+          <button
+            onclick="
+              addBbqOption(
+                ${product.id},
+                '${product.name}',
+                ${product.price}
+              )
+            "
+          >
+            カートへ追加
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+    if(
+      product.type === 'bbq-option'
+    ){
+
+      optionGrid.innerHTML += card;
+
+    }
+
+    if(
+      product.type === 'drink'
+    ){
+
+      drinkGrid.innerHTML += card;
+
+    }
+
+  });
+```
+
+}catch(error){
+
+```
+console.error(error);
+
+alert(
+  '商品取得エラー'
+);
+```
 
 }
+
+}
+
 
 function changeBbqQty(
   productId,
@@ -267,19 +275,17 @@ function renderCart(){
 
   if(cart.length === 0){
 
-    target.innerHTML = `
+  target.innerHTML = `
+    <p>
+      商品がありません
+    </p>
+  `;
 
-      <p>
+  updateCartSummary();
 
-        商品がありません
+  return;
 
-      </p>
-
-    `;
-
-    return;
-
-  }
+}
 
   cart.forEach(item => {
 
@@ -363,6 +369,57 @@ function renderCart(){
 
   `;
 
+  updateCartSummary();
+
+}
+
+function updateCartSummary(){
+
+  const cart =
+    JSON.parse(
+      localStorage.getItem(
+        'bbqOptionCart'
+      )
+    ) || [];
+
+  let qty = 0;
+
+  let total = 0;
+
+  cart.forEach(item=>{
+
+    qty += Number(
+      item.qty
+    );
+
+    total +=
+      Number(item.qty) *
+      Number(item.price);
+
+  });
+
+  const target =
+    document.getElementById(
+      'cartSummary'
+    );
+
+  if(!target){
+
+    return;
+
+  }
+
+  target.innerHTML = `
+
+    カート
+    ${qty}点
+
+    ／
+
+    ¥${total.toLocaleString()}
+
+  `;
+
 }
 
 function changeOrderQty(
@@ -433,6 +490,5 @@ window.onload = function(){
 
   loadBbqOptions();
 
-  renderCart();
 
 };

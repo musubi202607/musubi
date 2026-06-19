@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>
+カレンダー管理
+</title>
+
+<link
+rel="stylesheet"
+href="css/style.css">
+
+<style>
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  background:#fff;
+
+}
+
+th,
+td{
+
+  border:1px solid #ddd;
+
+  padding:10px;
+
+}
+
+th{
+
+  background:#f5f5f5;
+
+}
+
+input,
+select{
+
+  width:100%;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container header-inner">
+
+<h1>
+カレンダー管理
+</h1>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<a
+href="admin.html"
+class="back-btn">
+
+← 管理画面へ戻る
+
+</a>
+
+<br><br>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+日付
+</th>
+
+<th>
+状態
+</th>
+
+<th>
+上限
+</th>
+
+<th>
+保存
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="calendarBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+<script src="js/config.js"></script>
+
+<script>
+
+async function loadCalendar(){
+
+  const response =
+    await fetch(
+      API_URL +
+      '?mode=calendarAdmin'
+    );
+
+  const data =
+    await response.json();
+
+  let html='';
+
+  data.forEach(row=>{
+
+    html += `
+
+    <tr>
+
+      <td>
+
+        ${row.date}
+
+      </td>
+
+      <td>
+
+        <select
+          id="status-${row.row}">
+
+          <option
+            value="○"
+            ${row.status==='○'?'selected':''}
+          >
+            ○
+          </option>
+
+          <option
+            value="△"
+            ${row.status==='△'?'selected':''}
+          >
+            △
+          </option>
+
+          <option
+            value="×"
+            ${row.status==='×'?'selected':''}
+          >
+            ×
+          </option>
+
+        </select>
+
+      </td>
+
+      <td>
+
+        <input
+          type="number"
+          id="limit-${row.row}"
+          value="${row.limit}"
+        >
+
+      </td>
+
+      <td>
+
+        <button
+          onclick="saveCalendar(${row.row})"
+        >
+          保存
+        </button>
+
+      </td>
+
+    </tr>
+
+    `;
+
+  });
+
+  document.getElementById(
+    'calendarBody'
+  ).innerHTML = html;
+
+}
+
+async function saveCalendar(row){
+
+  const status =
+    document.getElementById(
+      'status-' + row
+    ).value;
+
+  const limit =
+    document.getElementById(
+      'limit-' + row
+    ).value;
+
+  const response =
+    await fetch(
+
+      API_URL +
+      '?mode=calendarUpdate' +
+      '&row=' + row +
+      '&status=' +
+      encodeURIComponent(status) +
+      '&limit=' +
+      encodeURIComponent(limit)
+
+    );
+
+  const result =
+    await response.json();
+
+  if(result.success){
+
+    alert('保存しました');
+
+  }
+
+}
+
+loadCalendar();
+
+</script>
+
+</body>
+
+</html>

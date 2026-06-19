@@ -148,55 +148,47 @@ async function loadReservations(){
 
     html += `
 
-      <tr>
+<tr>
 
-        <td>
+  <td>
+    ${r.reservationNo}
+  </td>
 
-          ${r.no}
+  <td>
+    ${r.customerName}
+  </td>
 
-        </td>
+  <td>
+    ${r.people}
+  </td>
 
-        <td>
+  <td>
+    ${r.plan}
+  </td>
 
-          ${r.name}
+  <td>
 
-        </td>
+    ${
+      r.status === '来店済'
+      ? '<span class="status-ok">来店済</span>'
+      : '<span class="status-ng">未受付</span>'
+    }
 
-        <td>
+  </td>
 
-          ${r.people}
+  <td>
 
-        </td>
+    ${
+      r.paid === '済'
+      ? '<span class="status-ok">済</span>'
+      : '<span class="status-ng">未</span>'
+    }
 
-        <td>
+  </td>
 
-          ${r.date || ''}
+</tr>
 
-        </td>
-
-        <td>
-
-          ${
-            r.status === '来店済'
-            ? '<span class="status-ok">来店済</span>'
-            : '<span class="status-ng">未受付</span>'
-          }
-
-        </td>
-
-        <td>
-
-          ${
-            r.paid === '済'
-            ? '<span class="status-ok">済</span>'
-            : '<span class="status-ng">未</span>'
-          }
-
-        </td>
-
-      </tr>
-
-    `;
+`;
 
   });
 

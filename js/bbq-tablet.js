@@ -6,6 +6,18 @@ let reservationCache = [];
 // =========================
 window.onload = function(){
 
+  const productArea =
+    document.getElementById(
+      'productArea'
+    );
+
+  if(productArea){
+
+    productArea.style.display =
+      'none';
+
+  }
+
   loadReservations();
 
   loadBbqOptions();
@@ -450,10 +462,20 @@ async function displayReservation(data){
   }
 
   renderReservationList(
-    reservationCache
+  reservationCache
+);
+
+renderCart();
+
+const productArea =
+  document.getElementById(
+    'productArea'
   );
 
-  renderCart();
+if(productArea){
+
+  productArea.style.display =
+    'block';
 
 }
 // =========================
@@ -461,36 +483,55 @@ async function displayReservation(data){
 // =========================
 async function loadBbqOptions(){
 
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=products'
-    );
+try{
 
-  const products =
-    await response.json();
+const response =
+  await fetch(
+    API_URL +
+    '?mode=products'
+  );
 
-  const bbqOptions =
-    products.filter(
-      p =>
-        p.type ===
-        'bbq-option'
-    );
+const products =
+  await response.json();
 
-  const grid =
-    document.getElementById(
-      'productGrid'
-    );
+const optionGrid =
+  document.getElementById(
+    'optionGrid'
+  );
 
-  if(!grid){
-    return;
-  }
+const drinkGrid =
+  document.getElementById(
+    'drinkGrid'
+  );
 
-  grid.innerHTML = '';
+if(
+  !optionGrid ||
+  !drinkGrid
+){
+  return;
+}
 
-  bbqOptions.forEach(product => {
+optionGrid.innerHTML = '';
 
-    grid.innerHTML += `
+drinkGrid.innerHTML = '';
+
+products
+  .sort(
+    (a,b)=>
+      Number(a.sort || 9999) -
+      Number(b.sort || 9999)
+  )
+  .forEach(product=>{
+
+    if(
+      product.type !== 'bbq-option'
+      &&
+      product.type !== 'drink'
+    ){
+      return;
+    }
+
+    const card = `
 
       <div class="product-card">
 
@@ -537,10 +578,39 @@ async function loadBbqOptions(){
 
     `;
 
+    if(
+      product.type ===
+      'bbq-option'
+    ){
+
+      optionGrid.innerHTML +=
+        card;
+
+    }
+
+    if(
+      product.type ===
+      'drink'
+    ){
+
+      drinkGrid.innerHTML +=
+        card;
+
+    }
+
   });
 
+}catch(error){
+
+console.error(error);
+
+alert(
+  '商品取得エラー'
+);
+
 }
-// =========================
+
+}// =========================
 // カート追加
 // =========================
 function addBbqOption(

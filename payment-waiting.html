@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+会計待ち一覧
+</title>
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
+
+<style>
+
+.payment-card{
+
+  background:#fff;
+
+  border-radius:10px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  box-shadow:
+    0 2px 6px
+    rgba(0,0,0,.1);
+
+}
+
+.total{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  margin-top:10px;
+
+}
+
+.pay-btn{
+
+  width:100%;
+
+  margin-top:15px;
+
+  padding:12px;
+
+  background:#4caf50;
+
+  color:#fff;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="container header-inner">
+
+    <h1>
+      会計待ち一覧
+    </h1>
+
+  </div>
+
+</header>
+
+<div class="container">
+
+  <a
+    href="admin.html"
+    class="back-btn"
+  >
+    ← 管理画面へ戻る
+  </a>
+
+  <div id="paymentList">
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+
+<script>
+
+async function loadPayments(){
+
+  const response =
+    await fetch(
+      API_URL +
+      '?mode=waitingPayments'
+    );
+
+  const data =
+    await response.json();
+
+  let html = '';
+
+  if(data.length === 0){
+
+    html = `
+
+      <div class="payment-card">
+
+        会計待ちはありません
+
+      </div>
+
+    `;
+
+  }
+
+  data.forEach(item=>{
+
+    html += `
+
+      <div class="payment-card">
+
+        <h2>
+
+          ${item.customerName}
+
+        </h2>
+
+        <p>
+
+          予約番号：
+          ${item.reservationNo}
+
+        </p>
+
+        <p>
+
+          BBQ：
+          ¥${Number(
+            item.bbqPrice
+          ).toLocaleString()}
+
+        </p>
+
+        <p>
+
+          追加：
+          ¥${Number(
+            item.optionTotal
+          ).toLocaleString()}
+
+        </p>
+
+        <div class="total">
+
+          合計：
+          ¥${Number(
+            item.total
+          ).toLocaleString()}
+
+        </div>
+
+        <button
+          class="pay-btn"
+          onclick="
+            paidUpdate(
+              '${item.reservationNo}'
+            )
+          "
+        >
+
+          会計済みにする
+
+        </button>
+
+      </div>
+
+    `;
+
+  });
+
+  document
+    .getElementById(
+      'paymentList'
+    )
+    .innerHTML = html;
+
+}
+
+async function paidUpdate(no){
+
+  if(
+    !confirm(
+      '会計済みにしますか？'
+    )
+  ){
+    return;
+  }
+
+  const response =
+    await fetch(
+
+      API_URL +
+      '?mode=paid' +
+      '&no=' +
+      encodeURIComponent(no)
+
+    );
+
+  const result =
+    await response.json();
+
+  if(result.success){
+
+    alert(
+      '会計済みにしました'
+    );
+
+    loadPayments();
+
+  }else{
+
+    alert(
+      '更新失敗'
+    );
+
+  }
+
+}
+
+loadPayments();
+
+</script>
+
+</body>
+</html>

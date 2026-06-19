@@ -1,13 +1,17 @@
+</html>
+
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
 
   <title>
     BBQ追加注文
@@ -26,35 +30,37 @@
 
   <div class="container header-inner">
 
-    <div>
+```
+<div>
 
-      <h1>
-        BBQ追加注文
-      </h1>
+  <h1>
+    BBQ追加注文
+  </h1>
 
-      <p>
-        BBQ予約済みのお客様向け
-      </p>
+  <p>
+    BBQ予約済みのお客様向け
+  </p>
 
-    </div>
+</div>
 
-    <div>
+<div>
 
-      <a
-        href="index.html"
-        class="cart-button"
-      >
-        おにぎり
-      </a>
+  <a
+    href="index.html"
+    class="cart-button"
+  >
+    おにぎり
+  </a>
 
-      <a
-        href="bbq.html"
-        class="cart-button"
-      >
-        BBQ予約
-      </a>
+  <a
+    href="bbq.html"
+    class="cart-button"
+  >
+    BBQ予約
+  </a>
 
-    </div>
+</div>
+```
 
   </div>
 
@@ -62,45 +68,179 @@
 
 <div class="container">
 
-  <a
-    href="index.html"
-    class="back-btn"
-  >
-    ← トップページへ戻る
+<a
+href="index.html"
+class="back-btn"
+
+>
+
+```
+← トップページへ戻る
+```
+
   </a>
 
 </div>
 
-<section class="products container">
+<!-- 予約一覧 -->
+
+<section class="container">
 
   <div class="section-title">
 
-    <h2>
-      BBQ追加メニュー
-    </h2>
+```
+<h2>
+  本日の予約
+</h2>
+```
 
   </div>
 
   <div
-    class="product-grid"
-    id="productGrid"
+    id="reservationList"
   >
   </div>
 
 </section>
 
-<div class="container">
+<!-- 選択中予約 -->
 
-  <a
-    href="bbq-option-order.html"
-    class="order-btn"
+<section class="container">
+
+  <div
+    id="currentReservation"
   >
+  </div>
 
-    注文内容確認へ
+</section>
 
-  </a>
+<!-- 商品エリア -->
+
+<div id="productArea">
+
+  <!-- 追加商品 -->
+
+  <section class="products container">
+
+```
+<div class="section-title">
+
+  <h2>
+    追加商品
+  </h2>
 
 </div>
+
+<div
+  class="product-grid"
+  id="optionGrid"
+>
+</div>
+```
+
+  </section>
+
+  <!-- ドリンク -->
+
+  <section class="products container">
+
+```
+<div class="section-title">
+
+  <h2>
+    ドリンク
+  </h2>
+
+</div>
+
+<div
+  class="product-grid"
+  id="drinkGrid"
+>
+</div>
+```
+
+  </section>
+
+  <!-- カート -->
+
+  <section class="container">
+
+```
+<div class="section-title">
+
+  <h2>
+    カート
+  </h2>
+
+</div>
+
+<div
+  id="cartArea"
+>
+</div>
+
+<div
+  id="cartSummary"
+  class="cart-summary"
+>
+</div>
+
+<div
+  style="
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+  "
+>
+
+  <button
+    class="order-btn"
+    onclick="clearCart()"
+  >
+
+    カートクリア
+
+  </button>
+
+  <button
+    class="order-btn"
+    onclick="sendTabletOrder()"
+  >
+
+    注文送信
+
+  </button>
+
+</div>
+```
+
+  </section>
+
+</div>
+
+<script>
+
+document.addEventListener(
+  'DOMContentLoaded',
+  function(){
+
+    const productArea =
+      document.getElementById(
+        'productArea'
+      );
+
+    if(productArea){
+
+      productArea.style.display =
+        'none';
+
+    }
+
+  }
+);
+
+</script>
 
 <script src="js/config.js"></script>
 

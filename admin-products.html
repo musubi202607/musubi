@@ -251,9 +251,14 @@ async function loadProducts(){
     );
 
   const data =
-    await response.json();
+  await response.json();
 
-  let html='';
+   console.log(
+   'productsAdmin:',
+    data
+  );
+
+   let html='';
 
   data.forEach(item=>{
 
@@ -262,137 +267,111 @@ async function loadProducts(){
     <tr>
 
       <td>
+  ${item.id}
+</td>
 
-        ${item.id}
+<td>
+  <input
+    id="name_${item.row}"
+    value="${item.name}">
+</td>
 
-      </td>
+<td>
+  <input
+    type="number"
+    id="price_${item.row}"
+    value="${item.price}">
+</td>
 
-      <td>
+<td>
+  <input
+    id="desc_${item.row}"
+    value="${item.description}">
+</td>
 
-        <input
-          id="name_${item.row}"
-          value="${item.name}">
+<td>
+  <input
+    id="image_${item.row}"
+    value="${item.image || ''}">
+</td>
 
-      </td>
-      
-      <td>
-
-      <select id="status_${item.row}">
-
-         <option
-          value="ON"
-            ${item.status==='ON'?'selected':''}
-       >
-           ON
-         </option>
-
-         <option
-           value="OFF"
-            ${item.status==='OFF'?'selected':''}
-       >
-        OFF
-       </option>
-
-       </select>
-
-      </td>
-      
-      <td>
-
-        <input
-          type="number"
-          id="price_${item.row}"
-          value="${item.price}">
-
-      </td>
-
-      <td>
-
-        <input
-          id="desc_${item.row}"
-          value="${item.description}">
-
-      </td>
-      
-      <td>
-
-        <input
-          id="desc_${item.row}"
-          value="${item.description}">
-
-      </td>
-      
-      <td>
+<td>
 
 <select id="type_${item.row}">
 
   <option value="onigiri"
-    ${item.type === 'onigiri'
-      ? 'selected'
-      : ''}>
-
+    ${item.type==='onigiri'?'selected':''}>
     onigiri
-
   </option>
 
   <option value="bbq"
-    ${item.type === 'bbq'
-      ? 'selected'
-      : ''}>
-
+    ${item.type==='bbq'?'selected':''}>
     bbq
-
   </option>
 
   <option value="bbq-option"
-    ${item.type === 'bbq-option'
-      ? 'selected'
-      : ''}>
-
+    ${item.type==='bbq-option'?'selected':''}>
     bbq-option
-
   </option>
-  
+
   <option value="drink"
-  ${item.type==='drink'
-      ?'selected'
-      :''}>
-  
+    ${item.type==='drink'?'selected':''}>
     drink
-  
   </option>
 
 </select>
 
-      </td>
+</td>
 
-      <td>
+<td>
 
-        <input
-          type="number"
-          id="sort_${item.row}"
-          value="${item.sort}">
+<select id="status_${item.row}">
 
-      </td>
+  <option value="ON"
+    ${item.status==='ON'?'selected':''}>
+    ON
+  </option>
 
-      <td>
+  <option value="OFF"
+    ${item.status==='OFF'?'selected':''}>
+    OFF
+  </option>
 
-        <button
-          class="save-btn"
-          onclick="saveProduct(${item.row})">
+</select>
 
-          保存
+</td>
 
-        </button>
-        
-        <button
-          onclick="deleteProduct(${item.row})">
+<td>
 
-          削除
+  <input
+    type="number"
+    id="sort_${item.row}"
+    value="${item.sort}">
 
-        </button>
-      
-      </td>
+</td>
+
+<td>
+
+  <button
+    class="save-btn"
+    onclick="saveProduct(${item.row})">
+
+    保存
+
+  </button>
+
+</td>
+
+<td>
+
+  <button
+    onclick="deleteProduct(${item.row})">
+
+    削除
+
+  </button>
+
+</td>
 
     </tr>
 
@@ -465,7 +444,7 @@ async function saveProduct(row){
     encodeURIComponent(description) +
 
     '&image=' +
-    encodeURIComponent(image)
+    encodeURIComponent(image) +
 
     '&type=' +
     encodeURIComponent(type) +
