@@ -904,102 +904,90 @@ function clearCart(){
 // =========================
 async function sendTabletOrder(){
 
-  if(!currentReservation){
+if(!currentReservation){
 
-    alert(
-      '予約を選択してください'
-    );
+alert(
+  '予約を選択してください'
+);
 
-    return;
+return;
 
-  }
+}
 
-  if(
-    currentReservation.status !==
-    '来店済'
-  ){
+if(
+currentReservation.status !==
+'来店済'
+){
 
-    alert(
-      '来店受付後に注文できます'
-    );
+alert(
+  '来店受付後に注文できます'
+);
 
-    return;
+return;
 
-  }
+}
 
-  const cartKey =
-    'bbqOptionCart_' +
-    currentReservation.reservationNo;
+const cartKey =
+'bbqOptionCart_' +
+currentReservation.reservationNo;
 
-  const cart =
-    JSON.parse(
-      localStorage.getItem(
-        cartKey
-      )
-    ) || [];
+const cart =
+JSON.parse(
+localStorage.getItem(
+cartKey
+)
+) || [];
 
-  if(cart.length === 0){
+if(cart.length === 0){
 
-    alert(
-      '商品がありません'
-    );
+alert(
+  '商品がありません'
+);
 
-    return;
+return;
 
-  }
+}
 
-  const orderData = {
+try{
 
-    orderType:
-      'BBQ_OPTION',
+const params =
+  new URLSearchParams({
+
+    mode:
+      'saveBbqOption',
 
     reservationNo:
-      currentReservation
-        .reservationNo,
+      currentReservation.reservationNo,
 
     orderDate:
-      currentReservation
-        .useDate,
+      currentReservation.useDate,
 
     customerName:
-      currentReservation
-        .customerName,
+      currentReservation.customerName,
 
     customerTel:
-      currentReservation
-        .customerTel,
+      currentReservation.customerTel,
 
     items:
-      cart,
+      JSON.stringify(cart),
 
     memo:''
 
-  };
+  });
 
-  try{
+const response =
+  await fetch(
 
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method:'POST',
+    API_URL +
+    '?' +
+    params.toString()
 
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
+  );
 
-          body:
-            JSON.stringify(
-              orderData
-            )
-        }
-      );
+const result =
+  await response.json();
 
-    const result =
-      await response.json();
-
-    if(result.success){
+if(result.success){
 
   alert(
     '追加注文完了'
@@ -1020,15 +1008,15 @@ async function sendTabletOrder(){
 
 }
 
-  }catch(error){
+}catch(error){
 
-    console.error(error);
+console.error(error);
 
-    alert(
-      '通信エラー'
-    );
+alert(
+  '通信エラー'
+);
 
-  }
+}
 
 }
 
