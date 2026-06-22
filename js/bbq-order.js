@@ -126,58 +126,53 @@ async function sendBbqOrder() {
 
   }
 
-  const orderData = {
-
-    orderType:
-      'BBQ',
-
-    orderDate:
-      localStorage.getItem(
-        'bbqDate'
-      ),
-
-    productName:
-      localStorage.getItem(
-        'bbqProductName'
-      ),
-
-    price:
-      localStorage.getItem(
-        'bbqPrice'
-      ),
-
-    people:
-      Number(people),
-
-    customerName:
-      customerName,
-
-    customerTel:
-      customerTel,
-
-    memo:
-      memo
-
-  };
-
   try {
+
+    const params =
+      new URLSearchParams({
+
+        mode:
+          'saveOrder',
+
+        orderType:
+          'BBQ',
+
+        orderDate:
+          localStorage.getItem(
+            'bbqDate'
+          ),
+
+        productName:
+          localStorage.getItem(
+            'bbqProductName'
+          ),
+
+        price:
+          localStorage.getItem(
+            'bbqPrice'
+          ),
+
+        people:
+          people,
+
+        customerName:
+          customerName,
+
+        customerTel:
+          customerTel,
+
+        memo:
+          memo
+
+      });
 
     const response =
       await fetch(
-        API_URL,
-        {
-          method:'POST',
 
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
+        API_URL +
+        '?' +
+        params.toString()
 
-          body:
-            JSON.stringify(
-              orderData
-            )
-        }
       );
 
     const result =
