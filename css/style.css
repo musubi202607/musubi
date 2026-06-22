@@ -209,7 +209,14 @@ header {
   margin-top: 30px;
   border: none;
   background: red;
-  color: white;/* =========================
+  color: white;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* =========================
   ボタン共通（POS向け強化）
 ========================= */
 
@@ -547,7 +554,7 @@ body {
 
 }
 
-/* 追加メニュー用カードレイアウト調整 */
+/* 追加メニュー用カードレイアウト調整（POS） */
 .product-card {
   display: flex;
   flex-direction: column;
@@ -555,8 +562,8 @@ body {
 
 .product-card img {
   width: 100%;
-  height: auto;
-  display: block;
+  height: 220px;      /* ここは今と同じ高さでもOK */
+  object-fit: cover;
 }
 
 .product-card .product-content {
@@ -574,13 +581,4 @@ body {
 .product-card .product-content button {
   margin-top: auto;
   width: 100%;
-}
-
-.product-content p {
-  min-height: 1.5em;
-}
-
-.product-card img {
-  height: 220px;
-  object-fit: cover;
 }
