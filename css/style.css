@@ -564,3 +564,14 @@ body {
   flex-direction: column;
   flex: 1 1 auto;
 }
+
+.product-card .product-content h3,
+.product-card .product-content p,
+.product-card .product-content .price {
+  margin-bottom: 8px;
+}
+
+.product-card .product-content button {
+  margin-top: auto;
+  width: 100%;
+}
