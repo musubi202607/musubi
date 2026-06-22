@@ -575,3 +575,12 @@ body {
   margin-top: auto;
   width: 100%;
 }
+
+.product-content p {
+  min-height: 1.5em;
+}
+
+.product-card img {
+  height: 220px;
+  object-fit: cover;
+}
