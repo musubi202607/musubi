@@ -199,7 +199,17 @@ header {
   filter: grayscale(1);
 }
 
+
 /* =========================
+  カート関連
+========================= */
+
+.clear-btn {
+  width: 100%;
+  margin-top: 30px;
+  border: none;
+  background: red;
+  color: white;/* =========================
   ボタン共通（POS向け強化）
 ========================= */
 
@@ -227,16 +237,6 @@ button {
   color: #fff;
 }
 
-/* =========================
-  カート関連
-========================= */
-
-.clear-btn {
-  width: 100%;
-  margin-top: 30px;
-  border: none;
-  background: red;
-  color: white;
   padding: 16px;
   border-radius: 16px;
   font-size: 18px;
@@ -545,4 +545,22 @@ body {
 
   text-align:center;
 
+}
+
+/* 追加メニュー用カードレイアウト調整 */
+.product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-card .product-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
