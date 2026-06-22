@@ -477,7 +477,9 @@ if(productArea){
   productArea.style.display =
     'block';
 
+ }
 }
+
 // =========================
 // BBQ商品読込
 // =========================
