@@ -535,50 +535,48 @@ products
 
     const card = `
 
-      <div class="product-card">
+<div class="product-card">
 
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-        >
+  <img
+    src="${product.image}"
+    alt="${product.name}"
+  >
 
-        <div class="product-content">
+  <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+    <h3>
+      ${product.name}
+    </h3>
 
-          <p>
-            ${product.description}
-          </p>
+    <p>
+      ${product.description}
+    </p>
 
-          <div class="price">
+    <div class="price">
 
-            ¥${Number(
-              product.price
-            ).toLocaleString()}
+      ¥${Number(
+        product.price
+      ).toLocaleString()}
 
-          </div>
+    </div>
 
-          <button
-            onclick="
-              addBbqOption(
-                ${product.id},
-                '${product.name}',
-                ${product.price}
-              )
-            "
-          >
+    <button
+      onclick="
+        addBbqOption(
+          ${product.id},
+          '${product.name}',
+          ${product.price}
+        )
+      "
+    >
+      追加
+    </button>
 
-            追加
+  </div>
 
-          </button>
+</div>
 
-        </div>
-
-      </div>
-
-    `;
+`;
 
     if(
       product.type ===

@@ -15,7 +15,6 @@ async function sendOrder() {
       'memo'
     )?.value.trim() || '';
 
-  // 未入力チェック
   if (!customerName) {
 
     alert(
@@ -91,49 +90,40 @@ async function sendOrder() {
 
   });
 
-  const orderData = {
-
-    orderType:
-      'ONIGIRI',
-
-    pickupDate:
-      '',
-
-    items:
-      items,
-
-    customerName:
-      customerName,
-
-    customerTel:
-      customerTel,
-
-    memo:
-      memo
-
-  };
-
   try {
+
+    const params =
+      new URLSearchParams({
+
+        mode:
+          'saveOrder',
+
+        orderType:
+          'ONIGIRI',
+
+        customerName:
+          customerName,
+
+        customerTel:
+          customerTel,
+
+        memo:
+          memo,
+
+        items:
+          JSON.stringify(
+            items
+          )
+
+      });
 
     const result =
       await fetch(
-        API_URL,
-        {
 
-          method:
-            'POST',
+        API_URL +
+        '?' +
+        params.toString()
 
-          headers: {
-            'Content-Type':
-              'application/json'
-          },
-
-          body:
-            JSON.stringify(
-              orderData
-            )
-
-        }
       );
 
     const json =
@@ -155,7 +145,11 @@ async function sendOrder() {
     } else {
 
       alert(
+
+        json.message ||
+
         '注文送信エラー'
+
       );
 
     }

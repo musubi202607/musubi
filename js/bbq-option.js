@@ -159,31 +159,31 @@ alert(
 
 
 function changeBbqQty(
-  productId,
+  id,
   diff
 ){
 
   const target =
     document.getElementById(
-      `qty-${productId}`
+      'qty-' + id
     );
+
+  if(!target){
+    return;
+  }
 
   let qty =
     Number(
-      target.innerText
+      target.textContent
     );
 
   qty += diff;
 
-  if(
-    qty < 1
-  ){
-
+  if(qty < 1){
     qty = 1;
-
   }
 
-  target.innerText =
+  target.textContent =
     qty;
 
 }
@@ -202,11 +202,11 @@ function addBbqOption(
     ) || [];
 
   const qty =
-    Number(
-      document.getElementById(
-        `qty-${id}`
-      ).innerText
-    );
+  Number(
+    document.getElementById(
+      'qty-' + id
+    ).textContent
+  );
 
   const existing =
     cart.find(
@@ -217,27 +217,20 @@ function addBbqOption(
 
   if(existing){
 
-    existing.qty += qty;
+  existing.qty += qty;
 
-  }else{
+}else{
 
-    cart.push({
+  cart.push({
 
-      id:
-        id,
+    id:id,
+    name:name,
+    price:price,
+    qty:qty
 
-      name:
-        name,
+  });
 
-      price:
-        price,
-
-      qty:
-        qty
-
-    });
-
-  }
+}
 
   localStorage.setItem(
 
