@@ -554,6 +554,30 @@ body {
 
 }
 
+.cart-footer{
+
+  position:fixed;
+
+  bottom:0;
+
+  left:0;
+
+  right:0;
+
+  background:#fff;
+
+  border-top:1px solid #ddd;
+
+  padding:15px;
+
+  z-index:999;
+
+  max-height:250px;
+
+  overflow-y:auto;
+
+}
+
 /* 追加メニュー用カードレイアウト調整（POS） */
 .product-card {
   display: flex;
@@ -581,28 +605,4 @@ body {
 .product-card .product-content button {
   margin-top: auto;
   width: 100%;
-}
-
-.cart-footer{
-
-  position:fixed;
-
-  bottom:0;
-
-  left:0;
-
-  right:0;
-
-  background:#fff;
-
-  border-top:1px solid #ddd;
-
-  padding:15px;
-
-  z-index:999;
-
-  max-height:250px;
-
-  overflow-y:auto;
-
 }
