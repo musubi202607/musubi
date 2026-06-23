@@ -2,64 +2,34 @@
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<title>注文履歴</title>
 
-<title>
-注文履歴
-</title>
-
-<link
-rel="stylesheet"
-href="css/style.css"
->
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 
 .filter-card{
-
   background:#fff;
-
   padding:20px;
-
   border-radius:10px;
-
   margin-bottom:20px;
-
-  box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
-
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
-table{
-
-  width:100%;
-
-  border-collapse:collapse;
-
+.order-card{
   background:#fff;
-
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
-th,
-td{
-
-  border:1px solid #ddd;
-
-  padding:10px;
-
-}
-
-th{
-
-  background:#f5f5f5;
-
+.item{
+  padding-left:10px;
+  font-size:14px;
 }
 
 </style>
@@ -69,75 +39,29 @@ th{
 <body>
 
 <header>
-
   <div class="container header-inner">
-
-    <div>
-
-      <h1>
-        注文履歴
-      </h1>
-
-    </div>
-
+    <h1>注文履歴</h1>
   </div>
-
 </header>
 
 <div class="container">
 
-  <a
-    href="admin.html"
-    class="back-btn"
-  >
-    ← 管理画面へ戻る
-  </a>
+<a href="admin.html" class="back-btn">
+  ← 管理画面へ戻る
+</a>
 
-  <div class="filter-card">
+<div class="filter-card">
 
-    <input
-      type="date"
-      id="startDate"
-    >
+  <input type="date" id="startDate">
+  <input type="date" id="endDate">
 
-    <input
-      type="date"
-      id="endDate"
-    >
+  <button onclick="loadOrders()">
+    検索
+  </button>
 
-    <button onclick="loadOrders()">
-      検索
-    </button>
+</div>
 
-  </div>
-
-  <table>
-
-    <thead>
-
-      <tr>
-
-        <th>日時</th>
-
-        <th>区分</th>
-
-        <th>氏名</th>
-
-        <th>商品</th>
-
-        <th>数量</th>
-
-        <th>金額</th>
-
-      </tr>
-
-    </thead>
-
-    <tbody id="orderBody">
-
-    </tbody>
-
-  </table>
+<div id="orderBody"></div>
 
 </div>
 
@@ -147,76 +71,42 @@ th{
 
 async function loadOrders(){
 
-  const startDate =
-    document.getElementById(
-      'startDate'
-    ).value;
+  const response = await fetch(API_URL + "/api/orders");
+  const data = await response.json();
 
-  const endDate =
-    document.getElementById(
-      'endDate'
-    ).value;
+  let html = "";
 
-  const response =
-    await fetch(
+  data.forEach(order => {
 
-      API_URL +
-      '?mode=orders' +
-      '&start=' +
-      encodeURIComponent(startDate) +
-      '&end=' +
-      encodeURIComponent(endDate)
+    let itemsHtml = "";
 
-    );
-
-  const data =
-    await response.json();
-
-  let html = '';
-
-  data.forEach(row => {
+    order.items.forEach(i => {
+      itemsHtml += `
+        <div class="item">
+          ・商品ID: ${i.id} × ${i.qty}
+        </div>
+      `;
+    });
 
     html += `
+      <div class="order-card">
 
-      <tr>
+        <h3>注文ID: ${order.orderId}</h3>
 
-        <td>
-          ${row.date}
-        </td>
+        <p>日時: ${order.createdAt}</p>
 
-        <td>
-          ${row.type}
-        </td>
+        <p>ステータス: ${order.status}</p>
 
-        <td>
-          ${row.name}
-        </td>
+        <div>
+          ${itemsHtml}
+        </div>
 
-        <td>
-          ${row.item}
-        </td>
-
-        <td>
-          ${row.qty}
-        </td>
-
-        <td>
-
-          ¥${Number(
-            row.amount || 0
-          ).toLocaleString()}
-
-        </td>
-
-      </tr>
-
+      </div>
     `;
 
   });
 
-  document.getElementById(
-    'orderBody'
-  ).innerHTML = html;
+  document.getElementById("orderBody").innerHTML = html;
 
 }
 

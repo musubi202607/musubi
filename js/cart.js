@@ -1,205 +1,204 @@
-function getCart() {
+// =========================
+// セッション管理（ここだけローカルOK）
+// =========================
+const API_URL = "https://musubi-online.musubi-202607.workers.dev";
 
-  return JSON.parse(
-    localStorage.getItem('cart')
-  ) || [];
+function getSessionId() {
+  let id = localStorage.getItem('sessionId');
 
-}
-
-function saveCart(cart) {
-
-  localStorage.setItem(
-    'cart',
-    JSON.stringify(cart)
-  );
-
-  updateCartCount();
-
-}
-
-function addToCart(
-  productId,
-  qty = 1
-){
-
-  const cart = getCart();
-
-  const existing =
-    cart.find(
-      item => item.id === productId
-    );
-
-  if(existing){
-
-    existing.qty += qty;
-
-  } else {
-
-    cart.push({
-      id: productId,
-      qty: qty
-    });
-
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem('sessionId', id);
   }
 
-  saveCart(cart);
+  return id;
+}
+
+
+// =========================
+// カート取得（API化）
+// =========================
+async function getCart() {
+
+  const sessionId = getSessionId();
+
+  const res = await fetch(
+    API_URL + '/api/cart/get?sessionId=' + sessionId
+  );
+
+  return await res.json();
+}
+
+
+// =========================
+// カート追加（API化）
+// =========================
+async function addToCart(productId, qty = 1) {
+
+  const sessionId = getSessionId();
+
+  await fetch(API_URL + '/api/cart/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      sessionId,
+      productId,
+      qty
+    })
+  });
 
   alert('カートへ追加しました');
 
+  updateCartCount();
 }
 
-function updateCartCount() {
 
-  const cart = getCart();
+// =========================
+// カート件数更新（非同期）
+// =========================
+async function updateCartCount() {
 
-  const count =
-    cart.reduce(
-      (sum,item) =>
-        sum + item.qty,
-      0
-    );
+  const cart = await getCart();
 
-  const target =
-    document.getElementById(
-      'cartCount'
-    );
+  const count = cart.reduce(
+    (sum, item) => sum + item.qty,
+    0
+  );
 
-  if(target){
+  const target = document.getElementById('cartCount');
 
+  if (target) {
     target.innerText = count;
-
   }
-
 }
 
+
+// =========================
+// カート表示
+// =========================
 async function displayCart() {
 
-  const response =
-    await fetch(
-      API_URL + '?mode=products'
-    );
+  const [productsRes, cart] = await Promise.all([
+    fetch(API_URL + '?mode=products'),
+    getCart()
+  ]);
 
-  const products =
-    await response.json();
+  const products = await productsRes.json();
 
-  const cart =
-    getCart();
+  const cartItems = document.getElementById('cartItems');
 
-  const cartItems =
-    document.getElementById(
-      'cartItems'
-    );
-
-  if(!cartItems) return;
+  if (!cartItems) return;
 
   cartItems.innerHTML = '';
 
-  if(cart.length === 0){
-
+  if (cart.length === 0) {
     cartItems.innerHTML = `
-
-      <h2>
-
-        カートは空です
-
-      </h2>
-
+      <h2>カートは空です</h2>
     `;
-
     return;
-
   }
 
   let total = 0;
 
   cart.forEach(item => {
 
-    const product =
-      products.find(
-        p => p.id == item.id
-      );
+    const product = products.find(p => p.id == item.id);
+    if (!product) return;
 
-    if(!product) return;
-
-    const subtotal =
-      product.price * item.qty;
-
+    const subtotal = product.price * item.qty;
     total += subtotal;
 
     cartItems.innerHTML += `
-
       <div class="product-card">
 
         <img src="${product.image}">
 
         <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+          <h3>${product.name}</h3>
 
-          <p>
-            数量：${item.qty}
-          </p>
+          <p>数量：${item.qty}</p>
 
           <div class="price">
-
             ¥${subtotal.toLocaleString()}
-
           </div>
 
         </div>
 
       </div>
-
     `;
-
   });
 
   cartItems.innerHTML += `
-
     <h2 style="margin-top:20px;">
-
       合計 ¥${total.toLocaleString()}
-
     </h2>
-
   `;
-
 }
 
-function clearCart(){
 
-  localStorage.removeItem(
-    'cart'
+// =========================
+// カート削除（API化）
+// =========================
+async function clearCart() {
+
+  const sessionId = getSessionId();
+
+  await fetch(
+    API_URL + '/api/cart/clear?sessionId=' + sessionId
   );
 
   updateCartCount();
-
   location.reload();
-
 }
 
-function goOrder(){
 
-  const cart =
-    getCart();
+// =========================
+// 注文画面へ
+// =========================
+async function goOrder() {
 
-  if(cart.length === 0){
+  const cart = await getCart();
 
-    alert(
-      'カートが空です'
-    );
-
+  if (cart.length === 0) {
+    alert('カートが空です');
     return;
-
   }
 
-  location.href =
-    'order.html';
-
+  location.href = 'order.html';
 }
 
-displayCart();
 
+// =========================
+// 初期表示
+// =========================
+displayCart();
 updateCartCount();
+
+async function placeOrder() {
+
+  const sessionId = getSessionId();
+
+  const res = await fetch(API_URL + "/api/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      sessionId
+    })
+  });
+
+  if (!res.ok) {
+    alert("注文に失敗しました");
+    return;
+  }
+
+  const data = await res.json();
+
+  alert("注文完了！注文番号: " + data.orderId);
+
+  location.href = "complete.html";
+}
