@@ -156,173 +156,69 @@ class="back-btn"
 
 <script>
 
-const params =
-  new URLSearchParams(
-    location.search
-  );
+async function loadReservations(){
 
-const reservationNo =
-  params.get('no');
+  try{
 
-async function loadDetail(){
-  
-  console.log(
-  'reservationNo =',
-  reservationNo
-);
-  
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=reservation&no=' +
-      encodeURIComponent(
-        reservationNo
-      )
-    );
+    const response =
+      await fetch(
+        API_URL +
+        '?mode=reservations'
+      );
 
-  const data =
-    await response.json();
+    const data =
+      await response.json();
 
-  console.log(data);
+    const tbody =
+      document.getElementById(
+        'reservationBody'
+      );
 
-  if(!data){
+    tbody.innerHTML = '';
 
-    document
-      .getElementById(
-        'reservationInfo'
-      )
-      .innerHTML =
-      '<h2>予約が見つかりません</h2>';
+    data.forEach(item => {
 
-    return;
-
-  }
-
-  const historyRes =
-    await fetch(
-
-      API_URL +
-      '?mode=orderhistory&no=' +
-      encodeURIComponent(
-        reservationNo
-      )
-
-    );
-
-  const history =
-    await historyRes.json();
-
-  let html = `
-
-    <h2>
-      ${data.customerName}
-    </h2>
-
-    <p>
-      予約番号：
-      ${data.reservationNo}
-    </p>
-
-    <p>
-      利用日：
-      ${data.useDate}
-    </p>
-
-    <p>
-      人数：
-      ${data.people}名
-    </p>
-
-    <p>
-      プラン：
-      ${data.plan}
-    </p>
-
-    <p>
-      BBQ料金：
-      ¥${Number(
-        data.price || 0
-      ).toLocaleString()}
-    </p>
-
-    <p>
-      来店状況：
-      ${data.status}
-    </p>
-
-    <p>
-      会計：
-      ${data.paid || '未'}
-    </p>
-
-  `;
-
-  if(data.paid !== '済'){
-
-    html += `
-
-      <button
-        class="order-btn"
-        onclick="paidComplete()"
-      >
-
-        会計済にする
-
-      </button>
-
-    `;
-
-  }else{
-
-    html += `
-
-      <h3
-        style="
-          color:green;
-          margin-top:15px;
-        "
-      >
-
-        会計済
-
-      </h3>
-
-    `;
-
-  }
-
-  document
-    .getElementById(
-      'reservationInfo'
-    )
-    .innerHTML = html;
-
-  let rows = '';
-
-  if(
-    history.items &&
-    history.items.length > 0
-  ){
-
-    history.items.forEach(item => {
-
-      rows += `
+      tbody.innerHTML += `
 
         <tr>
 
           <td>
-            ${item.itemName}
+            ${item.reservationNo}
           </td>
 
           <td>
-            ${item.qty}
+            <a href="
+              admin-reservation-detail.html?no=${item.reservationNo}
+            ">
+              ${item.customerName}
+            </a>
           </td>
 
           <td>
+            ${item.people}
+          </td>
 
-            ¥${Number(
-              item.amount
-            ).toLocaleString()}
+          <td>
+            ${item.plan}
+          </td>
+
+          <td class="${
+            item.status === '来店済'
+            ? 'status-ok'
+            : 'status-ng'
+          }">
+
+            ${item.status}
+
+          </td>
+
+          <td class="${
+            item.paid === '済'
+            ? 'status-ok'
+            : 'status-ng'
+          }">
+
+            ${item.paid || '未'}
 
           </td>
 
@@ -332,151 +228,19 @@ async function loadDetail(){
 
     });
 
-  }else{
-
-    rows = `
-
-      <tr>
-
-        <td colspan="3">
-
-          追加注文なし
-
-        </td>
-
-      </tr>
-
-    `;
-
-  }
-
-  const bbqTotal =
-    Number(
-      data.price || 0
-    );
-
-  const optionTotal =
-    Number(
-      history.total || 0
-    );
-
-  const grandTotal =
-    bbqTotal + optionTotal;
-
-  document
-    .getElementById(
-      'orderHistory'
-    )
-    .innerHTML = `
-
-      <h2>
-        追加注文履歴
-      </h2>
-
-      <table>
-
-        <tr>
-
-          <th>
-            商品
-          </th>
-
-          <th>
-            数量
-          </th>
-
-          <th>
-            金額
-          </th>
-
-        </tr>
-
-        ${rows}
-
-      </table>
-
-      <br>
-
-      <p>
-
-        BBQ：
-        ¥${bbqTotal.toLocaleString()}
-
-      </p>
-
-      <p>
-
-        追加：
-        ¥${optionTotal.toLocaleString()}
-
-      </p>
-
-      <h2>
-
-        総合計：
-        ¥${grandTotal.toLocaleString()}
-
-      </h2>
-
-    `;
-
-}
-
-async function paidComplete(){
-
-  if(
-    !confirm(
-      '会計済にしますか？'
-    )
-  ){
-    return;
-  }
-
-  try{
-
-    const response =
-      await fetch(
-
-        API_URL +
-        '?mode=paid&no=' +
-        encodeURIComponent(
-          reservationNo
-        )
-
-      );
-
-    const result =
-      await response.json();
-
-    if(result.success){
-
-      alert(
-        '会計完了'
-      );
-
-      await loadDetail();
-
-    }else{
-
-      alert(
-        '更新失敗'
-      );
-
-    }
-
   }catch(error){
 
     console.error(error);
 
     alert(
-      '通信エラー'
+      '予約取得エラー'
     );
 
   }
 
 }
 
-loadDetail();
+loadReservations();
 
 </script>
 
