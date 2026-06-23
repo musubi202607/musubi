@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 
+tablet.html の head部分
 <head>
 
 <meta charset="UTF-8">
@@ -18,10 +19,6 @@
   rel="stylesheet"
   href="css/style.css"
 >
-
-<!-- =========================
-  iOS / iPad アプリ化設定
-========================= -->
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -43,12 +40,11 @@
   href="icon.png"
 >
 
+<style>
+
 body{
-
   margin:0;
-
   padding-bottom:300px;
-
 }
 
 .layout{
@@ -75,8 +71,7 @@ body{
   padding:15px;
 
   box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
+    0 2px 6px rgba(0,0,0,.1);
 
 }
 
@@ -107,6 +102,10 @@ body{
   padding:15px;
 
   z-index:999;
+
+  max-height:250px;
+
+  overflow-y:auto;
 
 }
 
@@ -158,8 +157,7 @@ body{
 
   .layout{
 
-    grid-template-columns:
-      1fr;
+    grid-template-columns:1fr;
 
   }
 
