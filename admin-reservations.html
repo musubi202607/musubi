@@ -165,20 +165,38 @@ const reservationNo =
   params.get('no');
 
 async function loadDetail(){
-
+  
+  console.log(
+  'reservationNo =',
+  reservationNo
+);
+  
   const response =
     await fetch(
-
       API_URL +
       '?mode=reservation&no=' +
       encodeURIComponent(
         reservationNo
       )
-
     );
 
   const data =
     await response.json();
+
+  console.log(data);
+
+  if(!data){
+
+    document
+      .getElementById(
+        'reservationInfo'
+      )
+      .innerHTML =
+      '<h2>予約が見つかりません</h2>';
+
+    return;
+
+  }
 
   const historyRes =
     await fetch(
