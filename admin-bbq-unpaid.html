@@ -1,46 +1,41 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 
 <head>
 
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>BBQ未会計一覧</title>
 
-<link rel="stylesheet"
-href="css/style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 
 table{
-
   width:100%;
-
   border-collapse:collapse;
-
   background:#fff;
-
 }
 
-th,
-td{
-
+th, td{
   border:1px solid #ddd;
-
   padding:10px;
-
   text-align:center;
-
 }
 
 th{
-
   background:#f5f5f5;
+}
 
+.status-ng{
+  color:#dc3545;
+  font-weight:bold;
+}
+
+.status-ok{
+  color:#28a745;
+  font-weight:bold;
 }
 
 </style>
@@ -52,25 +47,15 @@ th{
 <header>
 
 <div class="container header-inner">
-
-<h1>
-
-BBQ未会計一覧
-
-</h1>
-
+  <h1>BBQ未会計一覧</h1>
 </div>
 
 </header>
 
 <div class="container">
 
-<a
-href="admin.html"
-class="back-btn">
-
-← 管理画面へ戻る
-
+<a href="admin.html" class="back-btn">
+  ← 管理画面へ戻る
 </a>
 
 <br><br>
@@ -78,30 +63,19 @@ class="back-btn">
 <table>
 
 <thead>
-
-<tr>
-
-<th>予約番号</th>
-
-<th>氏名</th>
-
-<th>人数</th>
-
-<th>BBQ料金</th>
-
-<th>追加注文</th>
-
-<th>合計</th>
-
-<th>詳細</th>
-
-</tr>
-
+  <tr>
+    <th>予約番号</th>
+    <th>氏名</th>
+    <th>人数</th>
+    <th>BBQ料金</th>
+    <th>追加注文</th>
+    <th>合計</th>
+    <th>会計状態</th>
+    <th>詳細</th>
+  </tr>
 </thead>
 
-<tbody id="result">
-
-</tbody>
+<tbody id="result"></tbody>
 
 </table>
 
@@ -111,88 +85,57 @@ class="back-btn">
 
 <script>
 
-async function loadData(){
+// =========================
+// BBQ未会計一覧（Worker版）
+// =========================
+async function loadData() {
 
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=bbqUnpaid'
-    );
+  const res =
+    await fetch(API_URL + '/api/unpaid?type=bbq');
 
-  const data =
-    await response.json();
+  const data = await res.json();
 
   let html = '';
 
-  data.forEach(row=>{
+  data.forEach(row => {
+
+    const total =
+      Number(row.bbqPrice || 0) +
+      Number(row.optionTotal || 0);
 
     html += `
+      <tr>
 
-    <tr>
+        <td>${row.reservationNo}</td>
 
-      <td>
+        <td>${row.customerName}</td>
 
-        ${row.reservationNo}
+        <td>${row.people}</td>
 
-      </td>
+        <td>¥${Number(row.bbqPrice || 0).toLocaleString()}</td>
 
-      <td>
+        <td>¥${Number(row.optionTotal || 0).toLocaleString()}</td>
 
-        ${row.customerName}
+        <td>¥${total.toLocaleString()}</td>
 
-      </td>
+        <td>
+          <span class="${row.paid === '済' ? 'status-ok' : 'status-ng'}">
+            ${row.paid || '未'}
+          </span>
+        </td>
 
-      <td>
+        <td>
+          <a href="admin-reservation-detail.html?no=${row.reservationNo}">
+            開く
+          </a>
+        </td>
 
-        ${row.people}
-
-      </td>
-
-      <td>
-
-        ¥${Number(
-          row.bbqPrice
-        ).toLocaleString()}
-
-      </td>
-
-      <td>
-
-        ¥${Number(
-          row.optionTotal
-        ).toLocaleString()}
-
-      </td>
-
-      <td>
-
-        ¥${Number(
-          row.total
-        ).toLocaleString()}
-
-      </td>
-
-      <td>
-
-        <a href="admin-reservation-detail.html?no=${row.reservationNo}">
-
-          開く
-
-        </a>
-
-      </td>
-
-    </tr>
-
+      </tr>
     `;
 
   });
 
-  document
-    .getElementById(
-      'result'
-    )
-    .innerHTML = html;
+  document.getElementById('result').innerHTML = html;
 
 }
 
@@ -201,5 +144,4 @@ loadData();
 </script>
 
 </body>
-
 </html>

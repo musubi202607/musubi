@@ -1,69 +1,85 @@
 // =========================
-// セッション管理（ここだけローカルOK）
+// セッション管理
 // =========================
-const API_URL = "https://musubi-online.musubi-202607.workers.dev";
-
 function getSessionId() {
+
   let id = localStorage.getItem('sessionId');
 
   if (!id) {
+
     id = crypto.randomUUID();
+
     localStorage.setItem('sessionId', id);
+
   }
 
   return id;
+
 }
 
 
 // =========================
-// カート取得（API化）
+// カート取得
 // =========================
 async function getCart() {
 
   const sessionId = getSessionId();
 
   const res = await fetch(
-    API_URL + '/api/cart/get?sessionId=' + sessionId
+    `${API_URL}/api/cart/get?sessionId=${sessionId}`
   );
 
+  if (!res.ok) return [];
+
   return await res.json();
+
 }
 
 
 // =========================
-// カート追加（API化）
+// カート追加
 // =========================
 async function addToCart(productId, qty = 1) {
 
   const sessionId = getSessionId();
 
-  await fetch(API_URL + '/api/cart/add', {
+  const res = await fetch(`${API_URL}/api/cart/add`, {
+
     method: 'POST',
+
     headers: {
       'Content-Type': 'application/json'
     },
+
     body: JSON.stringify({
       sessionId,
       productId,
       qty
     })
+
   });
+
+  if (!res.ok) {
+    alert('追加に失敗しました');
+    return;
+  }
 
   alert('カートへ追加しました');
 
   updateCartCount();
+
 }
 
 
 // =========================
-// カート件数更新（非同期）
+// カート件数
 // =========================
 async function updateCartCount() {
 
   const cart = await getCart();
 
   const count = cart.reduce(
-    (sum, item) => sum + item.qty,
+    (sum, item) => sum + Number(item.qty || 0),
     0
   );
 
@@ -72,6 +88,7 @@ async function updateCartCount() {
   if (target) {
     target.innerText = count;
   }
+
 }
 
 
@@ -81,7 +98,7 @@ async function updateCartCount() {
 async function displayCart() {
 
   const [productsRes, cart] = await Promise.all([
-    fetch(API_URL + "/api/products"),
+    fetch(`${API_URL}/api/products`),
     getCart()
   ]);
 
@@ -93,27 +110,34 @@ async function displayCart() {
 
   cartItems.innerHTML = '';
 
-  if (cart.length === 0) {
-    cartItems.innerHTML = `
-      <h2>カートは空です</h2>
-    `;
+  if (!cart.length) {
+
+    cartItems.innerHTML = `<h2>カートは空です</h2>`;
+
     return;
+
   }
 
   let total = 0;
 
   cart.forEach(item => {
 
-    const product = products.find(p => p.id == item.id);
+    const product = products.find(
+      p => String(p.id) === String(item.id)
+    );
+
     if (!product) return;
 
-    const subtotal = product.price * item.qty;
+    const subtotal =
+      Number(product.price || 0) * Number(item.qty || 0);
+
     total += subtotal;
 
     cartItems.innerHTML += `
+
       <div class="product-card">
 
-        <img src="${product.image}">
+        <img src="${product.image}" />
 
         <div class="product-content">
 
@@ -128,7 +152,9 @@ async function displayCart() {
         </div>
 
       </div>
+
     `;
+
   });
 
   cartItems.innerHTML += `
@@ -136,22 +162,25 @@ async function displayCart() {
       合計 ¥${total.toLocaleString()}
     </h2>
   `;
+
 }
 
 
 // =========================
-// カート削除（API化）
+// カートクリア
 // =========================
 async function clearCart() {
 
   const sessionId = getSessionId();
 
   await fetch(
-    API_URL + '/api/cart/clear?sessionId=' + sessionId
+    `${API_URL}/api/cart/clear?sessionId=${sessionId}`
   );
 
   updateCartCount();
+
   location.reload();
+
 }
 
 
@@ -162,12 +191,13 @@ async function goOrder() {
 
   const cart = await getCart();
 
-  if (cart.length === 0) {
+  if (!cart.length) {
     alert('カートが空です');
     return;
   }
 
   location.href = 'order.html';
+
 }
 
 
@@ -177,28 +207,38 @@ async function goOrder() {
 displayCart();
 updateCartCount();
 
+
+// =========================
+// 注文確定
+// =========================
 async function placeOrder() {
 
   const sessionId = getSessionId();
 
-  const res = await fetch(API_URL + "/api/order", {
-    method: "POST",
+  const res = await fetch(`${API_URL}/api/order`, {
+
+    method: 'POST',
+
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      sessionId
-    })
+
+    body: JSON.stringify({ sessionId })
+
   });
 
   if (!res.ok) {
-    alert("注文に失敗しました");
+
+    alert('注文に失敗しました');
+
     return;
+
   }
 
   const data = await res.json();
 
-  alert("注文完了！注文番号: " + data.orderId);
+  alert('注文完了！注文番号: ' + data.orderId);
 
-  location.href = "complete.html";
+  location.href = 'complete.html';
+
 }

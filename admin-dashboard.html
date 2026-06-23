@@ -1,220 +1,3 @@
-<!DOCTYPE html>
-
-<html lang="ja">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>
-ダッシュボード
-</title>
-
-<link
-rel="stylesheet"
-href="css/style.css">
-
-<style>
-
-.dashboard-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(auto-fit,minmax(220px,1fr));
-
-  gap:20px;
-
-  margin-top:20px;
-
-}
-
-.dashboard-card{
-
-  background:#fff;
-
-  border-radius:10px;
-
-  padding:20px;
-
-  text-align:center;
-
-  box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
-
-}
-
-.dashboard-card h2{
-
-  font-size:18px;
-
-  margin-bottom:10px;
-
-}
-
-.dashboard-value{
-
-  font-size:32px;
-
-  font-weight:bold;
-
-  color:#007bff;
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<header>
-
-  <div class="container header-inner">
-
-    <div>
-
-      <h1>
-        ダッシュボード
-      </h1>
-
-      <p>
-        本日の店舗状況
-      </p>
-
-    </div>
-
-  </div>
-
-</header>
-
-<div class="container">
-
-  <a
-    href="admin.html"
-    class="back-btn"
-  >
-
-    ← 管理画面へ戻る
-
-  </a>
-
-  <div class="dashboard-grid">
-
-    <div class="dashboard-card">
-
-      <h2>
-        本日の予約件数
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="reservationCount"
-      >
-        0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        来店済
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="checkedInCount"
-      >
-        0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        未会計
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="unpaidCount"
-      >
-        0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        BBQ売上
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="bbqSales"
-      >
-        ¥0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        追加注文売上
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="optionSales"
-      >
-        ¥0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        おにぎり売上
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="onigiriSales"
-      >
-        ¥0
-      </div>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <h2>
-        総売上
-      </h2>
-
-      <div
-        class="dashboard-value"
-        id="totalSales"
-      >
-        ¥0
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
 <script src="js/config.js"></script>
 
 <script>
@@ -222,69 +5,33 @@ href="css/style.css">
 async function loadDashboard(){
 
   const response =
-    await fetch(
-
-      API_URL +
-      '?mode=dashboard'
-
-    );
+    await fetch(API_URL + '/api/dashboard');
 
   const data =
     await response.json();
 
-  document.getElementById(
-    'reservationCount'
-  ).innerText =
+  document.getElementById('reservationCount').innerText =
     data.reservationCount || 0;
 
-  document.getElementById(
-    'checkedInCount'
-  ).innerText =
+  document.getElementById('checkedInCount').innerText =
     data.checkedInCount || 0;
 
-  document.getElementById(
-    'unpaidCount'
-  ).innerText =
+  document.getElementById('unpaidCount').innerText =
     data.unpaidCount || 0;
 
-  document.getElementById(
-    'bbqSales'
-  ).innerText =
-    '¥' +
-    Number(
-      data.bbqSales || 0
-    ).toLocaleString();
+  document.getElementById('bbqSales').innerText =
+    '¥' + Number(data.bbqSales || 0).toLocaleString();
 
-  document.getElementById(
-    'optionSales'
-  ).innerText =
-    '¥' +
-    Number(
-      data.optionSales || 0
-    ).toLocaleString();
+  document.getElementById('optionSales').innerText =
+    '¥' + Number(data.optionSales || 0).toLocaleString();
 
-  document.getElementById(
-    'onigiriSales'
-  ).innerText =
-    '¥' +
-    Number(
-      data.onigiriSales || 0
-    ).toLocaleString();
+  document.getElementById('onigiriSales').innerText =
+    '¥' + Number(data.onigiriSales || 0).toLocaleString();
 
-  document.getElementById(
-    'totalSales'
-  ).innerText =
-    '¥' +
-    Number(
-      data.totalSales || 0
-    ).toLocaleString();
-
+  document.getElementById('totalSales').innerText =
+    '¥' + Number(data.totalSales || 0).toLocaleString();
 }
 
 loadDashboard();
 
 </script>
-
-</body>
-
-</html>

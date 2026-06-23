@@ -2,8 +2,7 @@ async function loadProducts() {
 
   const response =
     await fetch(
-      API_URL +
-      '?mode=products'
+      API_URL + '/api/products'
     );
 
   const products =
@@ -15,16 +14,13 @@ async function loadProducts() {
     );
 
   const grid =
-    document.getElementById(
-      'productGrid'
-    );
+    document.getElementById('productGrid');
 
   grid.innerHTML = '';
 
   onigiri.forEach(product => {
 
     grid.innerHTML += `
-
       <div class="product-card">
 
         <img
@@ -34,25 +30,19 @@ async function loadProducts() {
 
         <div class="product-content">
 
-          <h3>
-            ${product.name}
-          </h3>
+          <h3>${product.name}</h3>
 
-          <p>
-            ${product.description}
-          </p>
+          <p>${product.description}</p>
 
           <div class="price">
-            ¥${Number(
-              product.price
-            ).toLocaleString()}
+            ¥${Number(product.price).toLocaleString()}
           </div>
 
           <div class="qty-area">
 
             <button
               class="qty-btn"
-              onclick="changeQty(${product.id},-1)"
+              onclick="changeQty(${product.id}, -1)"
             >
               －
             </button>
@@ -66,7 +56,7 @@ async function loadProducts() {
 
             <button
               class="qty-btn"
-              onclick="changeQty(${product.id},1)"
+              onclick="changeQty(${product.id}, 1)"
             >
               ＋
             </button>
@@ -82,64 +72,39 @@ async function loadProducts() {
         </div>
 
       </div>
-
     `;
 
   });
 
 }
 
-function changeQty(
-  productId,
-  diff
-){
+function changeQty(productId, diff) {
 
   const target =
-    document.getElementById(
-      `qty-${productId}`
-    );
+    document.getElementById(`qty-${productId}`);
 
   let qty =
-    Number(
-      target.innerText
-    );
+    Number(target.innerText);
 
   qty += diff;
 
-  if(qty < 1){
-    qty = 1;
-  }
+  if (qty < 1) qty = 1;
 
-  target.innerText =
-    qty;
-
+  target.innerText = qty;
 }
 
-function addToCartQty(
-  productId
-){
+function addToCartQty(productId) {
 
   const qty =
     Number(
-      document.getElementById(
-        `qty-${productId}`
-      ).innerText
+      document.getElementById(`qty-${productId}`).innerText
     );
 
-  addToCart(
-    productId,
-    qty
-  );
-
+  addToCart(productId, qty);
 }
 
 loadProducts();
 
-window.addEventListener(
-  'pageshow',
-  () => {
-
-    updateCartCount();
-
-  }
-);
+window.addEventListener('pageshow', () => {
+  updateCartCount();
+});

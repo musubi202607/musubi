@@ -1,168 +1,87 @@
 async function sendOrder() {
 
   const customerName =
-    document.getElementById(
-      'customerName'
-    ).value.trim();
+    document.getElementById('customerName').value.trim();
 
   const customerTel =
-    document.getElementById(
-      'customerTel'
-    ).value.trim();
+    document.getElementById('customerTel').value.trim();
 
   const memo =
-    document.getElementById(
-      'memo'
-    )?.value.trim() || '';
+    document.getElementById('memo')?.value.trim() || '';
 
   if (!customerName) {
-
-    alert(
-      'お名前を入力してください'
-    );
-
+    alert('お名前を入力してください');
     return;
-
   }
 
   if (!customerTel) {
-
-    alert(
-      '電話番号を入力してください'
-    );
-
+    alert('電話番号を入力してください');
     return;
-
   }
 
-  const response =
-    await fetch(
-      API_URL +
-      '?mode=products'
-    );
+  const sessionId = localStorage.getItem('sessionId');
 
-  const products =
-    await response.json();
-
-  const cart =
-    JSON.parse(
-      localStorage.getItem(
-        'cart'
-      )
-    ) || [];
-
-  if (cart.length === 0) {
-
-    alert(
-      '商品がありません'
-    );
-
+  if (!sessionId) {
+    alert('カート情報がありません');
     return;
-
   }
 
-  const items = [];
+  // =========================
+  // Workerからカート取得
+  // =========================
+  const cartRes = await fetch(
+    API_URL + '/api/cart/get?sessionId=' + sessionId
+  );
 
-  cart.forEach(item => {
+  const cart = await cartRes.json();
 
-    const product =
-      products.find(
-        p => p.id == item.id
-      );
-
-    if (!product) return;
-
-    items.push({
-
-      id:
-        product.id,
-
-      name:
-        product.name,
-
-      price:
-        product.price,
-
-      qty:
-        item.qty
-
-    });
-
-  });
+  if (!cart.length) {
+    alert('商品がありません');
+    return;
+  }
 
   try {
 
-    const params =
-      new URLSearchParams({
+    const res = await fetch(API_URL + '/api/order', {
 
-        mode:
-          'saveOrder',
+      method: 'POST',
 
-        orderType:
-          'ONIGIRI',
+      headers: {
+        'Content-Type': 'application/json'
+      },
 
-        customerName:
-          customerName,
+      body: JSON.stringify({
 
-        customerTel:
-          customerTel,
+        sessionId,
+        customerName,
+        customerTel,
+        memo,
+        orderType: 'ONIGIRI'
 
-        memo:
-          memo,
+      })
 
-        items:
-          JSON.stringify(
-            items
-          )
+    });
 
-      });
-
-    const result =
-      await fetch(
-
-        API_URL +
-        '?' +
-        params.toString()
-
-      );
-
-    const json =
-      await result.json();
+    const json = await res.json();
 
     if (json.success) {
 
-      alert(
-        '注文ありがとうございました'
-      );
+      alert('注文ありがとうございました');
 
-      localStorage.removeItem(
-        'cart'
-      );
-
-      location.href =
-        'index.html';
+      // カートクリアはWorker側でやる想定
+      location.href = 'index.html';
 
     } else {
 
-      alert(
-
-        json.message ||
-
-        '注文送信エラー'
-
-      );
+      alert(json.message || '注文送信エラー');
 
     }
 
   } catch (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
-    alert(
-      '通信エラーが発生しました'
-    );
+    alert('通信エラーが発生しました');
 
   }
 

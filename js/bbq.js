@@ -1,14 +1,15 @@
 let calendarData = [];
 
-let currentMonth =
-  new Date();
+let currentMonth = new Date();
 
+// =========================
+// BBQ商品取得
+// =========================
 async function loadBbq() {
 
   const response =
     await fetch(
-      API_URL +
-      '?mode=products'
+      API_URL + '/api/products'
     );
 
   const products =
@@ -20,185 +21,113 @@ async function loadBbq() {
     );
 
   const target =
-    document.getElementById(
-      'bbqProducts'
-    );
+    document.getElementById('bbqProducts');
 
   if (!target) return;
 
   target.innerHTML = '';
 
-  bbqProducts.forEach(
-    product => {
+  bbqProducts.forEach(product => {
 
-      target.innerHTML += `
+    target.innerHTML += `
+      <div class="product-card">
 
-        <div class="product-card">
+        <img
+          src="${product.image}"
+          alt="${product.name}"
+        >
 
-          <img
-            src="${product.image}"
-            alt="${product.name}"
-          >
+        <div class="product-content">
 
-          <div
-            class="product-content"
-          >
+          <h3>${product.name}</h3>
 
-            <h3>
+          <p>${product.description}</p>
 
-              ${product.name}
-
-            </h3>
-
-            <p>
-
-              ${product.description}
-
-            </p>
-
-            <div class="price">
-
-              ¥${Number(
-                product.price
-              ).toLocaleString()}
-
-            </div>
-
-            <button
-
-              onclick="
-                selectBbq(
-                  ${product.id},
-                  '${product.name}',
-                  ${product.price}
-                )
-              "
-
-            >
-
-              この商品を予約
-
-            </button>
-
+          <div class="price">
+            ¥${Number(product.price).toLocaleString()}
           </div>
+
+          <button
+            onclick="
+              selectBbq(
+                ${product.id},
+                '${product.name}',
+                ${product.price}
+              )
+            "
+          >
+            この商品を予約
+          </button>
 
         </div>
 
-      `;
+      </div>
+    `;
 
-    }
-  );
+  });
 
 }
 
-function selectBbq(
-  id,
-  name,
-  price
-){
+// =========================
+// BBQ選択
+// =========================
+function selectBbq(id, name, price) {
 
-  localStorage.setItem(
-    'bbqProductId',
-    id
-  );
-
-  localStorage.setItem(
-    'bbqProductName',
-    name
-  );
-
-  localStorage.setItem(
-    'bbqPrice',
-    price
-  );
+  localStorage.setItem('bbqProductId', id);
+  localStorage.setItem('bbqProductName', name);
+  localStorage.setItem('bbqPrice', price);
 
   document
-    .getElementById(
-      'calendarSection'
-    )
-    ?.scrollIntoView({
-      behavior:'smooth'
-    });
+    .getElementById('calendarSection')
+    ?.scrollIntoView({ behavior: 'smooth' });
 
 }
 
-async function loadCalendar(){
+// =========================
+// カレンダー取得（Worker化）
+// =========================
+async function loadCalendar() {
 
   const response =
     await fetch(
-      API_URL +
-      '?mode=calendar'
+      API_URL + '/api/calendar'
     );
 
   calendarData =
     await response.json();
 
-  console.log(
-    'calendarData',
-    calendarData
-  );
-
   renderCalendar();
-
 }
 
-function renderCalendar(){
+// =========================
+// カレンダー描画
+// =========================
+function renderCalendar() {
 
   const target =
-    document.getElementById(
-      'calendar'
-    );
+    document.getElementById('calendar');
 
-  if(!target) return;
+  if (!target) return;
 
   target.innerHTML = '';
 
-  const year =
-    currentMonth.getFullYear();
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
 
-  const month =
-    currentMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
 
-  const firstDay =
-    new Date(
-      year,
-      month,
-      1
-    );
-
-  const lastDay =
-    new Date(
-      year,
-      month + 1,
-      0
-    );
-
-  const startDay =
-    firstDay.getDay();
-
-  const totalDays =
-    lastDay.getDate();
+  const startDay = firstDay.getDay();
+  const totalDays = lastDay.getDate();
 
   target.innerHTML += `
-
     <div class="calendar-header">
 
-      <button
-        onclick="prevMonth()"
-      >
-        ←
-      </button>
+      <button onclick="prevMonth()">←</button>
 
-      <h2>
-        ${year}年
-        ${month + 1}月
-      </h2>
+      <h2>${year}年 ${month + 1}月</h2>
 
-      <button
-        onclick="nextMonth()"
-      >
-        →
-      </button>
+      <button onclick="nextMonth()">→</button>
 
     </div>
 
@@ -211,291 +140,147 @@ function renderCalendar(){
       <div class="calendar-week">木</div>
       <div class="calendar-week">金</div>
       <div class="calendar-week">土</div>
-
   `;
 
-  for(
-    let i = 0;
-    i < startDay;
-    i++
-  ){
-
-    target.innerHTML +=
-      '<div></div>';
-
+  for (let i = 0; i < startDay; i++) {
+    target.innerHTML += '<div></div>';
   }
 
-  const today =
-    new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  today.setHours(
-    0,0,0,0
-  );
+  for (let day = 1; day <= totalDays; day++) {
 
-  for(
-    let day = 1;
-    day <= totalDays;
-    day++
-  ){
+    const dateObj = new Date(year, month, day);
+    const dateStr = formatDate(dateObj);
 
-    const dateObj =
-      new Date(
-        year,
-        month,
-        day
-      );
+    const item = calendarData.find(d =>
+      String(d.date)
+        .substring(0, 10)
+        .replaceAll('/', '-')
+      === dateStr
+    );
 
-    const dateStr =
-      formatDate(
-        dateObj
-      );
-
-    const item =
-      calendarData.find(
-        d =>
-          String(d.date)
-            .substring(0,10)
-            .replaceAll(
-              '/',
-              '-'
-            )
-          === dateStr
-      );
-
-    if(!item){
-
-      target.innerHTML +=
-        '<div></div>';
-
+    if (!item) {
+      target.innerHTML += '<div></div>';
       continue;
-
     }
 
-    let className =
-      'calendar-day';
+    let className = 'calendar-day';
+    let disabled = '';
+    let statusText = item.status;
 
-    let disabled =
-      '';
+    if (dateObj < today) {
 
-    let statusText =
-      item.status;
+      className += ' closed';
+      disabled = 'disabled';
+      statusText = '受付終了';
 
-    if(
-      dateObj < today
-    ){
+    } else if (item.status === '○') {
 
-      className +=
-        ' closed';
+      className += ' available';
+      statusText = `あと${item.limit}枠`;
 
-      disabled =
-        'disabled';
+    } else if (item.status === '△') {
 
-      statusText =
-        '受付終了';
+      className += ' few';
+      statusText = `あと${item.limit}枠`;
 
-    }
-    else if(
-      item.status === '○'
-    ){
+    } else {
 
-      className +=
-        ' available';
-
-      statusText =
-        `あと${item.limit}枠`;
-
-    }
-    else if(
-      item.status === '△'
-    ){
-
-      className +=
-        ' few';
-
-      statusText =
-        `あと${item.limit}枠`;
-
-    }
-    else{
-
-      className +=
-        ' closed';
-
-      disabled =
-        'disabled';
-
-      statusText =
-        '予約不可';
+      className += ' closed';
+      disabled = 'disabled';
+      statusText = '予約不可';
 
     }
 
     target.innerHTML += `
-
       <button
-
         class="${className}"
-
         ${disabled}
-
-        onclick="
-          selectDate(
-            '${dateStr}',
-            this
-          )
-        "
-
+        onclick="selectDate('${dateStr}', this)"
       >
 
-        <div
-          class="calendar-date"
-        >
-
+        <div class="calendar-date">
           ${day}
-
         </div>
 
-        <div
-          class="calendar-status"
-        >
-
+        <div class="calendar-status">
           ${statusText}
-
         </div>
 
       </button>
-
     `;
-
   }
 
-  target.innerHTML +=
-    '</div>';
-
+  target.innerHTML += '</div>';
 }
 
-function selectDate(
-  date,
-  button
-){
+// =========================
+// 日付選択
+// =========================
+function selectDate(date, button) {
 
-  localStorage.setItem(
-    'bbqDate',
-    date
-  );
+  localStorage.setItem('bbqDate', date);
 
-  document
-    .querySelectorAll(
-      '.calendar-day'
-    )
-    .forEach(
-      btn =>
-        btn.classList.remove(
-          'selected'
-        )
-    );
+  document.querySelectorAll('.calendar-day')
+    .forEach(btn => btn.classList.remove('selected'));
 
-  button.classList.add(
-    'selected'
-  );
+  button.classList.add('selected');
 
-  const goBtn =
-    document.getElementById(
-      'goOrder'
-    );
+  const goBtn = document.getElementById('goOrder');
 
-  if(goBtn){
-
-    goBtn.disabled =
-      false;
-
-  }
-
+  if (goBtn) goBtn.disabled = false;
 }
 
-function prevMonth(){
-
-  currentMonth.setMonth(
-    currentMonth.getMonth() - 1
-  );
-
+// =========================
+// 月移動
+// =========================
+function prevMonth() {
+  currentMonth.setMonth(currentMonth.getMonth() - 1);
   renderCalendar();
-
 }
 
-function nextMonth(){
-
-  currentMonth.setMonth(
-    currentMonth.getMonth() + 1
-  );
-
+function nextMonth() {
+  currentMonth.setMonth(currentMonth.getMonth() + 1);
   renderCalendar();
-
 }
 
-function formatDate(
-  date
-){
+// =========================
+// 日付フォーマット
+// =========================
+function formatDate(date) {
 
-  const y =
-    date.getFullYear();
-
-  const m =
-    String(
-      date.getMonth() + 1
-    ).padStart(
-      2,
-      '0'
-    );
-
-  const d =
-    String(
-      date.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
 
   return `${y}-${m}-${d}`;
-
 }
 
-function goOrder(){
+// =========================
+// 次へ
+// =========================
+function goOrder() {
 
-  const bbqProduct =
-    localStorage.getItem(
-      'bbqProductId'
-    );
+  const bbqProduct = localStorage.getItem('bbqProductId');
+  const bbqDate = localStorage.getItem('bbqDate');
 
-  const bbqDate =
-    localStorage.getItem(
-      'bbqDate'
-    );
-
-  if(!bbqProduct){
-
-    alert(
-      'BBQ商品を選択してください'
-    );
-
+  if (!bbqProduct) {
+    alert('BBQ商品を選択してください');
     return;
-
   }
 
-  if(!bbqDate){
-
-    alert(
-      '予約日を選択してください'
-    );
-
+  if (!bbqDate) {
+    alert('予約日を選択してください');
     return;
-
   }
 
-  location.href =
-    'bbq-order.html';
-
+  location.href = 'bbq-order.html';
 }
 
+// =========================
+// 初期化
+// =========================
 loadBbq();
-
 loadCalendar();

@@ -1,72 +1,43 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+<title>おにぎり未会計一覧</title>
 
-<title>
-おにぎり未会計一覧
-</title>
-
-<link
-rel="stylesheet"
-href="css/style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 
 table{
-
   width:100%;
-
   border-collapse:collapse;
-
   background:#fff;
-
 }
 
-th,
-td{
-
+th, td{
   border:1px solid #ddd;
-
   padding:10px;
-
   text-align:center;
-
 }
 
 th{
-
   background:#f5f5f5;
-
 }
 
 .paid-btn{
-
   background:#28a745;
-
   color:#fff;
-
   border:none;
-
   padding:8px 12px;
-
   border-radius:6px;
-
   cursor:pointer;
-
 }
 
 .paid-btn:hover{
-
-  opacity:.8;
-
+  opacity:.85;
 }
 
 </style>
@@ -76,74 +47,33 @@ th{
 <body>
 
 <header>
-
-<div class="container header-inner">
-
-<h1>
-おにぎり未会計一覧
-</h1>
-
-</div>
-
+  <div class="container header-inner">
+    <h1>おにぎり未会計一覧</h1>
+  </div>
 </header>
 
 <div class="container">
 
-<a
-href="admin.html"
-class="back-btn">
-
-← 管理画面へ戻る
-
-</a>
+<a href="admin.html" class="back-btn">← 管理画面へ戻る</a>
 
 <br><br>
 
 <table>
 
 <thead>
-
 <tr>
-
-<th>
-受付日時
-</th>
-
-<th>
-氏名
-</th>
-
-<th>
-電話番号
-</th>
-
-<th>
-商品名
-</th>
-
-<th>
-数量
-</th>
-
-<th>
-金額
-</th>
-
-<th>
-状態
-</th>
-
-<th>
-会計
-</th>
-
+  <th>受付日時</th>
+  <th>氏名</th>
+  <th>電話番号</th>
+  <th>商品名</th>
+  <th>数量</th>
+  <th>金額</th>
+  <th>状態</th>
+  <th>会計</th>
 </tr>
-
 </thead>
 
-<tbody id="result">
-
-</tbody>
+<tbody id="result"></tbody>
 
 </table>
 
@@ -157,133 +87,71 @@ async function loadData(){
 
   const response =
     await fetch(
-      API_URL +
-      '?mode=onigiriUnpaid'
+      API_URL + '/api/unpaid?type=onigiri'
     );
 
-  const data =
-    await response.json();
+  const data = await response.json();
 
   let html = '';
 
   data.forEach(row => {
 
     html += `
-
       <tr>
 
-        <td>
-          ${row.orderDate}
-        </td>
+        <td>${row.orderDate}</td>
+        <td>${row.customerName}</td>
+        <td>${row.customerTel}</td>
+        <td>${row.itemName}</td>
+        <td>${row.qty}</td>
+        <td>¥${Number(row.amount || 0).toLocaleString()}</td>
+        <td>${row.status}</td>
 
         <td>
-          ${row.customerName}
-        </td>
-
-        <td>
-          ${row.customerTel}
-        </td>
-
-        <td>
-          ${row.itemName}
-        </td>
-
-        <td>
-          ${row.qty}
-        </td>
-
-        <td>
-
-          ¥${Number(
-            row.amount
-          ).toLocaleString()}
-
-        </td>
-
-        <td>
-          ${row.status}
-        </td>
-
-        <td>
-
           <button
             class="paid-btn"
-            onclick="
-              paidComplete(
-                ${row.rowNo}
-              )
-            ">
-
+            onclick="paidComplete(${row.rowNo})"
+          >
             会計済
-
           </button>
-
         </td>
 
       </tr>
-
     `;
-
   });
 
-  document
-    .getElementById(
-      'result'
-    )
-    .innerHTML = html;
-
+  document.getElementById('result').innerHTML = html;
 }
 
-async function paidComplete(
-  rowNo
-){
 
-  if(
-    !confirm(
-      '会計済にしますか？'
-    )
-  ){
-    return;
-  }
+// 会計済処理（Worker版）
+async function paidComplete(rowNo){
+
+  if(!confirm('会計済にしますか？')) return;
 
   try{
 
     const response =
-      await fetch(
+      await fetch(API_URL + '/api/onigiri/paid', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ rowNo })
+      });
 
-        API_URL +
-        '?mode=onigiriPaid&rowNo=' +
-        rowNo
-
-      );
-
-    const result =
-      await response.json();
+    const result = await response.json();
 
     if(result.success){
-
-      alert(
-        '会計完了'
-      );
-
+      alert('会計完了');
       loadData();
-
     }else{
-
-      alert(
-        '更新失敗'
-      );
-
+      alert('更新失敗');
     }
 
   }catch(error){
-
     console.error(error);
-
-    alert(
-      '通信エラー'
-    );
-
+    alert('通信エラー');
   }
 
 }
@@ -293,5 +161,4 @@ loadData();
 </script>
 
 </body>
-
 </html>

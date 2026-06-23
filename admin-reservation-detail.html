@@ -1,112 +1,55 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<title>予約詳細</title>
 
->
-
-<title>
-  予約詳細
-</title>
-
-<link
-  rel="stylesheet"
-  href="css/style.css"
->
+<link rel="stylesheet" href="css/style.css">
 
 <style>
-
 .card{
-
   background:#fff;
-
   padding:20px;
-
   border-radius:10px;
-
   margin-bottom:20px;
-
-  box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
-
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
 table{
-
   width:100%;
-
   border-collapse:collapse;
-
+  background:#fff;
 }
 
-th,
-td{
-
+th, td{
   border:1px solid #ddd;
-
   padding:10px;
-
 }
 
 th{
-
   background:#f5f5f5;
-
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-
   <div class="container header-inner">
-
-```
-<h1>
-  予約詳細
-</h1>
-```
-
+    <h1>予約詳細</h1>
   </div>
-
 </header>
 
 <div class="container">
 
-<a
-href="admin-reservations.html"
-class="back-btn"
+<a href="admin-reservations.html" class="back-btn">← 一覧へ戻る</a>
 
->
+<div id="reservationInfo" class="card"></div>
 
-```
-← 一覧へ戻る
-```
-
-  </a>
-
-  <div
-    id="reservationInfo"
-    class="card"
-  >
-  </div>
-
-  <div
-    id="orderHistory"
-    class="card"
-  >
-  </div>
+<div id="orderHistory" class="card"></div>
 
 </div>
 
@@ -114,195 +57,103 @@ class="back-btn"
 
 <script>
 
-const params =
-  new URLSearchParams(
-    location.search
-  );
+const params = new URLSearchParams(location.search);
+const reservationNo = params.get('no');
 
-const reservationNo =
-  params.get('no');
+async function loadDetail() {
 
-async function loadDetail(){
+  if (!reservationNo) {
+    alert("予約番号がありません");
+    return;
+  }
 
-  const response =
-    await fetch(
+  try {
 
-      API_URL +
-      '?mode=reservation&no=' +
-      encodeURIComponent(
-        reservationNo
-      )
-
+    // =========================
+    // 予約詳細
+    // =========================
+    const res1 = await fetch(
+      API_URL + '/api/reservation?no=' + encodeURIComponent(reservationNo)
     );
 
-  const data =
-    await response.json();
+    const data = await res1.json();
 
-  const historyRes =
-    await fetch(
-
-      API_URL +
-      '?mode=orderhistory&no=' +
-      encodeURIComponent(
-        reservationNo
-      )
-
+    // =========================
+    // 追加注文履歴
+    // =========================
+    const res2 = await fetch(
+      API_URL + '/api/reservations/history?no=' + encodeURIComponent(reservationNo)
     );
 
-  const history =
-    await historyRes.json();
+    const history = await res2.json();
 
-  let html = `
+    // =========================
+    // 予約情報表示
+    // =========================
+    document.getElementById('reservationInfo').innerHTML = `
+      <h2>${data.customerName || ""}</h2>
 
-    <h2>
-      ${data.customerName}
-    </h2>
+      <p>予約番号：${data.reservationNo || ""}</p>
+      <p>利用日：${data.useDate || ""}</p>
+      <p>人数：${data.people || 0}名</p>
+      <p>プラン：${data.plan || ""}</p>
 
-    <p>
-      予約番号：
-      ${data.reservationNo}
-    </p>
+      <p>BBQ料金：¥${Number(data.price || 0).toLocaleString()}</p>
 
-    <p>
-      利用日：
-      ${data.useDate}
-    </p>
-
-    <p>
-      人数：
-      ${data.people}名
-    </p>
-
-    <p>
-      プラン：
-      ${data.plan}
-    </p>
-
-    <p>
-      BBQ料金：
-      ¥${Number(
-        data.price || 0
-      ).toLocaleString()}
-    </p>
-
-    <p>
-      来店状況：
-      ${data.status}
-    </p>
-
-    <p>
-      会計：
-      ${data.paid}
-    </p>
-
-  `;
-
-  document
-    .getElementById(
-      'reservationInfo'
-    )
-    .innerHTML = html;
-
-  let rows = '';
-
-  history.items.forEach(item => {
-
-    rows += `
-
-      <tr>
-
-        <td>
-          ${item.itemName}
-        </td>
-
-        <td>
-          ${item.qty}
-        </td>
-
-        <td>
-
-          ¥${Number(
-            item.amount
-          ).toLocaleString()}
-
-        </td>
-
-      </tr>
-
+      <p>来店状況：${data.status || ""}</p>
+      <p>会計：${data.paid || ""}</p>
     `;
 
-  });
+    // =========================
+    // 追加注文一覧
+    // =========================
+    const items = history.items || [];
 
-  const bbqTotal =
-    Number(
-      data.price || 0
-    );
+    let rows = "";
 
-  const optionTotal =
-    Number(
-      history.total || 0
-    );
+    items.forEach(item => {
+      rows += `
+        <tr>
+          <td>${item.itemName}</td>
+          <td>${item.qty}</td>
+          <td>¥${Number(item.amount || 0).toLocaleString()}</td>
+        </tr>
+      `;
+    });
 
-  const grandTotal =
-    bbqTotal + optionTotal;
+    const bbqTotal = Number(data.price || 0);
+    const optionTotal = Number(history.total || 0);
+    const grandTotal = bbqTotal + optionTotal;
 
-  document
-    .getElementById(
-      'orderHistory'
-    )
-    .innerHTML = `
-
-      <h2>
-        追加注文履歴
-      </h2>
+    document.getElementById('orderHistory').innerHTML = `
+      <h2>追加注文履歴</h2>
 
       <table>
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th>数量</th>
+            <th>金額</th>
+          </tr>
+        </thead>
 
-        <tr>
-
-          <th>
-            商品
-          </th>
-
-          <th>
-            数量
-          </th>
-
-          <th>
-            金額
-          </th>
-
-        </tr>
-
-        ${rows}
-
+        <tbody>
+          ${rows || `<tr><td colspan="3">追加注文なし</td></tr>`}
+        </tbody>
       </table>
 
       <br>
 
-      <p>
+      <p>BBQ：¥${bbqTotal.toLocaleString()}</p>
+      <p>追加：¥${optionTotal.toLocaleString()}</p>
 
-        BBQ：
-        ¥${bbqTotal.toLocaleString()}
-
-      </p>
-
-      <p>
-
-        追加：
-        ¥${optionTotal.toLocaleString()}
-
-      </p>
-
-      <h2>
-
-        総合計：
-        ¥${grandTotal.toLocaleString()}
-
-      </h2>
-
+      <h2>総合計：¥${grandTotal.toLocaleString()}</h2>
     `;
 
+  } catch (e) {
+    console.error(e);
+    alert("読み込みエラー");
+  }
 }
 
 loadDetail();
@@ -310,5 +161,4 @@ loadDetail();
 </script>
 
 </body>
-
 </html>

@@ -27,17 +27,10 @@ async function loadCalendar() {
     target.innerHTML += `
 
       <button
-
         class="calendar-day"
-
+        data-date="${day.date}"
         ${disabled}
-
-        onclick="
-          selectDate(
-            '${day.date}'
-          )
-        "
-
+        onclick="selectDate(this)"
       >
 
         ${day.date}
@@ -53,27 +46,29 @@ async function loadCalendar() {
 
 }
 
-function selectDate(date){
 
-  document.getElementById(
-    'pickupDate'
-  ).value = date;
+// =========================
+// 日付選択
+// =========================
+function selectDate(button){
+
+  const date = button.getAttribute('data-date');
+
+  const input =
+    document.getElementById('pickupDate');
+
+  if(input){
+    input.value = date;
+  }
 
   document
-    .querySelectorAll(
-      '.calendar-day'
-    )
+    .querySelectorAll('.calendar-day')
     .forEach(btn => {
-
-      btn.classList.remove(
-        'selected'
-      );
-
+      btn.classList.remove('selected');
     });
 
-  event.target.classList.add(
-    'selected'
-  );
+  button.classList.add('selected');
+
 }
 
 loadCalendar();

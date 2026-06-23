@@ -10,15 +10,6 @@
 <link rel="stylesheet" href="css/style.css">
 
 <style>
-
-.filter-card{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-
 .order-card{
   background:#fff;
   padding:15px;
@@ -28,10 +19,14 @@
 }
 
 .item{
-  padding-left:10px;
   font-size:14px;
+  padding-left:10px;
 }
 
+.total{
+  margin-top:10px;
+  font-weight:bold;
+}
 </style>
 
 </head>
@@ -46,20 +41,7 @@
 
 <div class="container">
 
-<a href="admin.html" class="back-btn">
-  ← 管理画面へ戻る
-</a>
-
-<div class="filter-card">
-
-  <input type="date" id="startDate">
-  <input type="date" id="endDate">
-
-  <button onclick="loadOrders()">
-    検索
-  </button>
-
-</div>
+<a href="admin.html" class="back-btn">← 管理画面へ戻る</a>
 
 <div id="orderBody"></div>
 
@@ -71,19 +53,27 @@
 
 async function loadOrders(){
 
-  const response = await fetch(API_URL + "/api/orders");
-  const data = await response.json();
+  const res = await fetch(API_URL + "/api/orders");
+  const orders = await res.json();
 
   let html = "";
 
-  data.forEach(order => {
+  orders.forEach(order => {
 
     let itemsHtml = "";
+    let total = 0;
 
     order.items.forEach(i => {
+
+      const price = Number(i.price || 0);
+      const subtotal = price * i.qty;
+
+      total += subtotal;
+
       itemsHtml += `
         <div class="item">
-          ・商品ID: ${i.id} × ${i.qty}
+          ・${i.name || "商品"} × ${i.qty}
+          （¥${subtotal.toLocaleString()}）
         </div>
       `;
     });
@@ -95,19 +85,19 @@ async function loadOrders(){
 
         <p>日時: ${order.createdAt}</p>
 
-        <p>ステータス: ${order.status}</p>
+        <p>状態: ${order.status}</p>
 
-        <div>
-          ${itemsHtml}
+        <div>${itemsHtml}</div>
+
+        <div class="total">
+          合計: ¥${total.toLocaleString()}
         </div>
 
       </div>
     `;
-
   });
 
   document.getElementById("orderBody").innerHTML = html;
-
 }
 
 loadOrders();
@@ -115,5 +105,4 @@ loadOrders();
 </script>
 
 </body>
-
 </html>

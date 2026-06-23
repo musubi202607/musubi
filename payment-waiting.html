@@ -3,67 +3,41 @@
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+<title>会計待ち一覧</title>
 
-<title>
-会計待ち一覧
-</title>
-
-<link
-  rel="stylesheet"
-  href="css/style.css"
->
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 
 .payment-card{
-
   background:#fff;
-
   border-radius:10px;
-
   padding:20px;
-
   margin-bottom:20px;
-
-  box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
-
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
 .total{
-
   font-size:24px;
-
   font-weight:bold;
-
   margin-top:10px;
-
 }
 
 .pay-btn{
-
   width:100%;
-
   margin-top:15px;
-
   padding:12px;
-
   background:#4caf50;
-
   color:#fff;
-
   border:none;
-
   border-radius:8px;
-
   cursor:pointer;
+}
 
+.pay-btn:hover{
+  opacity:0.9;
 }
 
 </style>
@@ -73,29 +47,18 @@
 <body>
 
 <header>
-
   <div class="container header-inner">
-
-    <h1>
-      会計待ち一覧
-    </h1>
-
+    <h1>会計待ち一覧</h1>
   </div>
-
 </header>
 
 <div class="container">
 
-  <a
-    href="admin.html"
-    class="back-btn"
-  >
-    ← 管理画面へ戻る
-  </a>
+<a href="admin.html" class="back-btn">
+  ← 管理画面へ戻る
+</a>
 
-  <div id="paymentList">
-
-  </div>
+<div id="paymentList"></div>
 
 </div>
 
@@ -103,145 +66,86 @@
 
 <script>
 
+// =========================
+// 会計待ち一覧（Worker版）
+// =========================
 async function loadPayments(){
 
   const response =
-    await fetch(
-      API_URL +
-      '?mode=waitingPayments'
-    );
+    await fetch(API_URL + '/api/payments/waiting');
 
-  const data =
-    await response.json();
+  const data = await response.json();
 
   let html = '';
 
   if(data.length === 0){
-
     html = `
-
       <div class="payment-card">
-
         会計待ちはありません
-
       </div>
-
     `;
-
   }
 
-  data.forEach(item=>{
+  data.forEach(item => {
+
+    const bbq = Number(item.bbqPrice || 0);
+    const option = Number(item.optionTotal || 0);
+    const total = bbq + option;
 
     html += `
-
       <div class="payment-card">
 
-        <h2>
+        <h2>${item.customerName}</h2>
 
-          ${item.customerName}
+        <p>予約番号：${item.reservationNo}</p>
 
-        </h2>
+        <p>BBQ：¥${bbq.toLocaleString()}</p>
 
-        <p>
-
-          予約番号：
-          ${item.reservationNo}
-
-        </p>
-
-        <p>
-
-          BBQ：
-          ¥${Number(
-            item.bbqPrice
-          ).toLocaleString()}
-
-        </p>
-
-        <p>
-
-          追加：
-          ¥${Number(
-            item.optionTotal
-          ).toLocaleString()}
-
-        </p>
+        <p>追加：¥${option.toLocaleString()}</p>
 
         <div class="total">
-
-          合計：
-          ¥${Number(
-            item.total
-          ).toLocaleString()}
-
+          合計：¥${total.toLocaleString()}
         </div>
 
-        <button
-          class="pay-btn"
-          onclick="
-            paidUpdate(
-              '${item.reservationNo}'
-            )
-          "
-        >
-
+        <button class="pay-btn"
+          onclick="paidUpdate('${item.reservationNo}')">
           会計済みにする
-
         </button>
 
       </div>
-
     `;
-
   });
 
-  document
-    .getElementById(
-      'paymentList'
-    )
-    .innerHTML = html;
-
+  document.getElementById('paymentList').innerHTML = html;
 }
 
+
+// =========================
+// 会計更新（Worker版）
+// =========================
 async function paidUpdate(no){
 
-  if(
-    !confirm(
-      '会計済みにしますか？'
-    )
-  ){
-    return;
-  }
+  if(!confirm('会計済みにしますか？')) return;
 
   const response =
-    await fetch(
+    await fetch(API_URL + '/api/payments/complete', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        reservationNo: no
+      })
+    });
 
-      API_URL +
-      '?mode=paid' +
-      '&no=' +
-      encodeURIComponent(no)
-
-    );
-
-  const result =
-    await response.json();
+  const result = await response.json();
 
   if(result.success){
-
-    alert(
-      '会計済みにしました'
-    );
-
+    alert('会計済みにしました');
     loadPayments();
-
   }else{
-
-    alert(
-      '更新失敗'
-    );
-
+    alert('更新失敗');
   }
-
 }
 
 loadPayments();

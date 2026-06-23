@@ -1,250 +1,177 @@
-async function displayOrder(){
+// =========================
+// BBQ予約内容表示
+// =========================
+async function displayOrder() {
 
   const productName =
-    localStorage.getItem(
-      'bbqProductName'
-    );
+    localStorage.getItem('bbqProductName');
 
   const price =
-    localStorage.getItem(
-      'bbqPrice'
-    );
+    localStorage.getItem('bbqPrice');
 
   const bbqDate =
-    localStorage.getItem(
-      'bbqDate'
-    );
+    localStorage.getItem('bbqDate');
 
   const target =
-    document.getElementById(
-      'orderItems'
-    );
+    document.getElementById('orderItems');
 
-  if(!target){
-    return;
-  }
+  if (!target) return;
 
   target.innerHTML = `
-
     <div class="product-card">
 
       <div class="product-content">
 
         <h2>
-
           ${productName || ''}
-
         </h2>
 
         <p>
-
-          予約日：
-          ${bbqDate || ''}
-
+          予約日：${bbqDate || ''}
         </p>
 
         <div class="price">
-
-          ¥${Number(
-            price || 0
-          ).toLocaleString()}
-
+          ¥${Number(price || 0).toLocaleString()}
         </div>
 
       </div>
 
     </div>
-
   `;
-
 }
 
+
+// =========================
+// BBQ予約送信
+// =========================
 async function sendBbqOrder() {
 
   const customerName =
-    document
-      .getElementById(
-        'customerName'
-      )
-      .value
-      .trim();
+    document.getElementById('customerName').value.trim();
 
   const customerTel =
-    document
-      .getElementById(
-        'customerTel'
-      )
-      .value
-      .trim();
+    document.getElementById('customerTel').value.trim();
 
   const people =
-    document
-      .getElementById(
-        'people'
-      )
-      .value
-      .trim();
+    document.getElementById('people').value.trim();
 
   const memo =
-    document
-      .getElementById(
-        'memo'
-      )
-      .value
-      .trim();
+    document.getElementById('memo').value.trim();
 
-  if(!customerName){
+  const orderDate =
+    localStorage.getItem('bbqDate');
 
-    alert(
-      'お名前を入力してください'
-    );
+  const productName =
+    localStorage.getItem('bbqProductName');
 
+  const price =
+    localStorage.getItem('bbqPrice');
+
+  // =========================
+  // バリデーション
+  // =========================
+  if (!productName) {
+    alert('BBQ商品を選択してください');
     return;
-
   }
 
-  if(!customerTel){
-
-    alert(
-      '電話番号を入力してください'
-    );
-
+  if (!orderDate) {
+    alert('予約日を選択してください');
     return;
-
   }
 
-  if(
-    !people ||
-    Number(people) <= 0
-  ){
-
-    alert(
-      '人数を正しく入力してください'
-    );
-
+  if (!customerName) {
+    alert('お名前を入力してください');
     return;
-
   }
 
+  if (!customerTel) {
+    alert('電話番号を入力してください');
+    return;
+  }
+
+  if (!people || Number(people) <= 0) {
+    alert('人数を正しく入力してください');
+    return;
+  }
+
+  const telPattern = /^[0-9\-]+$/;
+  if (!telPattern.test(customerTel)) {
+    alert('電話番号を正しく入力してください');
+    return;
+  }
+
+  // =========================
+  // 送信データ
+  // =========================
+  const orderData = {
+
+    orderType: 'BBQ',
+
+    orderDate: orderDate,
+
+    productName: productName,
+
+    price: Number(price || 0),
+
+    people: Number(people),
+
+    customerName: customerName,
+
+    customerTel: customerTel,
+
+    memo: memo
+
+  };
+
+  // =========================
+  // API送信（Worker想定）
+  // =========================
   try {
 
-    const params =
-      new URLSearchParams({
+    const response =
+      await fetch(API_URL + '/api/reservations', {
 
-        mode:
-          'saveOrder',
+        method: 'POST',
 
-        orderType:
-          'BBQ',
+        headers: {
+          'Content-Type': 'application/json'
+        },
 
-        orderDate:
-          localStorage.getItem(
-            'bbqDate'
-          ),
-
-        productName:
-          localStorage.getItem(
-            'bbqProductName'
-          ),
-
-        price:
-          localStorage.getItem(
-            'bbqPrice'
-          ),
-
-        people:
-          people,
-
-        customerName:
-          customerName,
-
-        customerTel:
-          customerTel,
-
-        memo:
-          memo
+        body: JSON.stringify(orderData)
 
       });
-
-    const response =
-      await fetch(
-
-        API_URL +
-        '?' +
-        params.toString()
-
-      );
 
     const result =
       await response.json();
 
-    if(result.success){
-
-      if(
-        result.reservationNo
-      ){
-
-        localStorage.setItem(
-
-          'reservationNo',
-
-          result.reservationNo
-
-        );
-
-      }
+    if (result.success) {
 
       alert(
-
-        '予約番号：' +
-        result.reservationNo +
-        '\n予約完了しました'
-
+        '予約完了しました\n予約番号：' +
+        (result.reservationNo || '')
       );
 
-      localStorage.removeItem(
-        'bbqProductId'
-      );
+      // localStorageクリア
+      localStorage.removeItem('bbqProductId');
+      localStorage.removeItem('bbqProductName');
+      localStorage.removeItem('bbqPrice');
+      localStorage.removeItem('bbqDate');
 
-      localStorage.removeItem(
-        'bbqProductName'
-      );
+      location.href = 'index.html';
 
-      localStorage.removeItem(
-        'bbqPrice'
-      );
+    } else {
 
-      localStorage.removeItem(
-        'bbqDate'
-      );
-
-      location.href =
-        'index.html';
-
-    }else{
-
-      alert(
-
-        result.message ||
-        '送信エラー'
-
-      );
-
+      alert(result.message || '送信エラー');
     }
 
-  }catch(error){
+  } catch (error) {
 
-    console.error(
-      error
-    );
-
-    alert(
-      '通信エラーが発生しました'
-    );
-
+    console.error(error);
+    alert('通信エラーが発生しました');
   }
-
 }
+
 
 // =========================
 // 初期表示
