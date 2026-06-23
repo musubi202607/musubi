@@ -81,7 +81,7 @@ async function updateCartCount() {
 async function displayCart() {
 
   const [productsRes, cart] = await Promise.all([
-    fetch(API_URL + '?mode=products'),
+    fetch(API_URL + "/api/products"),
     getCart()
   ]);
 
