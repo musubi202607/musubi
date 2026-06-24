@@ -115,10 +115,16 @@ input, select {
 <script src="js/config.js"></script>
 
 <script>
+
 async function loadProducts() {
 
-  const res = await fetch(API_URL + '/api/products');
-  const data = await res.json();
+  const res =
+    await fetch(
+      API_URL + '/api/products'
+    );
+
+  const data =
+    await res.json();
 
   let html = '';
 
@@ -129,132 +135,327 @@ async function loadProducts() {
 
         <td>${item.id}</td>
 
-        <td><input id="name_${item.id}" value="${item.name}"></td>
-
-        <td><input type="number" id="price_${item.id}" value="${item.price}"></td>
-
-        <td><input id="desc_${item.id}" value="${item.description}"></td>
-
-        <td><input id="image_${item.id}" value="${item.image || ''}"></td>
+        <td>
+          <input
+            id="name_${item.id}"
+            value="${item.name || ''}"
+          >
+        </td>
 
         <td>
-           <select id="status_${item.id}">
+          <input
+            type="number"
+            id="price_${item.id}"
+            value="${item.price || 0}"
+          >
+        </td>
 
-           <option
-             value="販売中"
-             ${
-               item.status === "販売中"
-               ? "selected"
-               : ""
-              }
-        >
-              販売中
-           </option>
+        <td>
+          <input
+            id="desc_${item.id}"
+            value="${item.description || ''}"
+          >
+        </td>
 
-           <option
-             value="停止"
-             ${
-               item.status === "停止"
-               ? "selected"
-               : ""
-              }
-        >
-              停止
-           </option>
+        <td>
+          <input
+            id="image_${item.id}"
+            value="${item.image || ''}"
+          >
+        </td>
 
-           </select>
+        <td>
+          <select id="type_${item.id}">
+            <option value="onigiri"
+              ${item.type === 'onigiri' ? 'selected' : ''}>
+              onigiri
+            </option>
+
+            <option value="bbq"
+              ${item.type === 'bbq' ? 'selected' : ''}>
+              bbq
+            </option>
+
+            <option value="bbq-option"
+              ${item.type === 'bbq-option' ? 'selected' : ''}>
+              bbq-option
+            </option>
+
+            <option value="drink"
+              ${item.type === 'drink' ? 'selected' : ''}>
+              drink
+            </option>
+          </select>
         </td>
 
         <td>
           <select id="status_${item.id}">
-            <option value="ON" ${item.status==='ON'?'selected':''}>ON</option>
-            <option value="OFF" ${item.status==='OFF'?'selected':''}>OFF</option>
+
+            <option
+              value="販売中"
+              ${item.status === '販売中'
+                ? 'selected'
+                : ''}
+            >
+              販売中
+            </option>
+
+            <option
+              value="停止"
+              ${item.status === '停止'
+                ? 'selected'
+                : ''}
+            >
+              停止
+            </option>
+
           </select>
         </td>
 
-        <td><input type="number" id="sort_${item.id}" value="${item.sort}"></td>
+        <td>
+          <input
+            type="number"
+            id="sort_${item.id}"
+            value="${item.sort || ''}"
+          >
+        </td>
 
-        <td><button class="save-btn" onclick="saveProduct(${item.id})">保存</button></td>
+        <td>
 
-        <td><button onclick="deleteProduct(${item.id})">削除</button></td>
+          <button
+            class="save-btn"
+            onclick="saveProduct(${item.id})"
+          >
+            保存
+          </button>
+
+        </td>
+
+        <td>
+
+          <button
+            onclick="deleteProduct(${item.id})"
+          >
+            削除
+          </button>
+
+        </td>
 
       </tr>
     `;
+
   });
 
-  document.getElementById('productList').innerHTML = html;
+  document.getElementById(
+    'productList'
+  ).innerHTML = html;
+
 }
 
-
+// =========================
 // 更新
+// =========================
 async function saveProduct(id) {
 
   const body = {
+
     id,
-    name: document.getElementById('name_' + id).value,
-    price: document.getElementById('price_' + id).value,
-    description: document.getElementById('desc_' + id).value,
-    image: document.getElementById('image_' + id).value,
-    type: document.getElementById('type_' + id).value,
-    status: document.getElementById('status_' + id).value,
-    sort: document.getElementById('sort_' + id).value
+
+    name:
+      document.getElementById(
+        'name_' + id
+      ).value,
+
+    price:
+      document.getElementById(
+        'price_' + id
+      ).value,
+
+    description:
+      document.getElementById(
+        'desc_' + id
+      ).value,
+
+    image:
+      document.getElementById(
+        'image_' + id
+      ).value,
+
+    type:
+      document.getElementById(
+        'type_' + id
+      ).value,
+
+    status:
+      document.getElementById(
+        'status_' + id
+      ).value,
+
+    sort:
+      document.getElementById(
+        'sort_' + id
+      ).value
+
   };
 
-  const res = await fetch(API_URL + '/api/products/update', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  const res =
+    await fetch(
+      API_URL +
+      '/api/products/update',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+            'application/json'
+        },
+        body:
+          JSON.stringify(body)
+      }
+    );
 
-  const result = await res.json();
-  alert(result.ok ? "保存しました" : "失敗");
+  const result =
+    await res.json();
+
+  if (result.ok) {
+
+    alert(
+      '保存しました'
+    );
+
+  } else {
+
+    alert(
+      result.message ||
+      '保存失敗'
+    );
+
+  }
+
 }
 
-
+// =========================
 // 削除
+// =========================
 async function deleteProduct(id) {
 
-  if (!confirm('削除しますか？')) return;
+  if (
+    !confirm(
+      '削除しますか？'
+    )
+  ) return;
 
-  await fetch(API_URL + '/api/products/delete', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
+  const res =
+    await fetch(
+      API_URL +
+      '/api/products/delete',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+            'application/json'
+        },
+        body:
+          JSON.stringify({
+            id
+          })
+      }
+    );
 
-  loadProducts();
+  const result =
+    await res.json();
+
+  if (result.ok) {
+
+    alert('削除しました');
+
+    loadProducts();
+
+  } else {
+
+    alert('削除失敗');
+
+  }
+
 }
 
-
+// =========================
 // 追加
+// =========================
 async function addProduct() {
 
   const body = {
-    name: document.getElementById('newName').value,
-    price: document.getElementById('newPrice').value,
-    description: document.getElementById('newDescription').value,
-    type: document.getElementById('newType').value,
-    sort: document.getElementById('newSort').value
-    status:'販売中'
+
+    name:
+      document.getElementById(
+        'newName'
+      ).value,
+
+    price:
+      document.getElementById(
+        'newPrice'
+      ).value,
+
+    description:
+      document.getElementById(
+        'newDescription'
+      ).value,
+
+    image: '',
+
+    type:
+      document.getElementById(
+        'newType'
+      ).value,
+
+    sort:
+      document.getElementById(
+        'newSort'
+      ).value,
+
+    status:
+      '販売中'
+
   };
 
-  const res = await fetch(API_URL + '/api/products', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  const res =
+    await fetch(
+      API_URL +
+      '/api/products',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+            'application/json'
+        },
+        body:
+          JSON.stringify(body)
+      }
+    );
 
-  const result = await res.json();
+  const result =
+    await res.json();
 
   if (result.ok) {
-    alert("追加しました");
+
+    alert(
+      '追加しました'
+    );
+
     loadProducts();
+
   } else {
-    alert("失敗");
+
+    alert(
+      result.message ||
+      '追加失敗'
+    );
+
   }
+
 }
 
 loadProducts();
+
 </script>
 
 </body>
