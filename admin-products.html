@@ -138,12 +138,31 @@ async function loadProducts() {
         <td><input id="image_${item.id}" value="${item.image || ''}"></td>
 
         <td>
-          <select id="type_${item.id}">
-            <option value="onigiri" ${item.type==='onigiri'?'selected':''}>onigiri</option>
-            <option value="bbq" ${item.type==='bbq'?'selected':''}>bbq</option>
-            <option value="bbq-option" ${item.type==='bbq-option'?'selected':''}>bbq-option</option>
-            <option value="drink" ${item.type==='drink'?'selected':''}>drink</option>
-          </select>
+           <select id="status_${item.id}">
+
+           <option
+             value="販売中"
+             ${
+               item.status === "販売中"
+               ? "selected"
+               : ""
+              }
+        >
+              販売中
+           </option>
+
+           <option
+             value="停止"
+             ${
+               item.status === "停止"
+               ? "selected"
+               : ""
+              }
+        >
+              停止
+           </option>
+
+           </select>
         </td>
 
         <td>
@@ -216,6 +235,7 @@ async function addProduct() {
     description: document.getElementById('newDescription').value,
     type: document.getElementById('newType').value,
     sort: document.getElementById('newSort').value
+    status:'販売中'
   };
 
   const res = await fetch(API_URL + '/api/products', {
