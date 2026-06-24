@@ -186,28 +186,21 @@ async function paidComplete(rowNos){
         }
       );
 
-    const result =
-      await response.json();
+    const result = await response.json();
 
     if(result.success){
-
       alert('会計完了');
-
       loadData();
-
     }else{
-
       alert('更新失敗');
-
     }
 
   }catch(error){
-
     console.error(error);
-
     alert('通信エラー');
-
   }
-loadData(); 
-</script>
 }
+
+loadData();
+
+</script>
