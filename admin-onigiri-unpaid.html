@@ -138,7 +138,7 @@ async function loadData(){
 
           <button
             class="paid-btn"
-            onclick='paidComplete(${JSON.stringify(rowNos)})'
+            onclick="paidComplete(${JSON.stringify(rowNos)})"
           >
             会計済
           </button>
@@ -208,5 +208,6 @@ async function paidComplete(rowNos){
     alert('通信エラー');
 
   }
-
+loadData(); 
+</script>
 }
