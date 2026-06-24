@@ -62,12 +62,10 @@ th{
 
 <thead>
 <tr>
-  <th>受付日時</th>
   <th>氏名</th>
   <th>電話番号</th>
-  <th>商品名</th>
-  <th>数量</th>
-  <th>金額</th>
+  <th>注文内容</th>
+  <th>合計金額</th>
   <th>状態</th>
   <th>会計</th>
 </tr>
@@ -90,37 +88,75 @@ async function loadData(){
       API_URL + '/api/unpaid?type=onigiri'
     );
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
   let html = '';
 
-  data.forEach(row => {
+  data.forEach(order => {
+
+    let itemsHtml = '';
+
+    order.items.forEach(item => {
+
+      itemsHtml += `
+        ${item.name}
+        × ${item.qty}<br>
+      `;
+
+    });
+
+    const rowNo =
+      order.items[0].rowNo;
 
     html += `
+
       <tr>
 
-        <td>${row.orderDate}</td>
-        <td>${row.customerName}</td>
-        <td>${row.customerTel}</td>
-        <td>${row.itemName}</td>
-        <td>${row.qty}</td>
-        <td>¥${Number(row.amount || 0).toLocaleString()}</td>
-        <td>${row.status}</td>
+        <td>
+          ${order.customerName}
+        </td>
 
         <td>
+          ${order.customerTel}
+        </td>
+
+        <td>
+          ${itemsHtml}
+        </td>
+
+        <td>
+          ¥${Number(order.total)
+            .toLocaleString()}
+        </td>
+
+        <td>
+          未会計
+        </td>
+
+        <td>
+
           <button
             class="paid-btn"
-            onclick="paidComplete(${row.rowNo})"
+            onclick="paidComplete(${rowNo})"
           >
+
             会計済
+
           </button>
+
         </td>
 
       </tr>
+
     `;
+
   });
 
-  document.getElementById('result').innerHTML = html;
+  document.getElementById(
+    'result'
+  ).innerHTML = html;
+
 }
 
 
