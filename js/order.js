@@ -27,7 +27,7 @@ async function sendOrder() {
   }
 
   // =========================
-  // Workerからカート取得
+  // カート取得（Worker）
   // =========================
   const cartRes = await fetch(
     API_URL + '/api/cart/get?sessionId=' + sessionId
@@ -40,26 +40,26 @@ async function sendOrder() {
     return;
   }
 
+  // =========================
+  // ★ここが重要：GASに合わせて送る
+  // =========================
+  const payload = {
+    mode: "saveOrder",
+    orderType: "ONIGIRI",
+    customerName,
+    customerTel,
+    memo,
+    items: cart
+  };
+
   try {
 
-    const res = await fetch(API_URL + '/api/order', {
-
-      method: 'POST',
-
+    const res = await fetch(API_URL, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
-
-      body: JSON.stringify({
-
-        sessionId,
-        customerName,
-        customerTel,
-        memo,
-        orderType: 'ONIGIRI'
-
-      })
-
+      body: JSON.stringify(payload)
     });
 
     const json = await res.json();
@@ -68,21 +68,17 @@ async function sendOrder() {
 
       alert('注文ありがとうございました');
 
-      // カートクリアはWorker側でやる想定
+      // Worker側でカート削除してるならOK
       location.href = 'index.html';
 
     } else {
-
       alert(json.message || '注文送信エラー');
-
     }
 
   } catch (error) {
 
     console.error(error);
-
     alert('通信エラーが発生しました');
 
   }
-
 }

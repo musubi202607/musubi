@@ -1,7 +1,12 @@
 let calendarData = [];
-
 let currentMonth = new Date();
 
+let reservation = {
+  productId: null,
+  productName: null,
+  price: null,
+  date: null
+};
 // =========================
 // BBQ商品取得
 // =========================
@@ -73,14 +78,15 @@ async function loadBbq() {
 // =========================
 function selectBbq(id, name, price) {
 
-  localStorage.setItem('bbqProductId', id);
-  localStorage.setItem('bbqProductName', name);
-  localStorage.setItem('bbqPrice', price);
+  reservation.productId = id;
+  reservation.productName = name;
+  reservation.price = price;
+
+  saveReservation();
 
   document
     .getElementById('calendarSection')
     ?.scrollIntoView({ behavior: 'smooth' });
-
 }
 
 // =========================
@@ -221,7 +227,9 @@ function renderCalendar() {
 // =========================
 function selectDate(date, button) {
 
-  localStorage.setItem('bbqDate', date);
+  reservation.date = date;
+
+  saveReservation();
 
   document.querySelectorAll('.calendar-day')
     .forEach(btn => btn.classList.remove('selected'));
@@ -230,7 +238,9 @@ function selectDate(date, button) {
 
   const goBtn = document.getElementById('goOrder');
 
-  if (goBtn) goBtn.disabled = false;
+  if (goBtn) {
+    goBtn.disabled = false;
+  }
 }
 
 // =========================
@@ -259,19 +269,30 @@ function formatDate(date) {
 }
 
 // =========================
+// 保存関数
+// =========================
+function saveReservation() {
+  localStorage.setItem(
+    'bbqReservation',
+    JSON.stringify(reservation)
+  );
+}
+
+// =========================
 // 次へ
 // =========================
 function goOrder() {
 
-  const bbqProduct = localStorage.getItem('bbqProductId');
-  const bbqDate = localStorage.getItem('bbqDate');
+  const data = JSON.parse(
+    localStorage.getItem('bbqReservation')
+  );
 
-  if (!bbqProduct) {
+  if (!data?.productId) {
     alert('BBQ商品を選択してください');
     return;
   }
 
-  if (!bbqDate) {
+  if (!data?.date) {
     alert('予約日を選択してください');
     return;
   }

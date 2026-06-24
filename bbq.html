@@ -1,112 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>BBQ予約</title>
-
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
-
+<meta charset="UTF-8">
+<title>BBQ予約確認</title>
 </head>
 
 <body>
 
-<header>
+<h2>予約確認</h2>
 
-  <div class="container header-inner">
+<div id="summary"></div>
 
-    <div>
-
-      <h1>BBQ予約</h1>
-
-      <p>
-        ご希望日を選択してください
-      </p>
-
-    </div>
-
-    <div>
-
-      <a
-        href="index.html"
-        class="cart-button"
-      >
-        おにぎり
-      </a>
-
-      </div>
-
-</header>
-
-<section class="products container">
-
-  <div class="section-title">
-
-    <h2>
-      BBQセット
-    </h2>
-
-  </div>
-
-  <div
-    class="product-grid"
-    id="bbqProducts"
-  >
-  </div>
-
-</section>
-
-<div class="container">
-
-  <a
-    href="index.html"
-    class="back-btn"
-  >
-    ← トップページへ戻る
-  </a>
-
-</div>
-
-<section
-  class="container"
-  id="calendarSection"
->
-
-  <div class="section-title">
-
-    <h2>
-      予約可能日
-    </h2>
-
-  </div>
-
-  <div id="calendar"></div>
-
-  <button
-    id="goOrder"
-    class="order-btn"
-    onclick="goOrder()"
-    disabled
-  >
-
-    予約へ進む
-
-  </button>
-
-</section>
+<button onclick="submitOrder()">予約確定</button>
 
 <script src="js/config.js"></script>
 
-<script src="js/bbq.js"></script>
+<script>
+const data = JSON.parse(localStorage.getItem('bbqReservation'));
+
+document.getElementById('summary').innerHTML = `
+  <p>商品: ${data.productName}</p>
+  <p>日付: ${data.date}</p>
+  <p>金額: ¥${data.price}</p>
+`;
+
+async function submitOrder() {
+
+  const body = {
+    customerName: prompt("名前"),
+    customerTel: prompt("電話番号"),
+    people: 1,
+    plan: data.productName,
+    useDate: data.date,
+    memo: ""
+  };
+
+  const res = await fetch(API_URL + "/api/reservations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    alert("予約完了");
+    localStorage.removeItem('bbqReservation');
+    location.href = "index.html";
+  } else {
+    alert("失敗");
+  }
+}
+</script>
 
 </body>
 </html>
