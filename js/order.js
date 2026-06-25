@@ -139,21 +139,23 @@ async function sendOrder(){
     );
 
   const json =
-  await res.json();
+    await res.json();
 
   console.log(json);
 
   if(json.success){
-  
-  alert("注文完了");
-  
-  location.href =
-    "complete.html";
+
+    alert("注文完了");
+
+    location.href =
+      "complete.html";
 
   }else{
 
-  alert(
-    "注文送信エラー"
-  );
+    alert(
+      "注文送信エラー"
+    );
+
+  }
 
 }
