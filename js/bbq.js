@@ -38,7 +38,7 @@ async function loadBbq() {
 
   bbqProducts.forEach(product => {
 
-    target.innerHTML += `
+  target.innerHTML += `
       <div class="product-card">
 
         <img src="${product.image}" alt="${product.name}">
@@ -53,7 +53,13 @@ async function loadBbq() {
             ¥${Number(product.price).toLocaleString()}
           </div>
 
-          <button onclick="selectBbq(${product.id}, ${JSON.stringify(product.name)}, ${product.price})">
+          <button
+            class="bbq-select-btn"
+            data-id="${product.id}"
+            data-name="${product.name}"
+            data-price="${product.price}"
+            onclick="handleSelectBbq(this)"
+          >
             この商品を予約
           </button>
 
@@ -61,8 +67,7 @@ async function loadBbq() {
 
       </div>
     `;
-
-  });
+});
 
 }
 
