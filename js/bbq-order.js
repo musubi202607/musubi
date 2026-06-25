@@ -113,23 +113,20 @@ async function sendBbqOrder() {
     // =========================
     const orderData = {
 
+      // orderType は今のGASでは使っていないので、必要なら残してOK
       orderType: 'BBQ',
 
-      orderDate: orderDate,
-
-      productName: productName,
-
-      price: Number(price || 0),
+      // GAS側の saveBBQReservation が期待している名前に合わせる
+      useDate: orderDate,                    // 利用日
+      plan: productName,                     // プラン名
+      unitPrice: Number(price || 0),         // 単価
 
       people: Number(people),
-
       customerName: customerName,
-
       customerTel: customerTel,
-
       memo: memo
-
-    };
+      };
+      
 
     // =========================
     // API送信
