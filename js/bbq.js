@@ -74,6 +74,14 @@ async function loadBbq() {
 // =========================
 // BBQ選択
 // =========================
+function handleSelectBbq(button) {
+  const id = Number(button.dataset.id);
+  const name = button.dataset.name;
+  const price = Number(button.dataset.price);
+
+  selectBbq(id, name, price);
+}
+
 function selectBbq(id, name, price) {
 
   reservation.productId = id;
