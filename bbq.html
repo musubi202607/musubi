@@ -17,10 +17,12 @@
 
 <header>
   <div class="container header-inner">
+
     <div>
       <h1>BBQ予約</h1>
       <p>ご希望日を選択してください</p>
     </div>
+
     <div>
       <a
         href="index.html"
@@ -29,6 +31,7 @@
         おにぎり
       </a>
     </div>
+
   </div>
 </header>
 
@@ -36,6 +39,7 @@
   <div class="section-title">
     <h2>BBQセット</h2>
   </div>
+
   <div
     class="product-grid"
     id="bbqProducts"
@@ -77,39 +81,3 @@
 </body>
 </html>
 
-async function submitOrder() {
-
-  const body = {
-    customerName: prompt("氏名"),
-    customerTel: prompt("電話番号"),
-    people: 1,
-    plan: data.productName,
-    useDate: data.date,
-    unitPrice: data.price,
-    memo: ""
-  };
-
-  const res =
-    await fetch(API_URL + "/api/reservations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
-
-  const result = await res.json();
-
-  if (result.success) {
-
-    alert("予約完了：" + result.reservationNo);
-
-    localStorage.removeItem("bbqReservation");
-
-    location.href = "index.html";
-
-  } else {
-
-    alert("予約失敗");
-  }
-}
