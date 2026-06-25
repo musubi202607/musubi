@@ -26,7 +26,7 @@ async function getCart() {
   const sessionId = getSessionId();
 
   const res = await fetch(
-    `${API_URL}/api/cart/get?sessionId=${sessionId}`
+    `${API_URL}/api/cart?sessionId=${sessionId}`
   );
 
   if (!res.ok) return [];
@@ -215,30 +215,45 @@ async function placeOrder() {
 
   const sessionId = getSessionId();
 
-  const res = await fetch(`${API_URL}/api/order`, {
+  const customerName =
+    document.getElementById("customerName")?.value || "";
 
-    method: 'POST',
+  const customerTel =
+    document.getElementById("customerTel")?.value || "";
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
+  const memo =
+    document.getElementById("memo")?.value || "";
 
-    body: JSON.stringify({ sessionId })
+  const res = await fetch(
+    `${API_URL}/api/order`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        sessionId,
+        customerName,
+        customerTel,
+        memo
+      })
+    }
+  );
 
-  });
+  const data =
+    await res.json();
 
-  if (!res.ok) {
+  if(!data.success){
 
-    alert('注文に失敗しました');
+    alert("注文失敗");
 
     return;
 
   }
 
-  const data = await res.json();
+  alert("注文完了");
 
-  alert('注文完了！注文番号: ' + data.orderId);
-
-  location.href = 'complete.html';
+  location.href =
+    "complete.html";
 
 }

@@ -1,29 +1,33 @@
 let calendarData = [];
 let currentMonth = new Date();
 
-let reservation = {
-  productId: null,
-  productName: null,
-  price: null,
-  date: null
-};
+// =========================
+// 予約状態
+// =========================
+const saved = localStorage.getItem('bbqReservation');
+
+let reservation = saved
+  ? JSON.parse(saved)
+  : {
+      productId: null,
+      productName: null,
+      price: null,
+      date: null
+    };
+
 // =========================
 // BBQ商品取得
 // =========================
 async function loadBbq() {
 
   const response =
-    await fetch(
-      API_URL + '/api/products'
-    );
+    await fetch(API_URL + '/api/products');
 
   const products =
     await response.json();
 
   const bbqProducts =
-    products.filter(
-      p => p.type === 'bbq'
-    );
+    products.filter(p => p.type === 'bbq');
 
   const target =
     document.getElementById('bbqProducts');
@@ -37,30 +41,19 @@ async function loadBbq() {
     target.innerHTML += `
       <div class="product-card">
 
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-        >
+        <img src="${product.image}" alt="${product.name}">
 
         <div class="product-content">
 
           <h3>${product.name}</h3>
 
-          <p>${product.description}</p>
+          <p>${product.description || ''}</p>
 
           <div class="price">
             ¥${Number(product.price).toLocaleString()}
           </div>
 
-          <button
-            onclick="
-              selectBbq(
-                ${product.id},
-                '${product.name}',
-                ${product.price}
-              )
-            "
-          >
+          <button onclick="selectBbq(${product.id}, ${JSON.stringify(product.name)}, ${product.price})">
             この商品を予約
           </button>
 
@@ -83,6 +76,7 @@ function selectBbq(id, name, price) {
   reservation.price = price;
 
   saveReservation();
+  updateGoButton();
 
   document
     .getElementById('calendarSection')
@@ -90,17 +84,14 @@ function selectBbq(id, name, price) {
 }
 
 // =========================
-// カレンダー取得（Worker化）
+// カレンダー取得
 // =========================
 async function loadCalendar() {
 
   const response =
-    await fetch(
-      API_URL + '/api/calendar'
-    );
+    await fetch(API_URL + '/api/calendar');
 
-  calendarData =
-    await response.json();
+  calendarData = await response.json();
 
   renderCalendar();
 }
@@ -128,13 +119,9 @@ function renderCalendar() {
 
   target.innerHTML += `
     <div class="calendar-header">
-
       <button onclick="prevMonth()">←</button>
-
       <h2>${year}年 ${month + 1}月</h2>
-
       <button onclick="nextMonth()">→</button>
-
     </div>
 
     <div class="calendar-grid">
@@ -161,10 +148,7 @@ function renderCalendar() {
     const dateStr = formatDate(dateObj);
 
     const item = calendarData.find(d =>
-      String(d.date)
-        .substring(0, 10)
-        .replaceAll('/', '-')
-      === dateStr
+      String(d.date).slice(0, 10).replaceAll('/', '-') === dateStr
     );
 
     if (!item) {
@@ -206,15 +190,8 @@ function renderCalendar() {
         ${disabled}
         onclick="selectDate('${dateStr}', this)"
       >
-
-        <div class="calendar-date">
-          ${day}
-        </div>
-
-        <div class="calendar-status">
-          ${statusText}
-        </div>
-
+        <div class="calendar-date">${day}</div>
+        <div class="calendar-status">${statusText}</div>
       </button>
     `;
   }
@@ -230,17 +207,12 @@ function selectDate(date, button) {
   reservation.date = date;
 
   saveReservation();
+  updateGoButton();
 
   document.querySelectorAll('.calendar-day')
     .forEach(btn => btn.classList.remove('selected'));
 
   button.classList.add('selected');
-
-  const goBtn = document.getElementById('goOrder');
-
-  if (goBtn) {
-    goBtn.disabled = false;
-  }
 }
 
 // =========================
@@ -269,9 +241,10 @@ function formatDate(date) {
 }
 
 // =========================
-// 保存関数
+// 保存
 // =========================
 function saveReservation() {
+
   localStorage.setItem(
     'bbqReservation',
     JSON.stringify(reservation)
@@ -279,20 +252,28 @@ function saveReservation() {
 }
 
 // =========================
+// ボタン制御
+// =========================
+function updateGoButton() {
+
+  const goBtn = document.getElementById('goOrder');
+
+  if (!goBtn) return;
+
+  goBtn.disabled = !(reservation.productId && reservation.date);
+}
+
+// =========================
 // 次へ
 // =========================
 function goOrder() {
 
-  const data = JSON.parse(
-    localStorage.getItem('bbqReservation')
-  );
-
-  if (!data?.productId) {
+  if (!reservation.productId) {
     alert('BBQ商品を選択してください');
     return;
   }
 
-  if (!data?.date) {
+  if (!reservation.date) {
     alert('予約日を選択してください');
     return;
   }

@@ -1,84 +1,82 @@
-async function sendOrder() {
+async function sendOrder(){
 
   const customerName =
-    document.getElementById('customerName').value.trim();
+    document.getElementById(
+      'customerName'
+    ).value.trim();
 
   const customerTel =
-    document.getElementById('customerTel').value.trim();
+    document.getElementById(
+      'customerTel'
+    ).value.trim();
 
   const memo =
-    document.getElementById('memo')?.value.trim() || '';
+    document.getElementById(
+      'memo'
+    )?.value.trim() || '';
 
-  if (!customerName) {
+  if(!customerName){
     alert('お名前を入力してください');
     return;
   }
 
-  if (!customerTel) {
+  if(!customerTel){
     alert('電話番号を入力してください');
     return;
   }
 
-  const sessionId = localStorage.getItem('sessionId');
+  const sessionId =
+    localStorage.getItem(
+      'sessionId'
+    );
 
-  if (!sessionId) {
-    alert('カート情報がありません');
-    return;
-  }
+  try{
 
-  // =========================
-  // カート取得（Worker）
-  // =========================
-  const cartRes = await fetch(
-    API_URL + '/api/cart/get?sessionId=' + sessionId
-  );
+    const res =
+      await fetch(
+        API_URL + '/api/order',
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            sessionId,
+            customerName,
+            customerTel,
+            memo
+          })
+        }
+      );
 
-  const cart = await cartRes.json();
+    const json =
+      await res.json();
 
-  if (!cart.length) {
-    alert('商品がありません');
-    return;
-  }
+    if(json.success){
 
-  // =========================
-  // ★ここが重要：GASに合わせて送る
-  // =========================
-  const payload = {
-    mode: "saveOrder",
-    orderType: "ONIGIRI",
-    customerName,
-    customerTel,
-    memo,
-    items: cart
-  };
+      alert(
+        '注文ありがとうございました'
+      );
 
-  try {
+      location.href =
+        'index.html';
 
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+    }else{
 
-    const json = await res.json();
+      alert(
+        '注文送信エラー'
+      );
 
-    if (json.success) {
-
-      alert('注文ありがとうございました');
-
-      // Worker側でカート削除してるならOK
-      location.href = 'index.html';
-
-    } else {
-      alert(json.message || '注文送信エラー');
     }
 
-  } catch (error) {
+  }catch(error){
 
     console.error(error);
-    alert('通信エラーが発生しました');
+
+    alert(
+      '通信エラーが発生しました'
+    );
 
   }
+
 }
