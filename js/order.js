@@ -141,14 +141,16 @@ async function sendOrder(){
   const json =
   await res.json();
 
-console.log(json);
+  console.log(json);
 
-if(json.success){
-
+  if(json.success){
+  
+  alert("注文完了");
+  
   location.href =
     "complete.html";
 
-}else{
+  }else{
 
   alert(
     "注文送信エラー"
