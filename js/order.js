@@ -1,82 +1,43 @@
 async function sendOrder(){
 
+  const sessionId =
+    localStorage.getItem("sessionId");
+
+  console.log("sessionId=", sessionId);
+
   const customerName =
-    document.getElementById(
-      'customerName'
-    ).value.trim();
+    document.getElementById("customerName").value;
 
   const customerTel =
-    document.getElementById(
-      'customerTel'
-    ).value.trim();
+    document.getElementById("customerTel").value;
 
   const memo =
-    document.getElementById(
-      'memo'
-    )?.value.trim() || '';
+    document.getElementById("memo").value;
 
-  if(!customerName){
-    alert('お名前を入力してください');
-    return;
-  }
+  const payload = {
+    sessionId,
+    customerName,
+    customerTel,
+    memo
+  };
 
-  if(!customerTel){
-    alert('電話番号を入力してください');
-    return;
-  }
+  console.log(payload);
 
-  const sessionId =
-    localStorage.getItem(
-      'sessionId'
+  const res =
+    await fetch(
+      API_URL + "/api/order",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+      }
     );
 
-  try{
+  const json =
+    await res.json();
 
-    const res =
-      await fetch(
-        API_URL + '/api/order',
-        {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json'
-          },
-          body:JSON.stringify({
-            sessionId,
-            customerName,
-            customerTel,
-            memo
-          })
-        }
-      );
-
-    const json =
-      await res.json();
-
-    if(json.success){
-
-      alert(
-        '注文ありがとうございました'
-      );
-
-      location.href =
-        'index.html';
-
-    }else{
-
-      alert(
-        '注文送信エラー'
-      );
-
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      '通信エラーが発生しました'
-    );
-
-  }
+  console.log(json);
 
 }
