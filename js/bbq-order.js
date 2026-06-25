@@ -3,37 +3,48 @@
 // =========================
 async function displayOrder() {
 
-  const productName =
-    localStorage.getItem('bbqProductName');
+  const saved =
+  localStorage.getItem('bbqReservation');
 
-  const price =
-    localStorage.getItem('bbqPrice');
+if (!saved) {
+  alert('予約情報が見つかりません。最初からやり直してください。');
+  location.href = 'bbq.html';
+}
 
-  const bbqDate =
-    localStorage.getItem('bbqDate');
+const data = JSON.parse(saved);
 
-  const target =
-    document.getElementById('orderItems');
+// =========================
+// 画面表示
+// =========================
+const target =
+  document.getElementById('orderItems');
 
-  if (!target) return;
-
+if (target) {
   target.innerHTML = `
     <div class="product-card">
 
       <div class="product-content">
 
-        <h2>${productName || ''}</h2>
+        <h2>${data.productName || ''}</h2>
 
-        <p>予約日：${bbqDate || ''}</p>
+        <p>予約日：${data.date || ''}</p>
 
         <div class="price">
-          ¥${Number(price || 0).toLocaleString()}
+          ¥${Number(data.price || 0).toLocaleString()}
         </div>
 
       </div>
 
     </div>
   `;
+}
+
+// 人数の初期化
+const peopleInput =
+  document.getElementById('people');
+
+if (peopleInput && !peopleInput.value) {
+  peopleInput.value = 1;
 }
 
 
@@ -52,7 +63,6 @@ async function sendBbqOrder() {
   if (btn) btn.disabled = true;
 
   try {
-
     const customerName =
       document.getElementById('customerName').value.trim();
 
@@ -65,24 +75,13 @@ async function sendBbqOrder() {
     const memo =
       document.getElementById('memo').value.trim();
 
-    const orderDate =
-      localStorage.getItem('bbqDate');
-
-    const productName =
-      localStorage.getItem('bbqProductName');
-
-    const price =
-      localStorage.getItem('bbqPrice');
-
-    // =========================
-    // バリデーション
-    // =========================
-    if (!productName) {
+    // 簡単なバリデーション
+    if (!data.productName) {
       alert('BBQ商品を選択してください');
       return;
     }
 
-    if (!orderDate) {
+    if (!data.date) {
       alert('予約日を選択してください');
       return;
     }
@@ -120,7 +119,6 @@ async function sendBbqOrder() {
       useDate: orderDate,                    // 利用日
       plan: productName,                     // プラン名
       unitPrice: Number(price || 0),         // 単価
-
       people: Number(people),
       customerName: customerName,
       customerTel: customerTel,
@@ -157,11 +155,8 @@ async function sendBbqOrder() {
       // =========================
       // localStorageクリア
       // =========================
-      localStorage.removeItem('bbqProductId');
-      localStorage.removeItem('bbqProductName');
-      localStorage.removeItem('bbqPrice');
-      localStorage.removeItem('bbqDate');
-
+      localStorage.removeItem('bbqReservation');
+      
       location.href = 'index.html';
 
     } else {
