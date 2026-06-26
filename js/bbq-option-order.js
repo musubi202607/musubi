@@ -1,116 +1,114 @@
 async function sendBbqOptionOrder() {
 
   const cart =
-    JSON.parse(localStorage.getItem('bbqOptionCart')) || [];
+    JSON.parse(
+      localStorage.getItem("bbqOptionCart")
+    ) || [];
 
   if (cart.length === 0) {
-    alert('商品がありません');
+    alert("商品がありません");
     return;
   }
 
   const reservationNo =
-    localStorage.getItem('reservationNo') || '';
+    localStorage.getItem("reservationNo") || "";
 
   const bbqDate =
-    document.getElementById('bbqDate')?.value?.trim();
+    document.getElementById("bbqDate").value.trim();
 
   const customerName =
-    document.getElementById('customerName')?.value?.trim();
+    document.getElementById("customerName").value.trim();
 
   const customerTel =
-    document.getElementById('customerTel')?.value?.trim();
+    document.getElementById("customerTel").value.trim();
 
   const memo =
-    document.getElementById('memo')?.value?.trim();
+    document.getElementById("memo").value.trim();
 
   // =========================
   // バリデーション
   // =========================
   if (!reservationNo) {
-    alert('予約を選択してください');
+    alert("予約番号がありません");
     return;
   }
 
   if (!bbqDate) {
-    alert('BBQ利用日を入力してください');
+    alert("利用日を入力してください");
     return;
   }
 
   if (!customerName) {
-    alert('お名前を入力してください');
+    alert("お名前を入力してください");
     return;
   }
 
   if (!customerTel) {
-    alert('電話番号を入力してください');
+    alert("電話番号を入力してください");
     return;
   }
 
-  const telPattern = /^[0-9\-]+$/;
+  const telPattern =
+    /^[0-9\-]+$/;
 
   if (!telPattern.test(customerTel)) {
-    alert('電話番号を正しく入力してください');
+    alert("電話番号を正しく入力してください");
     return;
   }
 
   // =========================
-  // 送信データ
+  // Worker送信
   // =========================
-  const orderData = {
-
-    orderType: 'BBQ_OPTION',
-
-    reservationNo,
-    orderDate: bbqDate,
-
-    customerName,
-    customerTel,
-
-    items: cart,
-
-    memo
-
-  };
-
-  // =========================
-  // API送信（Worker統一ルート）
-  // =========================
-  try {
-
-    const response =
-      await fetch(API_URL + '/api/orders', {
-
-        method: 'POST',
+  const response =
+    await fetch(
+      API_URL +
+      "/api/bbq/addOrder",
+      {
+        method: "POST",
 
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
 
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({
 
-      });
+          reservationNo,
 
-    const result =
-      await response.json();
+          orderDate: bbqDate,
 
-    if (result.success) {
+          customerName,
 
-      alert('追加注文を受け付けました');
+          customerTel,
 
-      localStorage.removeItem('bbqOptionCart');
+          items: cart,
 
-      location.href = 'index.html';
+          memo
 
-    } else {
+        })
 
-      alert('送信エラー');
+      }
+    );
 
-    }
+  const result =
+    await response.json();
 
-  } catch (error) {
+  if (result.success) {
 
-    console.error(error);
-    alert('通信エラーが発生しました');
+    alert("追加注文を受け付けました");
+
+    localStorage.removeItem(
+      "bbqOptionCart"
+    );
+
+    location.href =
+      "index.html";
+
+  } else {
+
+    alert(
+      result.message ||
+      "送信エラー"
+    );
 
   }
 
