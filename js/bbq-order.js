@@ -133,6 +133,8 @@ async function sendBbqOrder() {
       customerTel,
       memo
     };
+    //確認
+    console.log(orderData);
 
 
     // =========================
