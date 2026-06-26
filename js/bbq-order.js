@@ -50,6 +50,8 @@ function displayOrder() {
 // =========================
 async function sendBbqOrder() {
 
+  console.log("sendBbqOrder START");
+
   // 二重送信防止フラグ
   if (window.sending) return;
   window.sending = true;
