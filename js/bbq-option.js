@@ -31,7 +31,9 @@ async function loadBbqOptions() {
         Number(a.sort || 9999) - Number(b.sort || 9999)
       )
       .forEach(product => {
-
+        
+        console.log(product.name, product.type);
+        
         if (
           product.type !== 'bbq-option' &&
           product.type !== 'drink'
@@ -96,6 +98,8 @@ async function loadBbqOptions() {
           </div>
 
         `;
+        
+        console.log(card);
 
         if (product.type === 'bbq-option') {
           optionGrid.innerHTML += card;
