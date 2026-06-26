@@ -19,20 +19,24 @@ window.addEventListener("DOMContentLoaded", async () => {
 // =========================
 async function loadReservations(){
 
+  console.log("① START");
+
   try{
 
     const res =
-      await fetch(
-        API_URL + "/api/reservations/today"
-      );
+      await fetch(API_URL + "/api/reservations/today");
+
+    console.log("② response", res.status);
 
     const data =
       await res.json();
 
+    console.log("③ data", data);
+
     const target =
-      document.getElementById(
-        "reservationList"
-      );
+      document.getElementById("reservationList");
+
+    console.log("④ target", target);
 
     target.innerHTML = "";
 
