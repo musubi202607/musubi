@@ -21,6 +21,12 @@ async function loadReservations(){
 
   try{
 
+    const data = await res.json();
+
+    console.log("Array?", Array.isArray(data));
+    console.log("data=", data);
+    console.log("keys=", Object.keys(data));
+    
     const res =
       await fetch(API_URL + "/api/reservations/today");
 
