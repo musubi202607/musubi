@@ -28,7 +28,8 @@ async function loadReservations() {
 
     const data =
       await res.json();
-
+      
+    console.log(JSON.stringify(data));
     console.log("Array?", Array.isArray(data));
     console.log(data);
 
