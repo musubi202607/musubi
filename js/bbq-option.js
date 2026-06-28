@@ -19,23 +19,77 @@ window.addEventListener("DOMContentLoaded", async () => {
 // =========================
 async function loadReservations(){
 
+  console.log("① START");
+
   try{
 
-    const data = await res.json();
-
-    console.log("Array?", Array.isArray(data));
-    console.log("data=", data);
-    console.log("keys=", Object.keys(data));
-    
     const res =
       await fetch(API_URL + "/api/reservations/today");
 
-    console.log("status", res.status);
+    console.log("② response", res.status);
 
-    const text =
-      await res.text();
+    const data =
+      await res.json();
 
-    console.log(text);
+    console.log("③ data", data);
+
+    const target =
+      document.getElementById("reservationList");
+
+    console.log("④ target", target);
+
+    target.innerHTML = "";
+
+    if(!data.length){
+
+      target.innerHTML =
+        "<p>本日の予約はありません</p>";
+
+      return;
+
+    }
+
+    data.forEach(r=>{
+
+      target.innerHTML += `
+
+      <div class="product-card">
+
+        <div class="product-content">
+
+          <h3>${r.customerName}</h3>
+
+          <p>
+
+            ${r.useDate}
+
+          </p>
+
+          <p>
+
+            ${r.plan}
+
+          </p>
+
+          <button
+            onclick="selectReservation(
+              '${r.reservationNo}',
+              '${r.customerName}',
+              '${r.useDate}'
+            )"
+          >
+
+            この予約を選択
+
+          </button>
+
+        </div>
+
+      </div>
+
+      `;
+
+    });
 
   }catch(e){
 
