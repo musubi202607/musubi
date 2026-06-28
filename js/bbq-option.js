@@ -17,30 +17,27 @@ window.addEventListener("DOMContentLoaded", async () => {
 // =========================
 // 本日の予約一覧取得
 // =========================
-async function loadReservations(){
+async function loadReservations() {
 
-  console.log("① START");
-
-  try{
+  try {
 
     const res =
       await fetch(API_URL + "/api/reservations/today");
 
-    console.log("② response", res.status);
+    console.log("status", res.status);
 
     const data =
       await res.json();
 
-    console.log("③ data", data);
+    console.log("Array?", Array.isArray(data));
+    console.log(data);
 
     const target =
       document.getElementById("reservationList");
 
-    console.log("④ target", target);
-
     target.innerHTML = "";
 
-    if(!data.length){
+    if (!data.length) {
 
       target.innerHTML =
         "<p>本日の予約はありません</p>";
@@ -49,7 +46,7 @@ async function loadReservations(){
 
     }
 
-    data.forEach(r=>{
+    data.forEach(r => {
 
       target.innerHTML += `
 
@@ -59,17 +56,9 @@ async function loadReservations(){
 
           <h3>${r.customerName}</h3>
 
-          <p>
+          <p>${r.useDate}</p>
 
-            ${r.useDate}
-
-          </p>
-
-          <p>
-
-            ${r.plan}
-
-          </p>
+          <p>${r.plan}</p>
 
           <button
             onclick="selectReservation(
@@ -78,9 +67,7 @@ async function loadReservations(){
               '${r.useDate}'
             )"
           >
-
             この予約を選択
-
           </button>
 
         </div>
@@ -91,7 +78,7 @@ async function loadReservations(){
 
     });
 
-  }catch(e){
+  } catch (e) {
 
     console.error(e);
 
