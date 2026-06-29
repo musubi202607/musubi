@@ -84,7 +84,7 @@ async function loadReservations() {
     const response = await fetch(API_URL + '/api/reservations/today');
 
     const data = await response.json();
-    console.log('data:', data);
+    //console.log('data:', data);
 
     if (!Array.isArray(data)) {
       console.error('配列ではないレスポンス:', data);
