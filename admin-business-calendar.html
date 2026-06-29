@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>営業日カレンダー管理</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+}
+th, td{
+  border:1px solid #ddd;
+  padding:10px;
+}
+th{
+  background:#f5f5f5;
+}
+select{
+  width:100%;
+  box-sizing:border-box;
+}
+button{
+  padding:6px 10px;
+  cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <div class="container header-inner">
+    <h1>営業日カレンダー管理</h1>
+  </div>
+</header>
+
+<div class="container">
+
+  <a href="admin.html" class="back-btn">
+    ← 管理画面へ戻る
+  </a>
+
+  <br><br>
+
+  <table>
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>営業日</th>
+        <th>保存</th>
+      </tr>
+    </thead>
+    <tbody id="businessCalendarBody"></tbody>
+  </table>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/business-calendar.js"></script>
+
+</body>
+</html>
