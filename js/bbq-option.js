@@ -29,6 +29,8 @@ async function loadReservations() {
     const data =
       await res.json();
       
+    console.log("Array?", Array.isArray(data));
+    console.log("Length=", data.length);
     console.log(JSON.stringify(data));
     console.log("Array?", Array.isArray(data));
     console.log(data);
@@ -49,6 +51,8 @@ async function loadReservations() {
 
     data.forEach(r => {
 
+      console.log("予約", r);
+      
       target.innerHTML += `
 
       <div class="product-card">
