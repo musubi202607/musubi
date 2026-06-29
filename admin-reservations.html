@@ -81,7 +81,7 @@ th{
 
 async function loadReservations() {
   try {
-    const response = await fetch(API_URL + '/api/reservations');
+    const response = await fetch(API_URL + '/api/reservations/today');
 
     const data = await response.json();
     console.log('data:', data);
