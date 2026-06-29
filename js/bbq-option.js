@@ -580,7 +580,7 @@ function clearCart(){
 // =========================
 // 注文送信
 // =========================
-async function sendTabletOrder(){
+async function sendBbqOptionOrder(){
 
   if(!currentReservation){
 
