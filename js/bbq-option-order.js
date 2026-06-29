@@ -59,35 +59,29 @@ async function sendBbqOptionOrder() {
   // =========================
   // Worker送信
   // =========================
-  const response =
-    await fetch(
-      API_URL +
-      "/api/bbq/addOrder",
-      {
-        method: "POST",
+  const response = await fetch(
+  API_URL + "/api/bbq/addOrder",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      reservationNo,
+      orderDate: bbqDate,
+      customerName,
+      customerTel,
+      items: cart,
+      memo
+    })
+  }
+);
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+console.log("status =", response.status);
 
-        body: JSON.stringify({
+const text = await response.text();
 
-          reservationNo,
-
-          orderDate: bbqDate,
-
-          customerName,
-
-          customerTel,
-
-          items: cart,
-
-          memo
-
-        })
-
-      }
-    );
+console.log("response =", text);
 
   const result =
     await response.json();
