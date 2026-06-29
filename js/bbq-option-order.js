@@ -1,30 +1,34 @@
 async function sendBbqOptionOrder() {
 
-  const cart =
-    JSON.parse(
-      localStorage.getItem("bbqOptionCart")
-    ) || [];
+  console.log("① sendBbqOptionOrder START");
 
-  if (cart.length === 0) {
-    alert("商品がありません");
-    return;
-  }
+  const cart =
+    JSON.parse(localStorage.getItem("bbqOptionCart")) || [];
+
+  console.log("② cart", cart);
 
   const reservationNo =
     localStorage.getItem("reservationNo") || "";
 
+  console.log("③ reservationNo", reservationNo);
+
   const bbqDate =
     document.getElementById("bbqDate").value.trim();
+
+  console.log("④ bbqDate", bbqDate);
 
   const customerName =
     document.getElementById("customerName").value.trim();
 
+  console.log("⑤ customerName", customerName);
+
   const customerTel =
     document.getElementById("customerTel").value.trim();
 
-  const memo =
-    document.getElementById("memo").value.trim();
+  console.log("⑥ customerTel", customerTel);
 
+  console.log("⑦ fetch直前");
+  
   // =========================
   // バリデーション
   // =========================
