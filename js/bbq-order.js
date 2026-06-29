@@ -134,7 +134,7 @@ async function sendBbqOrder() {
       memo
     };
     //確認
-    alert(JSON.stringify(orderData));
+    //alert(JSON.stringify(orderData));
 
 
     // =========================
