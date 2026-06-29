@@ -83,13 +83,12 @@ async function loadReservations() {
   try {
     const response = await fetch(API_URL + '/api/reservations');
 
-    console.log('status:', response.status);
     const data = await response.json();
     console.log('data:', data);
 
     if (!Array.isArray(data)) {
-      console.error('配列じゃないレスポンスです');
-      alert('サーバーから予約一覧の配列が返ってきていません');
+      console.error('配列ではないレスポンス:', data);
+      alert('予約一覧の取得に失敗しました: ' + (data.error || '不明なエラー'));
       return;
     }
 
@@ -116,7 +115,6 @@ async function loadReservations() {
         </tr>
       `;
     });
-
   } catch (error) {
     console.error(error);
     alert('予約取得エラー');
