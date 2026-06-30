@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -6,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>カレンダー管理</title>
+<title>BBQカレンダー管理</title>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -46,7 +47,9 @@ button{
 <header>
 
   <div class="container header-inner">
-    <h1>カレンダー管理</h1>
+
+    <h1>BBQカレンダー管理</h1>
+
   </div>
 
 </header>
@@ -54,7 +57,9 @@ button{
 <div class="container">
 
 <a href="admin.html" class="back-btn">
-  ← 管理画面へ戻る
+
+← 管理画面へ戻る
+
 </a>
 
 <br><br>
@@ -62,12 +67,19 @@ button{
 <table>
 
 <thead>
-  <tr>
-    <th>日付</th>
-    <th>状態</th>
-    <th>上限</th>
-    <th>保存</th>
-  </tr>
+
+<tr>
+
+<th>日付</th>
+
+<th>状態</th>
+
+<th>上限</th>
+
+<th>保存</th>
+
+</tr>
+
 </thead>
 
 <tbody id="calendarBody"></tbody>
@@ -81,84 +93,178 @@ button{
 <script>
 
 // =========================
-// カレンダー取得
+// BBQカレンダー取得
 // =========================
-async function loadCalendar() {
+async function loadCalendar(){
 
-  const response = await fetch(API_URL + '/api/calendar');
-  const data = await response.json();
+  try{
 
-  let html = '';
+    const response =
+      await fetch(
+        API_URL + "/api/business-calendar"
+      );
 
-  data.forEach(row => {
+    const data =
+      await response.json();
 
-    html += `
-      <tr>
+    let html = "";
 
-        <td>${row.date}</td>
+    data.forEach(row=>{
 
-        <td>
-          <select id="status-${row.id}">
-            <option value="○" ${row.status === '○' ? 'selected' : ''}>○</option>
-            <option value="△" ${row.status === '△' ? 'selected' : ''}>△</option>
-            <option value="×" ${row.status === '×' ? 'selected' : ''}>×</option>
-          </select>
-        </td>
+      html += `
 
-        <td>
-          <input type="number" id="limit-${row.id}" value="${row.limit}">
-        </td>
+<tr>
 
-        <td>
-          <button onclick="saveCalendar(${row.id})">
-            保存
-          </button>
-        </td>
+<td>
 
-      </tr>
-    `;
+${row.date}
 
-  });
+</td>
 
-  document.getElementById('calendarBody').innerHTML = html;
-}
+<td>
 
+<select
+id="status-${row.date}">
 
-// =========================
-// カレンダー更新
-// =========================
-async function saveCalendar(id) {
+<option
+value="○"
+${row.status==="○"?"selected":""}>
 
-  const status = document.getElementById('status-' + id).value;
-  const limit = document.getElementById('limit-' + id).value;
+○
 
-  const res = await fetch(API_URL + '/api/calendar/update', {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      id,
-      status,
-      limit
-    })
-  });
+</option>
 
-  const result = await res.json();
+<option
+value="×"
+${row.status==="×"?"selected":""}>
 
-  if (result.ok) {
-    alert('保存しました');
-  } else {
-    alert('保存失敗');
+×
+
+</option>
+
+</select>
+
+</td>
+
+<td>
+
+<input
+type="number"
+min="0"
+id="limit-${row.date}"
+value="${row.limit}">
+
+</td>
+
+<td>
+
+<button
+onclick="saveCalendar('${row.date}')">
+
+保存
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+    });
+
+    document.getElementById(
+      "calendarBody"
+    ).innerHTML = html;
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("カレンダー取得エラー");
+
   }
 
 }
 
+// =========================
+// BBQカレンダー保存
+// =========================
+async function saveCalendar(date){
 
-// 初期読み込み
+  try{
+
+    const status =
+      document.getElementById(
+        "status-"+date
+      ).value;
+
+    const limit =
+      Number(
+        document.getElementById(
+          "limit-"+date
+        ).value
+      );
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/business-calendar",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+
+            date,
+
+            status,
+
+            limit
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      alert("保存しました");
+
+    }else{
+
+      alert(
+        result.message ||
+        "保存失敗"
+      );
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("通信エラー");
+
+  }
+
+}
+
+// 初期表示
 loadCalendar();
 
 </script>
 
 </body>
 </html>
+```
