@@ -24,15 +24,15 @@ async function loadReservations() {
     const res =
       await fetch(API_URL + "/api/reservations/today");
 
-    //console.log("status", res.status);
+//console.log("status", res.status);
 
     const data =
       await res.json();
       
-    //console.log("Array?", Array.isArray(data));
-    //console.log("Length=", data.length);
-    //console.log(JSON.stringify(data));
-    //console.log(data);
+//console.log("Array?", Array.isArray(data));
+//console.log("Length=", data.length);
+//console.log(JSON.stringify(data));
+//console.log(data);
 
     const target =
       document.getElementById("reservationList");
@@ -50,8 +50,8 @@ async function loadReservations() {
 
     data.forEach(r => {
 
-      //console.log("予約", r);
-      
+//console.log("予約", r);
+
       target.innerHTML += `
 
       <div class="product-card">
@@ -598,7 +598,9 @@ async function sendBbqOptionOrder(){
   }
 
   try{
-
+    
+    console.log("① fetch開始");
+    
     const res =
       await fetch(
 
@@ -636,7 +638,9 @@ async function sendBbqOptionOrder(){
         }
 
       );
-
+    
+    console.log("② fetch終了", res.status);
+    
     const result =
       await res.json();
     
@@ -663,9 +667,9 @@ async function sendBbqOptionOrder(){
 
   }catch(e){
 
-    console.error(e);
+    console.error("通信エラー", e);
 
-    alert("通信エラー");
+    alert(e.message);
 
   }
 
