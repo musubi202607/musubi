@@ -640,7 +640,11 @@ async function sendBbqOptionOrder(){
 
     const result =
       await res.json();
-
+    
+    //テスト用
+    console.log("status =", res.status);
+    console.log("result =", result);
+    
     if(result.success){
 
       alert("追加注文を受け付けました");
