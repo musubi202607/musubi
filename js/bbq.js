@@ -102,7 +102,7 @@ function selectBbq(id, name, price) {
 async function loadCalendar() {
 
   const response =
-    await fetch(API_URL + '/api/calendar');
+    await fetch(API_URL + "/api/business-calendar");
 
   calendarData = await response.json();
 
@@ -115,11 +115,11 @@ async function loadCalendar() {
 function renderCalendar() {
 
   const target =
-    document.getElementById('calendar');
+    document.getElementById("calendar");
 
   if (!target) return;
 
-  target.innerHTML = '';
+  target.innerHTML = "";
 
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -149,7 +149,7 @@ function renderCalendar() {
   `;
 
   for (let i = 0; i < startDay; i++) {
-    target.innerHTML += '<div></div>';
+    target.innerHTML += "<div></div>";
   }
 
   const today = new Date();
@@ -160,40 +160,52 @@ function renderCalendar() {
     const dateObj = new Date(year, month, day);
     const dateStr = formatDate(dateObj);
 
-    const item = calendarData.find(d =>
-      String(d.date).slice(0, 10).replaceAll('/', '-') === dateStr
-    );
+    const item =
+      calendarData.find(
+        d => d.date === dateStr
+      );
 
     if (!item) {
-      target.innerHTML += '<div></div>';
+
+      target.innerHTML += "<div></div>";
       continue;
+
     }
 
-    let className = 'calendar-day';
-    let disabled = '';
-    let statusText = item.status;
+    let className = "calendar-day";
+    let disabled = "";
+    let statusText = "";
 
+    // 過去日は受付終了
     if (dateObj < today) {
 
-      className += ' closed';
-      disabled = 'disabled';
-      statusText = '受付終了';
+      className += " closed";
+      disabled = "disabled";
+      statusText = "受付終了";
 
-    } else if (item.status === '○') {
+    }
 
-      className += ' available';
-      statusText = `あと${item.limit}枠`;
+    // 予約可能
+    else if (item.status === "○" && item.limit > 0) {
 
-    } else if (item.status === '△') {
+      className += " available";
+      statusText = `あと${item.limit}組`;
 
-      className += ' few';
-      statusText = `あと${item.limit}枠`;
+    }
 
-    } else {
+    // 予約不可
+    else {
 
-      className += ' closed';
-      disabled = 'disabled';
-      statusText = '予約不可';
+      className += " closed";
+      disabled = "disabled";
+      statusText = "予約不可";
+
+    }
+
+    // 選択済み
+    if (reservation.date === dateStr) {
+
+      className += " selected";
 
     }
 
@@ -203,13 +215,22 @@ function renderCalendar() {
         ${disabled}
         onclick="selectDate('${dateStr}', this)"
       >
-        <div class="calendar-date">${day}</div>
-        <div class="calendar-status">${statusText}</div>
+
+        <div class="calendar-date">
+          ${day}
+        </div>
+
+        <div class="calendar-status">
+          ${statusText}
+        </div>
+
       </button>
     `;
+
   }
 
-  target.innerHTML += '</div>';
+  target.innerHTML += "</div>";
+
 }
 
 // =========================
