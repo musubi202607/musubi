@@ -599,7 +599,7 @@ async function sendBbqOptionOrder(){
 
   try{
     
-//console.log("① fetch開始");
+console.log("① fetch開始");
     
     const res =
       await fetch(
@@ -639,37 +639,25 @@ async function sendBbqOptionOrder(){
 
       );
     
-//console.log("② fetch終了", res.status);
+console.log("② fetch終了", res.status);
     
-    const text = await res.text();
-
-//console.log(text);
-
-//return;
-
-
     const result = await res.json();
-    
-//テスト用
-//console.log("status =", res.status);
-//console.log("result =", result);
-    
-    if(result.success){
 
-      alert("追加注文を受け付けました");
+console.log("result =", result);
 
-      bbqCart = [];
+    if (result.success) {
 
-      renderCart();
+       alert("追加注文を受け付けました");
 
-    }else{
+       bbqCart = [];
 
-      alert(
-        result.message ||
-        "送信エラー"
-      );
+       renderCart();
 
-    }
+     } else {
+
+       alert(result.message || "送信エラー");
+
+     }
 
   }catch(e){
 
