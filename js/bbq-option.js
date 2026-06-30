@@ -641,12 +641,18 @@ async function sendBbqOptionOrder(){
     
     console.log("② fetch終了", res.status);
     
-    const result =
-      await res.json();
+    const text = await res.text();
+
+    console.log(text);
+
+    return;
+
+
+//const result = await res.json();
     
-    //テスト用
-    console.log("status =", res.status);
-    console.log("result =", result);
+//テスト用
+//console.log("status =", res.status);
+//console.log("result =", result);
     
     if(result.success){
 
