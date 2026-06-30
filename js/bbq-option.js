@@ -24,7 +24,7 @@ async function loadReservations() {
     const res =
       await fetch(API_URL + "/api/reservations/today");
 
-    console.log("status", res.status);
+    //console.log("status", res.status);
 
     const data =
       await res.json();
@@ -50,7 +50,7 @@ async function loadReservations() {
 
     data.forEach(r => {
 
-      console.log("予約", r);
+      //console.log("予約", r);
       
       target.innerHTML += `
 
