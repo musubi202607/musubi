@@ -29,11 +29,10 @@ async function loadReservations() {
     const data =
       await res.json();
       
-    console.log("Array?", Array.isArray(data));
-    console.log("Length=", data.length);
-    console.log(JSON.stringify(data));
-    console.log("Array?", Array.isArray(data));
-    console.log(data);
+    //console.log("Array?", Array.isArray(data));
+    //console.log("Length=", data.length);
+    //console.log(JSON.stringify(data));
+    //console.log(data);
 
     const target =
       document.getElementById("reservationList");
