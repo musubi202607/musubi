@@ -1,132 +1,161 @@
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const path = url.pathname;
+// =========================
+// BBQ営業日一覧取得
+// =========================
+async function loadCalendar(){
 
-    try {
+  try{
 
-      // =========================
-      // 商品一覧
-      // =========================
-      if (path === "/api/products") {
-        return json(await getProducts(env));
-      }
+    const response =
+      await fetch(
+        API_URL + "/api/business-calendar"
+      );
 
-      // =========================
-      // 商品更新
-      // =========================
-      if (path === "/api/products/update") {
-        const body = await request.json();
-        return json(await updateProduct(env, body));
-      }
+    const data =
+      await response.json();
 
-      // =========================
-      // 商品削除
-      // =========================
-      if (path === "/api/products/delete") {
-        const body = await request.json();
-        return json(await deleteProduct(env, body.id));
-      }
+    let html = "";
 
-      // =========================
-      // カレンダー（予約用）
-      // =========================
-      if (path === "/api/calendar") {
-        return json(await getCalendar(env));
-      }
+    data.forEach(row=>{
 
-      // =========================
-      // カレンダー管理
-      // =========================
-      if (path === "/api/calendar/admin") {
-        return json(await getCalendarAdmin(env));
-      }
+      html += `
+<tr>
 
-      if (path === "/api/calendar/update") {
-        const body = await request.json();
-        return json(await updateCalendar(env, body));
-      }
+<td>${row.date}</td>
 
-      // =========================
-      // 予約一覧
-      // =========================
-      if (path === "/api/reservations") {
-        return json(await getReservations(env));
-      }
+<td>
 
-      // =========================
-      // 予約詳細
-      // =========================
-      if (path.startsWith("/api/reservation/")) {
-        const no = path.split("/").pop();
-        return json(await getReservationDetail(env, no));
-      }
+<select id="status-${row.date}">
 
-      // =========================
-      // 追加注文履歴
-      // =========================
-      if (path.startsWith("/api/orderhistory/")) {
-        const no = path.split("/").pop();
-        return json(await getOrderHistory(env, no));
-      }
+<option value="○"
+${row.status==="○"?"selected":""}>
 
-      // =========================
-      // 未会計一覧
-      // =========================
-      if (path === "/api/unpaid") {
-        return json(await getUnpaid(env));
-      }
+予約可
 
-      // =========================
-      // BBQ未会計
-      // =========================
-      if (path === "/api/bbq/unpaid") {
-        return json(await getBbqUnpaid(env));
-      }
+</option>
 
-      // =========================
-      // おにぎり未会計
-      // =========================
-      if (path === "/api/onigiri/unpaid") {
-        return json(await getOnigiriUnpaid(env));
-      }
+<option value="×"
+${row.status==="×"?"selected":""}>
 
-      // =========================
-      // 会計待ち
-      // =========================
-      if (path === "/api/payments/waiting") {
-        return json(await getWaitingPayments(env));
-      }
+予約不可
 
-      if (path === "/api/payments/paid") {
-        const body = await request.json();
-        return json(await setPaid(env, body.no));
-      }
+</option>
 
-      // =========================
-      // ダッシュボード
-      // =========================
-      if (path === "/api/dashboard") {
-        return json(await getDashboard(env));
-      }
+</select>
 
-      return json({ error: "Not Found" }, 404);
+</td>
 
-    } catch (e) {
-      return json({ error: e.message }, 500);
-    }
+<td>
+
+<input
+type="number"
+min="0"
+id="limit-${row.date}"
+value="${row.limit}">
+
+</td>
+
+<td>
+
+<button
+onclick="saveCalendar('${row.date}')">
+
+保存
+
+</button>
+
+</td>
+
+</tr>
+`;
+
+    });
+
+    document.getElementById(
+      "calendarBody"
+    ).innerHTML = html;
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("取得エラー");
+
   }
-};
+
+}
 
 // =========================
-// utils
+// 保存
 // =========================
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
+async function saveCalendar(date){
+
+  try{
+
+    let limit =
+      Number(
+        document.getElementById(
+          "limit-"+date
+        ).value
+      );
+
+    let status =
+      limit<=0
+      ? "×"
+      : "○";
+
+    document.getElementById(
+      "status-"+date
+    ).value = status;
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/business-calendar",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+
+            mode:"updateBusinessCalendar",
+
+            date,
+            status,
+            limit
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      alert("保存しました");
+
+    }else{
+
+      alert(result.message);
+
     }
-  });
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("通信エラー");
+
+  }
+
 }
+
+loadCalendar();

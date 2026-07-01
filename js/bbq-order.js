@@ -156,7 +156,9 @@ async function sendBbqOrder() {
     // 成功処理
     // =========================
     if (result.success) {
-
+      
+      localStorage.removeItem("bbqReservation");
+      
       alert(
         '予約完了しました\n予約番号：' +
         (result.reservationNo || '')
