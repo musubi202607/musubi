@@ -73,7 +73,7 @@ async function loadDetail() {
     // 予約詳細　確認必
     // =========================
     const res1 = await fetch(
-    API_URL + '?mode=bbqDetail&no=' + encodeURIComponent(reservationNo)
+    API_URL + '?mode=bbqDetail&no=' + reservationNo
     );
 
     const data = await res1.json();
@@ -82,7 +82,7 @@ async function loadDetail() {
     // 追加注文履歴　確認必
     // =========================
     const res2 = await fetch(
-    API_URL + '?mode=bbqHistory&no=' + encodeURIComponent(reservationNo)
+    API_URL + '?mode=bbqHistory&no=' + reservationNo
     );
 
     const history = await res2.json();
