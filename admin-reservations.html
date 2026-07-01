@@ -97,28 +97,113 @@ async function loadReservations() {
 
     data.forEach(item => {
       tbody.innerHTML += `
-        <tr>
-          <td>${item.reservationNo}</td>
-          <td>
-            <a href="admin-reservation-detail.html?no=${item.reservationNo}">
-              ${item.customerName}
-            </a>
-          </td>
-          <td>${item.people}</td>
-          <td>${item.plan}</td>
-          <td class="${item.status === '来店済' ? 'status-ok' : 'status-ng'}">
-            ${item.status}
-          </td>
-          <td class="${item.paid === '済' ? 'status-ok' : 'status-ng'}">
-            ${item.paid || '未'}
-          </td>
-        </tr>
-      `;
+    <tr>
+
+    <td>${item.reservationNo}</td>
+
+    <td>
+    <a href="admin-reservation-detail.html?no=${item.reservationNo}">
+    ${item.customerName}
+    </a>
+    </td>
+
+    <td>${item.people}</td>
+
+    <td>${item.plan}</td>
+
+    <td class="${item.status === '来店済' ? 'status-ok' : 'status-ng'}">
+    ${item.status}
+    </td>
+
+    <td class="${item.paid === '済' ? 'status-ok' : 'status-ng'}">
+    ${item.paid || '未'}
+    </td>
+
+    <td>
+
+    ${
+    item.status==="キャンセル"
+
+    ? "キャンセル済"
+
+    : `<button
+    onclick="cancelReservation('${item.reservationNo}')">
+
+    キャンセル
+
+    </button>`
+    }
+
+ </td>
+
+ </tr>
+ `;
     });
   } catch (error) {
     console.error(error);
     alert('予約取得エラー');
   }
+}
+// =========================
+// BBQ予約キャンセル
+// =========================
+async function cancelReservation(reservationNo){
+
+  if(
+    !confirm("この予約をキャンセルしますか？")
+  ){
+    return;
+  }
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/bbq/cancel",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+
+            reservationNo
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      alert("キャンセルしました");
+
+      loadReservations();
+
+    }else{
+
+      alert(result.message);
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("通信エラー");
+
+  }
+
 }
 
 loadReservations();

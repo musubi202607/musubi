@@ -186,7 +186,7 @@ function renderCalendar() {
     }
 
     // 予約可能
-    else if (item.status === "○" && item.limit > 0) {
+    else if(item.status==="○" && Number(item.limit)>0){
 
       className += " available";
       statusText = `あと${item.limit}組`;
@@ -236,17 +236,41 @@ function renderCalendar() {
 // =========================
 // 日付選択
 // =========================
-function selectDate(date, button) {
+function selectDate(date, button){
+
+  const item =
+    calendarData.find(
+      d => d.date === date
+    );
+
+  if(!item){
+    return;
+  }
+
+  if(item.status !== "○"){
+    alert("この日は予約できません");
+    return;
+  }
+
+  if(Number(item.limit) <= 0){
+    alert("この日は満席です");
+    return;
+  }
 
   reservation.date = date;
 
   saveReservation();
+
   updateGoButton();
 
-  document.querySelectorAll('.calendar-day')
-    .forEach(btn => btn.classList.remove('selected'));
+  document
+    .querySelectorAll(".calendar-day")
+    .forEach(btn =>
+      btn.classList.remove("selected")
+    );
 
-  button.classList.add('selected');
+  button.classList.add("selected");
+
 }
 
 // =========================
