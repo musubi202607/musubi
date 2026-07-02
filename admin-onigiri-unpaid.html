@@ -91,24 +91,18 @@ async function loadData(){
   const data =
     await response.json();
 
-  let html = '';
+    let html = '';
 
   data.forEach(order => {
 
     let itemsHtml = '';
 
-    let rowNos = [];
+      order.items.forEach(item => {
 
-    order.items.forEach(item => {
+     itemsHtml +=
+       `${item.name} × ${item.qty}<br>`;
 
-      itemsHtml +=
-        `${item.name} × ${item.qty}<br>`;
-
-      rowNos.push(
-        item.rowNo
-      );
-
-    });
+   });
 
     html += `
       <tr>
@@ -138,7 +132,10 @@ async function loadData(){
 
           <button
             class="paid-btn"
-            onclick="paidComplete(${JSON.stringify(rowNos)})"
+            onclick="paidComplete(
+                '${order.orderDate}',
+                '${order.customerName}'
+            )"
           >
             会計済
           </button>
@@ -157,48 +154,68 @@ async function loadData(){
 }
 
 
-// 会計済処理（Worker版）
-async function paidComplete(rowNos){
+// =========================
+// おにぎり会計済
+// =========================
+async function paidComplete(orderDate, customerName){
 
   if(
-    !confirm(
-      '会計済にしますか？'
-    )
-  ) return;
+    !confirm("会計済にしますか？")
+  ){
+    return;
+  }
 
   try{
 
     const response =
       await fetch(
+
         API_URL +
-        '/api/onigiri/paid',
+        "/api/onigiri/paid",
+
         {
-          method:'POST',
+
+          method:"POST",
 
           headers:{
-            'Content-Type':
-              'application/json'
+            "Content-Type":"application/json"
           },
 
           body:JSON.stringify({
-            rowNos
+
+            orderDate,
+
+            customerName
+
           })
+
         }
+
       );
 
-    const result = await response.json();
+    const result =
+      await response.json();
 
     if(result.success){
-      alert('会計完了');
+
+      alert("会計済にしました");
+
       loadData();
+
     }else{
-      alert('更新失敗');
+
+      alert(result.message);
+
     }
 
   }catch(error){
+
     console.error(error);
-    alert('通信エラー');
+
+    alert("通信エラー");
+
   }
+
 }
 
 loadData();
