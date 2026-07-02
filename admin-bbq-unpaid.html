@@ -118,9 +118,21 @@ async function loadData() {
         <td>¥${Number(row.grandTotal || 0).toLocaleString()}</td>
 
         <td>
-          <span class="${row.paid === '済' ? 'status-ok' : 'status-ng'}">
-            ${row.paid || '未'}
-          </span>
+
+        ${
+        row.paid === "済"
+
+        ? `<span class="status-ok">済</span>`
+
+        : `<button
+        onclick="setPaid('${row.reservationNo}')">
+
+        会計済
+
+        </button>`
+
+        }
+
         </td>
 
         <td>
@@ -133,6 +145,57 @@ async function loadData() {
     `;
 
   });
+
+
+// =========================
+// BBQ会計済
+// =========================
+async function setPaid(reservationNo){
+
+  if(!confirm("会計済にしますか？")){
+    return;
+  }
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/bbq/paid",
+
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          reservationNo
+
+        })
+
+      }
+
+    );
+
+  const result =
+    await res.json();
+
+  if(result.success){
+
+    alert("会計済に更新しました");
+
+    loadData();
+
+  }else{
+
+    alert(result.message);
+
+  }
+
+}
 
   document.getElementById('result').innerHTML = html;
 
