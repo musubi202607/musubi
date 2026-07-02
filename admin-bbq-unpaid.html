@@ -100,8 +100,7 @@ async function loadData() {
   data.forEach(row => {
 
     const total =
-      Number(row.bbqPrice || 0) +
-      Number(row.optionTotal || 0);
+      Number(row.grandTotal || 0);
 
     html += `
       <tr>
@@ -116,7 +115,7 @@ async function loadData() {
 
         <td>¥${Number(row.optionTotal || 0).toLocaleString()}</td>
 
-        <td>¥${total.toLocaleString()}</td>
+        <td>¥${Number(row.grandTotal || 0).toLocaleString()}</td>
 
         <td>
           <span class="${row.paid === '済' ? 'status-ok' : 'status-ng'}">
