@@ -127,7 +127,7 @@ async function loadData() {
         : `<button
         onclick="setPaid('${row.reservationNo}')">
 
-        会計済
+        未会計
 
         </button>`
 
@@ -146,6 +146,12 @@ async function loadData() {
 
   });
 
+
+  document.getElementById('result').innerHTML = html;
+
+}
+
+loadData();
 
 // =========================
 // BBQ会計済
@@ -196,12 +202,6 @@ async function setPaid(reservationNo){
   }
 
 }
-
-  document.getElementById('result').innerHTML = html;
-
-}
-
-loadData();
 
 </script>
 
