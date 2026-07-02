@@ -111,8 +111,19 @@ async function loadReservations() {
 
     <td>${item.plan}</td>
 
-    <td class="${item.status === '来店済' ? 'status-ok' : 'status-ng'}">
-    ${item.status}
+    <td>
+
+      <button
+       onclick="setVisited('${item.reservationNo}')"
+       ${item.status === "来店済" ? "disabled" : ""}
+      >
+
+      ${item.status === "来店済"
+        ? "来店済"
+        : "来店"}
+
+      </button>
+
     </td>
 
     <td class="${item.paid === '済' ? 'status-ok' : 'status-ng'}">
@@ -144,6 +155,55 @@ async function loadReservations() {
     alert('予約取得エラー');
   }
 }
+
+// =========================
+// 来店受付
+// =========================
+async function setVisited(reservationNo){
+
+  if(!confirm("来店済にしますか？")){
+    return;
+  }
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/bbq/visited",
+
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          reservationNo
+
+        })
+
+      }
+
+    );
+
+  const result =
+    await res.json();
+
+  if(result.success){
+
+    loadReservations();
+
+  }else{
+
+    alert(result.message);
+
+  }
+
+}
+
 // =========================
 // BBQ予約キャンセル
 // =========================
