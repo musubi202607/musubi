@@ -70,7 +70,7 @@ async function loadDetail() {
   try {
 
     // =========================
-    // 予約詳細　確認必
+    // 予約詳細
     // =========================
     const res1 = await fetch(
     API_URL + "/api/bbq/detail?no=" + reservationNo
@@ -79,7 +79,7 @@ async function loadDetail() {
     const data = await res1.json();
 
     // =========================
-    // 追加注文履歴　確認必
+    // 追加注文履歴
     // =========================
     const res2 = await fetch(
     API_URL + "/api/bbq/history?no=" + reservationNo
@@ -122,9 +122,11 @@ async function loadDetail() {
     });
 
     const bbqTotal = Number(data.price || 0);
-    const optionTotal = Number(history.total || 0);
-    const grandTotal = bbqTotal + optionTotal;
 
+    const optionTotal = Number(history.total || 0);
+
+    const grandTotal = bbqTotal + optionTotal;
+        
     document.getElementById('orderHistory').innerHTML = `
       <h2>追加注文履歴</h2>
 
@@ -151,9 +153,15 @@ async function loadDetail() {
     `;
 
   } catch (e) {
-    console.error(e);
-    alert("読み込みエラー");
-  }
+
+      console.error(e);
+
+      alert(
+        "読み込みエラー\n\n" +
+        e.message
+      );
+
+    }
 }
 
 loadDetail();
