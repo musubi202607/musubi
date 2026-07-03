@@ -62,6 +62,8 @@ th{
 
 <thead>
 <tr>
+  <th>注文番号</th>
+  <th>受取時間</th>
   <th>氏名</th>
   <th>電話番号</th>
   <th>商品</th>
@@ -107,39 +109,28 @@ async function loadData(){
     html += `
       <tr>
 
-        <td>
-          ${order.customerName}
-        </td>
+        <td>${order.orderNo}</td>
+
+        <td>${order.pickupTime || ""}</td>
+
+        <td>${order.customerName}</td>
+
+        <td>${order.customerTel}</td>
+
+        <td>${itemsHtml}</td>
+
+        <td>¥${Number(order.total).toLocaleString()}</td>
+
+        <td>未会計</td>
 
         <td>
-          ${order.customerTel}
-        </td>
-
-        <td>
-          ${itemsHtml}
-        </td>
-
-        <td>
-          ¥${Number(order.total)
-            .toLocaleString()}
-        </td>
-
-        <td>
-          未会計
-        </td>
-
-        <td>
-
           <button
             class="paid-btn"
             onclick="paidComplete(
-                '${order.orderDate}',
-                '${order.customerName}'
-            )"
-          >
+             '${order.orderNo}'
+            )">
             会計済
           </button>
-
         </td>
 
       </tr>
@@ -157,7 +148,7 @@ async function loadData(){
 // =========================
 // おにぎり会計済
 // =========================
-async function paidComplete(orderDate, customerName){
+async function paidComplete(orderNo){
 
   if(
     !confirm("会計済にしますか？")
@@ -183,9 +174,7 @@ async function paidComplete(orderDate, customerName){
 
           body:JSON.stringify({
 
-            orderDate,
-
-            customerName
+           orderNo
 
           })
 
