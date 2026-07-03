@@ -154,10 +154,18 @@ async function sendOrder(){
 
   if(json.success){
 
-    alert("注文完了");
+   sessionStorage.setItem(
+    "orderNo",
+    json.orderNo
+  );
 
-    location.href =
-      "complete.html";
+  sessionStorage.setItem(
+    "pickupTime",
+    pickupTime
+  );
+
+location.href =
+  "complete.html";
 
   }else{
 
