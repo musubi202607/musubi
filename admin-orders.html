@@ -90,7 +90,8 @@ async function loadOrders(type = "onigiri") {
 
   const resJson = await res.json();
 
-  const orders = resJson.orders; // ★ここ修正
+  const data = await res.json();
+  console.log("API RESPONSE:", data);
 
   let html = "";
 
