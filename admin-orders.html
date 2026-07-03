@@ -86,20 +86,17 @@ async function loadOrders(type = "onigiri") {
     API_URL + "/api/orders?type=" + type
   );
 
-  const resJson = await res.json(); // ←先にこれ
+  const resJson = await res.json();
 
-  console.log("RESPONSE:", resJson); // ←後に使う
+  console.log("RESPONSE:", resJson);
 
   const orders = resJson.orders || [];
 
   let html = "";
 
-  // =========================
-  // おにぎり
-  // =========================
-   if (type === "onigiri") {
+  orders.forEach(order => {
 
-    orders.forEach(order => {
+    if (type === "onigiri") {
       html += `
         <div class="order-card">
           <h3>注文番号 ${order.orderNo}</h3>
@@ -114,16 +111,9 @@ async function loadOrders(type = "onigiri") {
           <p>会計：${order.paid}</p>
         </div>
       `;
-    });
+    }
 
-  }
-
-  // =========================
-  // BBQ予約
-  // =========================
-  if (type === "bbq") {
-
-    orders.forEach(order => {
+    if (type === "bbq") {
       html += `
         <div class="order-card">
           <h3>予約番号 ${order.reservationNo}</h3>
@@ -137,16 +127,9 @@ async function loadOrders(type = "onigiri") {
           <p>会計：${order.paid}</p>
         </div>
       `;
-    });
+    }
 
-  }
-
-  // =========================
-  // BBQ追加注文
-  // =========================
-  if (type === "option") {
-
-    orders.forEach(order => {
+    if (type === "option") {
       html += `
         <div class="order-card">
           <h3>予約番号 ${order.reservationNo}</h3>
@@ -160,9 +143,9 @@ async function loadOrders(type = "onigiri") {
           <p>会計：${order.paid}</p>
         </div>
       `;
-    });
+    }
 
-  }
+  });
 
   document.getElementById("orderBody").innerHTML = html;
 }
