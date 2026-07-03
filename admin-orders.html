@@ -92,7 +92,7 @@ async function loadOrders(type = "onigiri") {
 
   const orders = resJson.orders || [];
 
-  let html = "";
+  orders.forEach(order => {
 
   // =========================
   // おにぎり
