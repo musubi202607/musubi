@@ -81,15 +81,15 @@ let currentType = "onigiri";
 async function loadOrders(type = "onigiri") {
 
   console.log("CLICK:", type);
-  console.log("RESPONSE:", resJson);
 
   const res = await fetch(
-    API_URL +
-    "/api/orders?type=" +
-    type
+    API_URL + "/api/orders?type=" + type
   );
 
-  const resJson = await res.json();
+  const resJson = await res.json(); // ←先にこれ
+
+  console.log("RESPONSE:", resJson); // ←後に使う
+
   const orders = resJson.orders || [];
 
   let html = "";
