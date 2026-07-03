@@ -113,7 +113,15 @@ async function sendOrder(){
 
   const customerTel =
     document.getElementById("customerTel").value;
-
+  
+  const pickupTime =
+    document.getElementById("pickupTime").value;
+      if(!pickupTime){
+       alert("受取時間を選択してください");
+       return;
+      }
+  
+  
   const memo =
     document.getElementById("memo").value;
 
@@ -121,6 +129,7 @@ async function sendOrder(){
     sessionId,
     customerName,
     customerTel,
+    pickupTime,
     memo
   };
 
