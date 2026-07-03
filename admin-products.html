@@ -316,7 +316,7 @@ async function saveProduct(id) {
   const result =
     await res.json();
 
-  if (result.ok) {
+  if (result.success) {
 
     alert(
       '保存しました'
@@ -364,7 +364,7 @@ async function deleteProduct(id) {
   const result =
     await res.json();
 
-  if (result.ok) {
+  if (result.success) {
 
     alert('削除しました');
 
@@ -435,7 +435,7 @@ async function addProduct() {
   const result =
     await res.json();
 
-  if (result.ok) {
+  if (result.success) {
 
     alert(
       '追加しました'
