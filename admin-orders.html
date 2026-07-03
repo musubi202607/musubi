@@ -80,6 +80,9 @@ let currentType = "onigiri";
 // =========================
 async function loadOrders(type = "onigiri") {
 
+  console.log("CLICK:", type);
+  console.log("RESPONSE:", resJson);
+
   const res = await fetch(
     API_URL +
     "/api/orders?type=" +
