@@ -78,21 +78,19 @@ let currentType = "onigiri";
 // =========================
 // 一覧取得
 // =========================
-async function loadOrders(type = "onigiri"){
+async function loadOrders(type = "onigiri") {
 
   currentType = type;
 
-  const res =
-    await fetch(
+  const res = await fetch(
+    API_URL +
+    "/api/orders?type=" +
+    type
+  );
 
-      API_URL +
-      "/api/orders?type=" +
-      type
+  const resJson = await res.json();
 
-    );
-
-  const orders =
-    await res.json();
+  const orders = resJson.orders; // ★ここ修正
 
   let html = "";
 
