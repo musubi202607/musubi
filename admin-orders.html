@@ -47,57 +47,314 @@
 
 </div>
 
+<div style="margin:20px 0;">
+
+<button onclick="loadOrders('onigiri')">
+
+おにぎり
+
+</button>
+
+<button onclick="loadOrders('bbq')">
+
+BBQ予約
+
+</button>
+
+<button onclick="loadOrders('option')">
+
+追加注文
+
+</button>
+
+</div>
+
 <script src="js/config.js"></script>
 
 <script>
 
-async function loadOrders(){
+let currentType = "onigiri";
 
-  const res = await fetch(API_URL + "/api/orders");
-  const orders = await res.json();
+// =========================
+// 一覧取得
+// =========================
+async function loadOrders(type = "onigiri"){
+
+  currentType = type;
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/orders?type=" +
+      type
+
+    );
+
+  const orders =
+    await res.json();
 
   let html = "";
 
-  orders.forEach(order => {
+  // =========================
+  // おにぎり
+  // =========================
+  if(type==="onigiri"){
 
-    let itemsHtml = "";
-    let total = 0;
+    orders.forEach(order=>{
 
-    order.items.forEach(i => {
+      html += `
 
-      const price = Number(i.price || 0);
-      const subtotal = price * i.qty;
-
-      total += subtotal;
-
-      itemsHtml += `
-        <div class="item">
-          ・${i.name || "商品"} × ${i.qty}
-          （¥${subtotal.toLocaleString()}）
-        </div>
-      `;
-    });
-
-    html += `
       <div class="order-card">
 
-        <h3>注文ID: ${order.orderId}</h3>
+        <h3>
 
-        <p>日時: ${order.createdAt}</p>
+        注文番号
 
-        <p>状態: ${order.status}</p>
+        ${order.orderNo}
 
-        <div>${itemsHtml}</div>
+        </h3>
 
-        <div class="total">
-          合計: ¥${total.toLocaleString()}
-        </div>
+        <p>
+
+        受付：
+        ${order.orderDate}
+
+        </p>
+
+        <p>
+
+        受取：
+        ${order.pickupTime}
+
+        </p>
+
+        <p>
+
+        氏名：
+        ${order.customerName}
+
+        </p>
+
+        <p>
+
+        電話：
+        ${order.customerTel}
+
+        </p>
+
+        <p>
+
+        商品：
+        ${order.itemName}
+
+        </p>
+
+        <p>
+
+        数量：
+        ${order.qty}
+
+        </p>
+
+        <p>
+
+        金額：
+        ¥${Number(order.amount).toLocaleString()}
+
+        </p>
+
+        <p>
+
+        状態：
+        ${order.status}
+
+        </p>
+
+        <p>
+
+        会計：
+        ${order.paid}
+
+        </p>
 
       </div>
-    `;
-  });
 
-  document.getElementById("orderBody").innerHTML = html;
+      `;
+
+    });
+
+  }
+
+  // =========================
+  // BBQ予約
+  // =========================
+  if(type==="bbq"){
+
+    orders.forEach(order=>{
+
+      html += `
+
+      <div class="order-card">
+
+        <h3>
+
+        予約番号
+
+        ${order.reservationNo}
+
+        </h3>
+
+        <p>
+
+        利用日：
+        ${order.useDate}
+
+        </p>
+
+        <p>
+
+        氏名：
+        ${order.customerName}
+
+        </p>
+
+        <p>
+
+        電話：
+        ${order.customerTel}
+
+        </p>
+
+        <p>
+
+        人数：
+        ${order.people}
+
+        </p>
+
+        <p>
+
+        プラン：
+        ${order.plan}
+
+        </p>
+
+        <p>
+
+        金額：
+        ¥${Number(order.price).toLocaleString()}
+
+        </p>
+
+        <p>
+
+        状態：
+        ${order.status}
+
+        </p>
+
+        <p>
+
+        会計：
+        ${order.paid}
+
+        </p>
+
+      </div>
+
+      `;
+
+    });
+
+  }
+
+  // =========================
+  // BBQ追加注文
+  // =========================
+  if(type==="option"){
+
+    orders.forEach(order=>{
+
+      html += `
+
+      <div class="order-card">
+
+        <h3>
+
+        予約番号
+
+        ${order.reservationNo}
+
+        </h3>
+
+        <p>
+
+        受付：
+        ${order.orderDate}
+
+        </p>
+
+        <p>
+
+        利用日：
+        ${order.useDate}
+
+        </p>
+
+        <p>
+
+        氏名：
+        ${order.customerName}
+
+        </p>
+
+        <p>
+
+        商品：
+        ${order.itemName}
+
+        </p>
+
+        <p>
+
+        数量：
+        ${order.qty}
+
+        </p>
+
+        <p>
+
+        金額：
+        ¥${Number(order.amount).toLocaleString()}
+
+        </p>
+
+        <p>
+
+        状態：
+        ${order.status}
+
+        </p>
+
+        <p>
+
+        会計：
+        ${order.paid}
+
+        </p>
+
+      </div>
+
+      `;
+
+    });
+
+  }
+
+  document.getElementById("orderBody").innerHTML =
+    html;
+
 }
 
 loadOrders();
