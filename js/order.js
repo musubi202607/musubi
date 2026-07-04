@@ -153,26 +153,23 @@ async function sendOrder(){
   console.log(json);
 
   if(json.success){
-
-   sessionStorage.setItem(
+  sessionStorage.setItem(
     "orderNo",
     json.orderNo
   );
-
   sessionStorage.setItem(
     "pickupTime",
-    pickupTime
+    document.getElementById(
+      "pickupTime"
+    ).value
   );
-
-location.href =
-  "complete.html";
-
+   alert("注文完了");
+  location.href =
+    "complete.html";
   }else{
-
     alert(
       "注文送信エラー"
     );
-
   }
 
 }
