@@ -88,9 +88,11 @@ async function loadOrders(type = "onigiri") {
     type
   );
 
-  const resJson = await res.json();
+  const result =
+  await res.json();
 
-  const orders = resJson.orders || [];
+  const orders =
+  result.orders || [];
 
   let html = "";
 
