@@ -173,17 +173,25 @@ async function clearCart() {
 
   const sessionId = getSessionId();
 
-  await fetch(
+  const res = await fetch(
     `${API_URL}/api/cart/clear?sessionId=${sessionId}`
   );
 
-  updateCartCount();
+  console.log("clear status", res.status);
+
+  if (!res.ok) {
+
+    alert("カート削除に失敗しました");
+
+    return;
+
+  }
+
+  await updateCartCount();
 
   location.reload();
 
 }
-
-
 // =========================
 // 注文画面へ
 // =========================
