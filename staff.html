@@ -6,58 +6,36 @@
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
-<title>
-店舗メニュー
-</title>
+<title>店舗メニュー</title>
 
 <link
-  rel="stylesheet"
-  href="css/style.css"
+    rel="stylesheet"
+    href="css/style.css"
 >
 
-<style>
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
 
-.menu-grid{
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
 
-  display:grid;
+<meta
+    name="apple-mobile-web-app-title"
+    content="店舗"
+>
 
-  gap:15px;
-
-  margin-top:20px;
-
-}
-
-.menu-btn{
-
-  display:block;
-
-  text-align:center;
-
-  padding:20px;
-
-  font-size:20px;
-
-  font-weight:bold;
-
-  background:#fff;
-
-  border-radius:10px;
-
-  text-decoration:none;
-
-  color:#333;
-
-  box-shadow:
-    0 2px 6px
-    rgba(0,0,0,.1);
-
-}
-
-</style>
+<link
+    rel="apple-touch-icon"
+    href="icon.png"
+>
 
 </head>
 
@@ -65,58 +43,92 @@
 
 <header>
 
-  <div class="container header-inner">
+    <div class="container header-inner">
 
-    <h1>
-      店舗メニュー
-    </h1>
+        <h1>店舗メニュー</h1>
 
-  </div>
+    </div>
 
 </header>
 
-<div class="container">
+<main class="container">
 
-  <div class="menu-grid">
+    <div class="staff-menu">
 
-    <a
-      href="index.html"
-      class="menu-btn"
-    >
-      🍙 おにぎり注文
-    </a>
+        <a
+            href="index.html"
+            class="staff-menu-btn"
+        >
+            <span class="staff-icon">🍙</span>
 
-    <a
-      href="bbq.html"
-      class="menu-btn"
-    >
-      🔥 BBQ予約
-    </a>
+            <span>
 
-    <a
-      href="bbq-option.html"
-      class="menu-btn"
-    >
-      ➕ 追加注文
-    </a>
+                おにぎり注文
 
-    <a
-      href="payment-waiting.html"
-      class="menu-btn"
-    >
-      💴 会計待ち
-    </a>
+            </span>
 
-    <a
-      href="admin-reservations.html"
-      class="menu-btn"
-    >
-      📋 本日の予約
-    </a>
+        </a>
 
-  </div>
+        <a
+            href="bbq.html"
+            class="staff-menu-btn"
+        >
+            <span class="staff-icon">🔥</span>
 
-</div>
+            <span>
+
+                BBQ予約
+
+            </span>
+
+        </a>
+
+        <a
+            href="bbq-option.html"
+            class="staff-menu-btn"
+        >
+            <span class="staff-icon">➕</span>
+
+            <span>
+
+                BBQ追加注文
+
+            </span>
+
+        </a>
+
+        <a
+            href="payment-waiting.html"
+            class="staff-menu-btn"
+        >
+            <span class="staff-icon">💴</span>
+
+            <span>
+
+                会計待ち
+
+            </span>
+
+        </a>
+
+        <a
+            href="admin-reservations.html"
+            class="staff-menu-btn"
+        >
+            <span class="staff-icon">📋</span>
+
+            <span>
+
+                本日の予約
+
+            </span>
+
+        </a>
+
+    </div>
+
+</main>
 
 </body>
+
 </html>

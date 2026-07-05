@@ -7,11 +7,11 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 >
 
 <title>
-  BBQ店舗端末（POS）
+BBQ店舗端末（POS）
 </title>
 
 <link
@@ -36,133 +36,7 @@
 
 <link
   rel="apple-touch-icon"
-  href="icon.png"
->
-
-<style>
-
-body{
-  margin:0;
-  padding-bottom:300px;
-}
-
-.layout{
-
-  display:grid;
-
-  grid-template-columns:
-    320px
-    1fr
-    420px;
-
-  gap:20px;
-
-  margin-top:20px;
-
-}
-
-.panel{
-
-  background:#fff;
-
-  border-radius:10px;
-
-  padding:15px;
-
-  box-shadow:
-    0 2px 6px rgba(0,0,0,.1);
-
-}
-
-#currentReservation{
-
-  background:#fff3cd;
-
-  padding:15px;
-
-  border-radius:10px;
-
-}
-
-.cart-footer{
-
-  position:fixed;
-
-  bottom:0;
-
-  left:0;
-
-  right:0;
-
-  background:#fff;
-
-  border-top:1px solid #ddd;
-
-  padding:15px;
-
-  z-index:999;
-
-  max-height:250px;
-
-  overflow-y:auto;
-
-}
-
-.cart-buttons{
-
-  display:flex;
-
-  gap:10px;
-
-}
-
-.btn{
-
-  border:none;
-
-  border-radius:8px;
-
-  padding:10px 15px;
-
-  cursor:pointer;
-
-}
-
-.btn-checkin{
-
-  background:#28a745;
-
-  color:#fff;
-
-}
-
-.btn-order{
-
-  background:#007bff;
-
-  color:#fff;
-
-}
-
-.btn-clear{
-
-  background:#dc3545;
-
-  color:#fff;
-
-}
-
-@media(max-width:1200px){
-
-  .layout{
-
-    grid-template-columns:1fr;
-
-  }
-
-}
-
-</style>
+  href="icon.png">
 
 </head>
 
@@ -175,11 +49,15 @@ body{
     <div>
 
       <h1>
+
         BBQ店舗端末
+
       </h1>
 
       <p>
-        予約選択・受付・追加注文
+
+        予約受付・追加注文
+
       </p>
 
     </div>
@@ -188,16 +66,18 @@ body{
 
 </header>
 
-<div class="layout container">
+<div class="tablet-layout container">
 
   <!-- =========================
-    左：本日の予約
+       本日の予約
   ========================= -->
 
   <section class="panel">
 
     <h2>
+
       本日の予約
+
     </h2>
 
     <div id="reservationList"></div>
@@ -205,51 +85,80 @@ body{
   </section>
 
   <!-- =========================
-    中央：選択中予約
+       現在受付中
   ========================= -->
 
   <section class="panel">
 
     <h2>
-      選択中の予約
+
+      受付中
+
     </h2>
 
-    <div id="currentReservation">
+    <div
+      id="currentReservation"
+      class="current-reservation"
+    >
 
-      予約を選択してください
+      <div class="empty-state">
+
+        <h3>
+
+          予約を選択してください
+
+        </h3>
+
+        <p>
+
+          本日の予約から選択すると
+          商品一覧が表示されます。
+
+        </p>
+
+      </div>
 
     </div>
 
   </section>
 
   <!-- =========================
-    右：追加メニュー
+       商品
   ========================= -->
 
- <section class="panel">
+  <section
+    id="productArea"
+    class="panel"
+  >
 
-  <h2>
-    追加メニュー
-  </h2>
+    <h2>
 
-  <h3>フード</h3>
+      フード
 
-  <div
-    class="product-grid"
-    id="optionGrid"
-  ></div>
+    </h2>
 
-  <h3>ドリンク</h3>
+    <div
+      id="optionGrid"
+      class="product-grid"
+    ></div>
 
-  <div
-    class="product-grid"
-    id="drinkGrid"
-  ></div>
+    <h2 style="margin-top:30px;">
 
-</section>
+      ドリンク
+
+    </h2>
+
+    <div
+      id="drinkGrid"
+      class="product-grid"
+    ></div>
+
+  </section>
+
+</div>
 
 <!-- =========================
-  カート
+     カート
 ========================= -->
 
 <div class="cart-footer">
@@ -259,17 +168,27 @@ body{
   <div class="cart-buttons">
 
     <button
+
       class="btn btn-clear"
+
       onclick="clearCart()"
+
     >
+
       カートを空にする
+
     </button>
 
     <button
+
       class="btn btn-order"
+
       onclick="sendTabletOrder()"
+
     >
+
       注文送信
+
     </button>
 
   </div>
