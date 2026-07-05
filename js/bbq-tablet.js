@@ -93,7 +93,7 @@ window.onload = async function () {
   const productArea = document.getElementById("productArea");
   if (productArea) productArea.style.display = "none";
 
-  await loadBbqOptions();
+  await loadBbqOption();
   await loadReservations();
 
   if (restoreCurrentReservation()) {
