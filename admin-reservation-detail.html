@@ -98,8 +98,10 @@ async function loadDetail() {
       <p>人数：${data.people || 0}名</p>
       <p>プラン：${data.plan || ""}</p>
 
+      <p>人数：${data.people}名</p>
+      <p>単価：¥${Number(data.price || 0).toLocaleString()}</p>
       <p>BBQ料金：¥${Number(data.total || 0).toLocaleString()}</p>
-
+      
       <p>来店状況：${data.status || ""}</p>
       <p>会計：${data.paid || ""}</p>
     `;
