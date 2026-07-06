@@ -98,7 +98,7 @@ async function loadDetail() {
       <p>人数：${data.people || 0}名</p>
       <p>プラン：${data.plan || ""}</p>
 
-      <p>BBQ料金：¥${Number(data.price || 0).toLocaleString()}</p>
+      <p>BBQ料金：¥${Number(data.total || 0).toLocaleString()}</p>
 
       <p>来店状況：${data.status || ""}</p>
       <p>会計：${data.paid || ""}</p>
@@ -121,7 +121,7 @@ async function loadDetail() {
       `;
     });
 
-    const bbqTotal = Number(data.price || 0);
+    const bbqTotal = Number(data.total || 0);
 
     const optionTotal = Number(history.total || 0);
 
