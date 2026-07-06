@@ -56,8 +56,12 @@ async function getCart(force = false) {
 // =========================
 async function displayCart() {
 
+  const cartItems = document.getElementById("cartItems");
+
+  if (!cartItems) return; // ★これ必須
+
   const products = await loadProductsCache();
-  const cart = await getCart(true); // ←毎回最新
+  const cart = await getCart();
 
   const cartCount = document.getElementById("cartCount");
 
