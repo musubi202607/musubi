@@ -194,11 +194,26 @@ async function addToCartQty(
 
 }
 
+async function updateCartCount() {
+
+  const cart = await getCart();
+
+  const cartCount = document.getElementById("cartCount");
+
+  if (!cartCount) return;
+
+  const count = cart.reduce(
+    (sum, item) => sum + Number(item.qty),
+    0
+  );
+
+  cartCount.innerText = count;
+}
 
 // =========================
 // 初期表示
 // =========================
 window.addEventListener("DOMContentLoaded", async () => {
   await loadProducts();
-  await displayCart(); // ← await必須
+  await updateCartCount(); // ← await必須
 });
