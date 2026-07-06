@@ -98,21 +98,40 @@ async function updateCartCount() {
 async function displayCart() {
 
   const [productsRes, cart] = await Promise.all([
-    fetch(`${API_URL}/api/products`),
+
+    fetch(
+      `${API_URL}/api/products`
+    ),
+
     getCart()
+
   ]);
 
-  const products = await productsRes.json();
+  const products =
+    await productsRes.json();
 
-  const cartItems = document.getElementById('cartItems');
+  const cartItems =
+    document.getElementById(
+      "cartItems"
+    );
 
-  if (!cartItems) return;
+  if(!cartItems){
+    return;
+  }
 
-  cartItems.innerHTML = '';
+  cartItems.innerHTML = "";
 
-  if (!cart.length) {
+  if(cart.length === 0){
 
-    cartItems.innerHTML = `<h2>カートは空です</h2>`;
+    cartItems.innerHTML = `
+
+      <h2>
+
+        カートは空です
+
+      </h2>
+
+    `;
 
     return;
 
@@ -120,16 +139,22 @@ async function displayCart() {
 
   let total = 0;
 
-  cart.forEach(item => {
+  cart.forEach(item=>{
 
-    const product = products.find(
-      p => String(p.id) === String(item.id)
-    );
+    const product =
+      products.find(
+        p =>
+          String(p.id) ===
+          String(item.id)
+      );
 
-    if (!product) return;
+    if(!product){
+      return;
+    }
 
     const subtotal =
-      Number(product.price || 0) * Number(item.qty || 0);
+      Number(product.price) *
+      Number(item.qty);
 
     total += subtotal;
 
@@ -137,16 +162,69 @@ async function displayCart() {
 
       <div class="product-card">
 
-        <img src="${product.image}" />
+        <img
+          src="${product.image}"
+          alt="${product.name}"
+        >
 
         <div class="product-content">
 
-          <h3>${product.name}</h3>
+          <h3>
 
-          <p>数量：${item.qty}</p>
+            ${product.name}
+
+          </h3>
+
+          <div class="qty-area">
+
+            <button
+
+              class="qty-btn"
+
+              onclick="
+                changeCartQty(
+                  ${product.id},
+                  -1
+                )
+              "
+
+            >
+
+              －
+
+            </button>
+
+            <span
+              class="qty-value"
+            >
+
+              ${item.qty}
+
+            </span>
+
+            <button
+
+              class="qty-btn"
+
+              onclick="
+                changeCartQty(
+                  ${product.id},
+                  1
+                )
+              "
+
+            >
+
+              ＋
+
+            </button>
+
+          </div>
 
           <div class="price">
+
             ¥${subtotal.toLocaleString()}
+
           </div>
 
         </div>
@@ -158,9 +236,16 @@ async function displayCart() {
   });
 
   cartItems.innerHTML += `
-    <h2 style="margin-top:20px;">
-      合計 ¥${total.toLocaleString()}
+
+    <h2
+      style="margin-top:20px;"
+    >
+
+      合計
+      ¥${total.toLocaleString()}
+
     </h2>
+
   `;
 
 }
@@ -261,5 +346,72 @@ async function placeOrder() {
 
   location.href =
     "complete.html";
+
+}
+
+async function changeCartQty(
+
+  productId,
+  diff
+
+){
+
+  const cart =
+    await getCart();
+
+  const item =
+    cart.find(
+      p =>
+        Number(p.id) ===
+        Number(productId)
+    );
+
+  if(!item){
+    return;
+  }
+
+  const qty =
+    Number(item.qty) +
+    diff;
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/cart/update",
+
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          sessionId:
+            getSessionId(),
+
+          productId,
+
+          qty
+
+        })
+
+      }
+
+    );
+
+  const result =
+    await res.json();
+
+  if(result.success){
+
+    displayCart();
+
+    updateCartCount();
+
+  }
 
 }
