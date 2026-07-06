@@ -184,49 +184,41 @@ async function addToCart(
 async function displayCart(){
 
   const products =
-    await loadProductsCashe();
+  await loadProductsCache();
 
   const cart =
-  cartCache.length
+    cartCache.length
+      ? cartCache
+      : await getCart();
 
-    ? cartCache
-
-    : await getCart();
-
-  const cartItems =
-    document.getElementById(
-      "cartItems"
-    );
-
-  if(!cartItems){
-    return;
-  }
-
-  cartItems.innerHTML = "";
-
-  // -------------------------
-  // カート件数
-  // -------------------------
+// 件数更新
   const cartCount =
-    document.getElementById(
-      "cartCount"
-    );
+  document.getElementById("cartCount");
+  
+if(cartCount){
 
-  let count = 0;
-
-  cart.forEach(item=>{
-
-    count +=
-      Number(item.qty);
-
-  });
-
-  if(cartCount){
+    const count =
+      cart.reduce(
+        (sum,item)=>
+          sum + Number(item.qty),
+        0
+      );
 
     cartCount.innerText =
       count;
 
   }
+
+  const cartItems =
+    document.getElementById("cartItems");
+
+  if(!cartItems){
+
+    return;
+
+}
+
+  cartItems.innerHTML = "";
 
   // -------------------------
   // 空
