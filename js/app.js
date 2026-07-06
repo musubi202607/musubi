@@ -198,16 +198,7 @@ async function addToCartQty(
 // =========================
 // 初期表示
 // =========================
-window.addEventListener(
-
-  "DOMContentLoaded",
-
-  ()=>{
-
-    loadProducts();
-
-    displayCart();
-
-  }
-
-);
+window.addEventListener("DOMContentLoaded", async () => {
+  await loadProducts();
+  await displayCart(); // ← await必須
+});

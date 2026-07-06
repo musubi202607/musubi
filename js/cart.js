@@ -55,21 +55,17 @@ async function getCart(force = false) {
 // カート表示
 // =========================
 async function displayCart() {
+
   const products = await loadProductsCache();
-  const cart = await getCart();
+  const cart = await getCart(true); // ←毎回最新
 
   const cartCount = document.getElementById("cartCount");
-  const cartItems = document.getElementById("cartItems");
 
-  if (!cartItems) return;
-
-  // 件数
   if (cartCount) {
-    const count = cart.reduce(
+    cartCount.innerText = cart.reduce(
       (sum, item) => sum + Number(item.qty),
       0
     );
-    cartCount.innerText = count;
   }
 
   cartItems.innerHTML = "";
@@ -126,16 +122,13 @@ async function displayCart() {
 // カート追加
 // =========================
 async function addToCart(productId, qty = 1) {
+
   const sessionId = getSessionId();
 
   const res = await fetch(API_URL + "/api/cart/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sessionId,
-      productId,
-      qty
-    })
+    body: JSON.stringify({ sessionId, productId, qty })
   });
 
   const result = await res.json();
@@ -147,8 +140,10 @@ async function addToCart(productId, qty = 1) {
 
   alert("カートへ追加しました");
 
+  // ★ここが重要
   cartCache = [];
-  await displayCart();
+  await getCart(true);   // ←強制更新
+  await displayCart();   // ←再描画
 }
 
 // =========================
