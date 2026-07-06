@@ -1,481 +1,1566 @@
-// =====================================================
-// bbq-tablet.js (PRODUCTION FINAL VERSION)
-// =====================================================
+let currentReservation = null;
+
+let reservationCache = [];
+
+let bbqCart = [];
+
+const RESERVATION_KEY =
+  "bbqCurrentReservation";
+
 
 // =========================
-// API
+// 起動
 // =========================
-const API_URL = "/api/bbq";
+window.addEventListener(
+  "DOMContentLoaded",
+  async () => {
 
-// =========================
-// 状態管理
-// =========================
-const state = {
-  currentReservation: null,
-  reservationCache: []
-};
+    const productArea =
+      document.getElementById(
+        "productArea"
+      );
 
-// =========================
-// LocalStorage Keys
-// =========================
-const STORAGE_KEYS = {
-  CURRENT_RESERVATION: "bbqCurrentReservation",
-  CART_PREFIX: "bbqOptionCart_"
-};
+    if(productArea){
 
-// =====================================================
-// 初期起動
-// =====================================================
-window.onload = async function () {
-  try {
-    const productArea = document.getElementById("productArea");
-    if (productArea) productArea.style.display = "none";
+      productArea.style.display =
+        "none";
 
-    // 商品読み込み（外部定義想定）
-    if (typeof loadBbqOptions === "function") {
-      await loadBbqOptions();
-    } else {
-      console.warn("loadBbqOptions is not defined");
     }
 
+    // 商品一覧
+    await loadBbqOptions();
+
+    // 本日の予約
     await loadReservations();
 
-    if (restoreCurrentReservation()) {
-      await searchReservationByNo(state.currentReservation.reservationNo);
-    } else {
+    // 前回選択中の予約を復元
+    const savedNo =
+      localStorage.getItem(
+        RESERVATION_KEY
+      );
+
+    if(savedNo){
+
+      await searchReservation(savedNo);
+
+    }else{
+
       renderCart();
+
     }
 
-  } catch (err) {
-    console.error("Init error:", err);
   }
-};
+);
 
-// =====================================================
-// 予約保存・復元
-// =====================================================
-function saveCurrentReservation(reservation) {
-  state.currentReservation = reservation;
+
+// =========================
+// 選択中予約保存
+// =========================
+function saveReservation(reservation){
+
+  currentReservation =
+    reservation;
 
   localStorage.setItem(
-    STORAGE_KEYS.CURRENT_RESERVATION,
-    JSON.stringify(reservation)
+
+    RESERVATION_KEY,
+
+    reservation.reservationNo
+
   );
+
 }
 
-function restoreCurrentReservation() {
-  const json = localStorage.getItem(STORAGE_KEYS.CURRENT_RESERVATION);
 
-  if (!json) {
-    state.currentReservation = null;
-    return false;
-  }
+// =========================
+// 選択解除
+// =========================
+function clearReservation(){
 
-  try {
-    state.currentReservation = JSON.parse(json);
-    return true;
-  } catch (e) {
-    console.error(e);
-    state.currentReservation = null;
-    return false;
-  }
-}
+  currentReservation = null;
 
-function clearCurrentReservation() {
-  state.currentReservation = null;
-  localStorage.removeItem(STORAGE_KEYS.CURRENT_RESERVATION);
-}
+  bbqCart = [];
 
-// =====================================================
-// カート系
-// =====================================================
-function getCartKey() {
-  if (!state.currentReservation) return null;
-  return STORAGE_KEYS.CART_PREFIX + state.currentReservation.reservationNo;
-}
+  localStorage.removeItem(
+    RESERVATION_KEY
+  );
 
-function getCart() {
-  const key = getCartKey();
-  if (!key) return [];
+  const current =
+    document.getElementById(
+      "currentReservation"
+    );
 
-  try {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  } catch {
-    return [];
-  }
-}
+  if(current){
 
-function saveCart(cart) {
-  const key = getCartKey();
-  if (!key) return;
+    current.innerHTML = `
 
-  localStorage.setItem(key, JSON.stringify(cart));
-}
+      <div class="empty-state">
 
-function clearCart() {
-  if (!state.currentReservation) return;
+        <h2>
 
-  if (!confirm("カートを空にしますか？")) return;
+          予約を選択してください
 
-  localStorage.removeItem(getCartKey());
-  renderCart();
-}
+        </h2>
 
-// =====================================================
-// 予約一覧
-// =====================================================
-async function loadReservations() {
-  try {
-    const res = await fetch(API_URL + "?mode=reservations");
-    const data = await res.json();
+        <p>
 
-    state.reservationCache = data || [];
-    renderReservationList(state.reservationCache);
+          左の一覧から予約を選択します。
 
-  } catch (err) {
-    console.error(err);
-    alert("予約一覧取得エラー");
-  }
-}
+        </p>
 
-function renderReservationList(list) {
-  const target = document.getElementById("reservationList");
-  if (!target) return;
-
-  const unpaid = list.filter(v => v.paid !== "済");
-
-  if (unpaid.length === 0) {
-    target.innerHTML = `<div class="product-card"><h3>本日の未会計予約はありません</h3></div>`;
-    return;
-  }
-
-  let html = "";
-
-  unpaid.forEach(item => {
-    const selected =
-      state.currentReservation &&
-      state.currentReservation.reservationNo === item.reservationNo;
-
-    const checked = item.status === "来店済";
-
-    html += `
-      <div class="reservation-card ${selected ? "selected" : ""}">
-        <h3>${item.customerName}</h3>
-        <p>${item.people}名</p>
-        <p>${item.plan}</p>
-        <p>${checked ? "🟢受付中" : "⚪受付前"}</p>
-
-        <button class="btn btn-order"
-          onclick="selectReservation('${item.reservationNo}')">
-          ${selected ? "選択中" : "選択"}
-        </button>
-
-        ${checked ? "" : `
-          <button class="btn btn-checkin"
-            onclick="checkInReservation('${item.reservationNo}')">
-            受付開始
-          </button>
-        `}
       </div>
+
     `;
+
+  }
+
+  const productArea =
+    document.getElementById(
+      "productArea"
+    );
+
+  if(productArea){
+
+    productArea.style.display =
+      "none";
+
+  }
+
+  renderReservationList(
+    reservationCache
+  );
+
+  renderCart();
+
+}
+
+
+// =========================
+// カートキー
+// =========================
+function getCartKey(){
+
+  if(!currentReservation){
+
+    return null;
+
+  }
+
+  return (
+
+    "bbqOptionCart_" +
+
+    currentReservation.reservationNo
+
+  );
+
+}
+
+
+// =========================
+// カート読込
+// =========================
+function loadCart(){
+
+  const key =
+    getCartKey();
+
+  if(!key){
+
+    bbqCart = [];
+
+    return;
+
+  }
+
+  bbqCart = JSON.parse(
+
+    localStorage.getItem(key)
+
+  ) || [];
+
+}
+
+
+// =========================
+// カート保存
+// =========================
+function saveCart(){
+
+  const key =
+    getCartKey();
+
+  if(!key){
+
+    return;
+
+  }
+
+  localStorage.setItem(
+
+    key,
+
+    JSON.stringify(bbqCart)
+
+  );
+
+}
+
+// =========================
+// 本日の予約取得
+// =========================
+async function loadReservations(){
+
+  try{
+
+    const res =
+      await fetch(
+        API_URL +
+        "/api/reservations/today"
+      );
+
+    const data =
+      await res.json();
+
+    reservationCache =
+
+      Array.isArray(data)
+      ? data
+      : [];
+
+    renderReservationList(
+      reservationCache
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("予約取得エラー");
+
+  }
+
+}
+
+
+// =========================
+// 予約一覧表示
+// =========================
+function renderReservationList(list){
+
+  const target =
+    document.getElementById(
+      "reservationList"
+    );
+
+  if(!target){
+
+    return;
+
+  }
+
+  target.innerHTML = "";
+
+  if(!list.length){
+
+    target.innerHTML = `
+
+      <div class="product-card">
+
+        <div class="product-content">
+
+          <h3>
+
+            本日の予約はありません
+
+          </h3>
+
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  list.forEach(item=>{
+
+    // 会計済は一覧に出さない
+    if(item.paid === "済"){
+
+      return;
+
+    }
+
+    const selected =
+
+      currentReservation &&
+
+      currentReservation.reservationNo ===
+      item.reservationNo;
+
+    const checkedIn =
+
+      item.status === "来店済";
+
+    target.innerHTML += `
+
+<div class="product-card ${selected ? "selected" : ""}">
+
+<div class="product-content">
+
+<h3>
+
+${item.customerName}
+
+</h3>
+
+<p>
+
+${item.useDate}
+
+</p>
+
+<p>
+
+${item.people}名
+
+</p>
+
+<p>
+
+${item.plan}
+
+</p>
+
+<p>
+
+状態：
+${item.status || "未"}
+
+</p>
+
+<p>
+
+会計：
+${item.paid || "未"}
+
+</p>
+
+<button
+
+class="btn btn-order"
+
+onclick="searchReservation(
+
+'${item.reservationNo}'
+
+)"
+
+>
+
+${selected ? "選択中" : "この予約を選択"}
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
   });
 
-  target.innerHTML = html;
 }
 
-// =====================================================
-// 予約操作
-// =====================================================
-async function selectReservation(no) {
-  await searchReservationByNo(no);
-}
 
-function changeReservation() {
-  if (!confirm("予約を変更しますか？")) return;
+// =========================
+// 予約検索
+// =========================
+async function searchReservation(
 
-  clearCurrentReservation();
-  localStorage.removeItem("currentReservationNo");
+  reservationNo
 
-  document.getElementById("currentReservation").innerHTML =
-    `<div class="empty-state"><h3>予約を選択してください</h3></div>`;
+){
 
-  document.getElementById("productArea").style.display = "none";
+  try{
 
-  renderReservationList(state.reservationCache);
-  renderCart();
-}
+    const res =
+      await fetch(
 
-async function searchReservationByNo(no) {
-  try {
-    const res = await fetch(API_URL + "?mode=reservation&no=" + encodeURIComponent(no));
-    const data = await res.json();
+        API_URL +
 
-    if (!data) {
+        "/api/bbq/detail?reservationNo=" +
+
+        encodeURIComponent(
+          reservationNo
+        )
+
+      );
+
+    const data =
+      await res.json();
+
+    if(!data){
+
       alert("予約が見つかりません");
+
       return;
+
     }
 
-    saveCurrentReservation(data);
-    await displayReservation(data);
+    displayReservation(data);
 
-  } catch (err) {
-    console.error(err);
+  }catch(error){
+
+    console.error(error);
+
     alert("予約取得エラー");
+
   }
+
 }
 
-async function checkInReservation(no) {
-  if (!confirm("来店受付しますか？")) return;
+// =========================
+// 選択中予約表示
+// =========================
+async function displayReservation(data){
 
-  try {
-    const res = await fetch(API_URL + "?mode=checkin&no=" + encodeURIComponent(no));
-    const result = await res.json();
+  saveReservation(data);
 
-    if (!result.success) {
-      alert(result.message || "受付失敗");
-      return;
-    }
+  loadCart();
 
-    await loadReservations();
-    await searchReservationByNo(no);
+  const history =
+    await loadOrderHistory(
+      data.reservationNo
+    );
 
-    alert("受付完了");
+  const bbqPrice =
+    Number(data.price || 0);
 
-  } catch (err) {
-    console.error(err);
-    alert("通信エラー");
-  }
-}
+  const optionTotal =
+    Number(history.total || 0);
 
-// =====================================================
-// 予約詳細表示
-// =====================================================
-async function displayReservation(data) {
-  saveCurrentReservation(data);
-
-  const history = await loadOrderHistory(data.reservationNo);
-
-  const bbqPrice = Number(data.price || 0);
-  const optionTotal = Number(history.total || 0);
-  const grandTotal = bbqPrice + optionTotal;
+  const grandTotal =
+    bbqPrice + optionTotal;
 
   let historyHtml = "";
 
-  if (history.items && history.items.length) {
-    history.items.forEach(item => {
+  if(
+    history.items &&
+    history.items.length
+  ){
+
+    history.items.forEach(item=>{
+
       historyHtml += `
-        <tr>
-          <td>${item.itemName}</td>
-          <td>${item.qty}</td>
-          <td>¥${Number(item.amount).toLocaleString()}</td>
-        </tr>
-      `;
+
+<tr>
+
+<td>${item.itemName}</td>
+
+<td>${item.qty}</td>
+
+<td>
+
+¥${Number(item.amount).toLocaleString()}
+
+</td>
+
+</tr>
+
+`;
+
     });
-  } else {
-    historyHtml = `<tr><td colspan="3">追加注文なし</td></tr>`;
+
+  }else{
+
+    historyHtml = `
+
+<tr>
+
+<td colspan="3">
+
+追加注文なし
+
+</td>
+
+</tr>
+
+`;
+
   }
 
-  const target = document.getElementById("currentReservation");
-  if (!target) return;
+  const checkedIn =
 
-  const checkedIn = data.status === "来店済";
+    data.status === "来店済";
+
+  const target =
+    document.getElementById(
+      "currentReservation"
+    );
 
   target.innerHTML = `
-    <div class="current-header">
-      <div class="current-status">
-        ${checkedIn ? "受付中" : "受付前"}
-      </div>
 
-      <button class="btn btn-clear" onclick="changeReservation()">
-        予約変更
-      </button>
-    </div>
+<div class="current-header">
 
-    <div>${data.customerName} 様</div>
-    <div>予約番号：${data.reservationNo}</div>
-    <div>人数：${data.people}名</div>
-    <div>プラン：${data.plan}</div>
-    <div>状態：${data.status}</div>
+<div>
 
-    ${checkedIn ? "" : `
-      <button class="btn btn-checkin"
-        onclick="checkInReservation('${data.reservationNo}')">
-        受付開始
-      </button>
-    `}
+<div class="current-status">
 
-    <hr>
+${checkedIn ? "受付中" : "受付前"}
 
-    <h3>追加注文履歴</h3>
+</div>
 
-    <table style="width:100%;border-collapse:collapse;">
-      <tr><th>商品</th><th>数量</th><th>金額</th></tr>
-      ${historyHtml}
-    </table>
+</div>
 
-    <div class="current-total">
-      <p>BBQ予約 ¥${bbqPrice.toLocaleString()}</p>
-      <p>追加注文 ¥${optionTotal.toLocaleString()}</p>
-      <h2>合計 ¥${grandTotal.toLocaleString()}</h2>
-    </div>
-  `;
+<button
 
-  renderReservationList(state.reservationCache);
+class="btn btn-clear"
+
+onclick="changeReservation()"
+
+>
+
+予約変更
+
+</button>
+
+</div>
+
+<div class="current-name">
+
+${data.customerName} 様
+
+</div>
+
+<div class="current-info">
+
+予約番号：
+${data.reservationNo}
+
+</div>
+
+<div class="current-info">
+
+利用日：
+${data.useDate}
+
+</div>
+
+<div class="current-info">
+
+人数：
+${data.people}名
+
+</div>
+
+<div class="current-info">
+
+プラン：
+${data.plan}
+
+</div>
+
+<div class="current-info">
+
+状態：
+${data.status}
+
+</div>
+
+${
+checkedIn
+
+?
+
+""
+
+:
+
+`
+
+<button
+
+class="btn btn-checkin"
+
+onclick="checkInReservation(
+
+'${data.reservationNo}'
+
+)"
+
+>
+
+受付開始
+
+</button>
+
+`
+
+}
+
+<hr style="margin:20px 0;">
+
+<h3>
+
+追加注文履歴
+
+</h3>
+
+<table
+style="
+width:100%;
+border-collapse:collapse;
+"
+>
+
+<tr>
+
+<th>商品</th>
+
+<th>数量</th>
+
+<th>金額</th>
+
+</tr>
+
+${historyHtml}
+
+</table>
+
+<div class="current-total">
+
+<p>
+
+BBQ予約
+
+¥${bbqPrice.toLocaleString()}
+
+</p>
+
+<p>
+
+追加注文
+
+¥${optionTotal.toLocaleString()}
+
+</p>
+
+<h2>
+
+合計
+
+¥${grandTotal.toLocaleString()}
+
+</h2>
+
+</div>
+
+`;
+
+  renderReservationList(
+    reservationCache
+  );
+
   renderCart();
 
-  const productArea = document.getElementById("productArea");
-  if (productArea) {
-    productArea.style.display = checkedIn ? "block" : "none";
+  const productArea =
+    document.getElementById(
+      "productArea"
+    );
+
+  if(productArea){
+
+    productArea.style.display =
+
+      checkedIn
+
+      ? "block"
+
+      : "none";
+
   }
+
 }
 
-// =====================================================
-// カート操作
-// =====================================================
-function addBbqOption(id, name, price) {
-  if (!state.currentReservation) {
-    alert("予約を選択してください");
+
+// =========================
+// 予約変更
+// =========================
+function changeReservation(){
+
+  if(
+
+    !confirm(
+
+      "現在の予約選択を解除しますか？"
+
+    )
+
+  ){
+
     return;
+
   }
 
-  if (state.currentReservation.status !== "来店済") {
-    alert("来店受付後に追加注文できます");
-    return;
-  }
+  clearReservation();
 
-  const cart = getCart();
-  const existing = cart.find(i => String(i.id) === String(id));
-
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ id, name, price: Number(price), qty: 1 });
-  }
-
-  saveCart(cart);
-  renderCart();
 }
 
-function changeCartQty(id, diff) {
-  let cart = getCart();
 
-  const item = cart.find(p => String(p.id) === String(id));
-  if (!item) return;
+// =========================
+// 来店受付
+// =========================
+async function checkInReservation(
 
-  item.qty += diff;
+  reservationNo
 
-  if (item.qty <= 0) {
-    cart = cart.filter(p => String(p.id) !== String(id));
+){
+
+  if(
+
+    !confirm(
+
+      "来店受付を開始しますか？"
+
+    )
+
+  ){
+
+    return;
+
   }
 
-  saveCart(cart);
-  renderCart();
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+
+        "/api/bbq/checkin",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+
+            "application/json"
+
+          },
+
+          body:JSON.stringify({
+
+            reservationNo
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      await loadReservations();
+
+      await searchReservation(
+        reservationNo
+      );
+
+      alert("受付開始しました");
+
+    }else{
+
+      alert(
+
+        result.message ||
+
+        "受付エラー"
+
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("通信エラー");
+
+  }
+
 }
 
-// =====================================================
-// カート表示
-// =====================================================
-function renderCart() {
-  const target = document.getElementById("cartArea");
-  if (!target) return;
+// =========================
+// BBQ商品取得
+// =========================
+async function loadBbqOptions(){
 
-  if (!state.currentReservation) {
-    target.innerHTML = `<div class="product-card"><h3>予約を選択してください</h3></div>`;
-    return;
-  }
+  try{
 
-  const cart = getCart();
+    const res =
+      await fetch(
+        API_URL +
+        "/api/products"
+      );
 
-  if (cart.length === 0) {
-    target.innerHTML = `<div class="product-card"><h3>カートは空です</h3></div>`;
-    return;
-  }
+    const products =
+      await res.json();
 
-  let html = "";
-  let total = 0;
+    const optionGrid =
+      document.getElementById(
+        "optionGrid"
+      );
 
-  cart.forEach(item => {
-    const subtotal = item.price * item.qty;
-    total += subtotal;
+    const drinkGrid =
+      document.getElementById(
+        "drinkGrid"
+      );
 
-    html += `
-      <div class="product-card">
-        <h3>${item.name}</h3>
-
-        <div>
-          <button onclick="changeCartQty('${item.id}',-1)">−</button>
-          <strong>${item.qty}</strong>
-          <button onclick="changeCartQty('${item.id}',1)">＋</button>
-        </div>
-
-        <div>¥${subtotal.toLocaleString()}</div>
-      </div>
-    `;
-  });
-
-  html += `<div class="cart-summary">合計 ¥${total.toLocaleString()}</div>`;
-  target.innerHTML = html;
-}
-
-// =====================================================
-// 送信
-// =====================================================
-async function sendTabletOrder() {
-  if (!state.currentReservation) {
-    alert("予約を選択してください");
-    return;
-  }
-
-  if (state.currentReservation.status !== "来店済") {
-    alert("来店受付後に注文できます");
-    return;
-  }
-
-  const cart = getCart();
-
-  if (cart.length === 0) {
-    alert("商品がありません");
-    return;
-  }
-
-  try {
-    const params = new URLSearchParams({
-      mode: "saveBbqOption",
-      reservationNo: state.currentReservation.reservationNo,
-      orderDate: state.currentReservation.useDate,
-      customerName: state.currentReservation.customerName,
-      memo: "",
-      items: JSON.stringify(cart)
-    });
-
-    const res = await fetch(API_URL + "?" + params.toString());
-    const result = await res.json();
-
-    if (!result.success) {
-      alert(result.message || "送信失敗");
+    if(
+      !optionGrid ||
+      !drinkGrid
+    ){
       return;
     }
 
-    alert("注文登録完了");
+    optionGrid.innerHTML = "";
+    drinkGrid.innerHTML = "";
 
-    clearCart();
-    await searchReservationByNo(state.currentReservation.reservationNo);
+    products
 
-  } catch (err) {
-    console.error(err);
-    alert("通信エラー");
+      .sort(
+        (a,b)=>
+          Number(a.sort || 9999) -
+          Number(b.sort || 9999)
+      )
+
+      .forEach(product=>{
+
+        if(
+
+          product.type !== "bbq-option"
+
+          &&
+
+          product.type !== "drink"
+
+        ){
+
+          return;
+
+        }
+
+        const card = `
+
+<div class="product-card">
+
+<img
+
+src="${product.image}"
+
+alt="${product.name}"
+
+>
+
+<div class="product-content">
+
+<h3>
+
+${product.name}
+
+</h3>
+
+<p>
+
+${product.description || ""}
+
+</p>
+
+<div class="price">
+
+¥${Number(product.price).toLocaleString()}
+
+</div>
+
+<div class="qty-area">
+
+<button
+
+class="qty-btn"
+
+onclick="changeQty(${product.id},-1)"
+
+>
+
+－
+
+</button>
+
+<span
+
+id="qty-${product.id}"
+
+class="qty-value"
+
+>
+
+1
+
+</span>
+
+<button
+
+class="qty-btn"
+
+onclick="changeQty(${product.id},1)"
+
+>
+
+＋
+
+</button>
+
+</div>
+
+<button
+
+class="btn btn-order"
+
+onclick="addToCart(
+
+${product.id},
+
+'${product.name}',
+
+${product.price}
+
+)"
+
+>
+
+カートへ追加
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+        if(
+          product.type ===
+          "bbq-option"
+        ){
+
+          optionGrid.innerHTML +=
+            card;
+
+        }
+
+        if(
+          product.type ===
+          "drink"
+        ){
+
+          drinkGrid.innerHTML +=
+            card;
+
+        }
+
+      });
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("商品取得エラー");
+
   }
+
 }
 
-// =====================================================
-// 注文履歴
-// =====================================================
-async function loadOrderHistory(no) {
-  try {
-    const res = await fetch(API_URL + "?mode=orderhistory&no=" + encodeURIComponent(no));
-    return await res.json();
-  } catch (err) {
-    console.error(err);
-    return { total: 0, items: [] };
+
+// =========================
+// 商品数量変更
+// =========================
+function changeQty(
+
+  id,
+  diff
+
+){
+
+  const target =
+    document.getElementById(
+      "qty-" + id
+    );
+
+  if(!target){
+
+    return;
+
   }
+
+  let qty =
+    Number(target.innerText);
+
+  qty += diff;
+
+  if(qty < 1){
+
+    qty = 1;
+
+  }
+
+  target.innerText = qty;
+
+}
+
+// =========================
+// カート追加
+// =========================
+function addToCart(
+
+  id,
+  name,
+  price
+
+){
+
+  if(!currentReservation){
+
+    alert("予約を選択してください");
+
+    return;
+
+  }
+
+  if(
+
+    currentReservation.status !==
+    "来店済"
+
+  ){
+
+    alert("受付開始後に追加注文できます");
+
+    return;
+
+  }
+
+  const qty =
+    Number(
+
+      document.getElementById(
+        "qty-" + id
+      ).innerText
+
+    );
+
+  const existing =
+    bbqCart.find(
+
+      item=>
+
+      String(item.id) ===
+      String(id)
+
+    );
+
+  if(existing){
+
+    existing.qty += qty;
+
+  }else{
+
+    bbqCart.push({
+
+      id,
+      name,
+      price:Number(price),
+      qty
+
+    });
+
+  }
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+// =========================
+// カート内数量変更
+// =========================
+function changeOrderQty(
+
+  id,
+  diff
+
+){
+
+  const item =
+    bbqCart.find(
+
+      p=>
+
+      String(p.id) ===
+      String(id)
+
+    );
+
+  if(!item){
+
+    return;
+
+  }
+
+  item.qty += diff;
+
+  if(item.qty <= 0){
+
+    bbqCart =
+      bbqCart.filter(
+
+        p=>
+
+        String(p.id) !==
+        String(id)
+
+      );
+
+  }
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+// =========================
+// カート表示
+// =========================
+function renderCart(){
+
+  const target =
+    document.getElementById(
+      "cartArea"
+    );
+
+  if(!target){
+
+    return;
+
+  }
+
+  target.innerHTML = "";
+
+  if(!currentReservation){
+
+    target.innerHTML = `
+
+<div class="product-card">
+
+<div class="product-content">
+
+<h3>
+
+予約を選択してください
+
+</h3>
+
+</div>
+
+</div>
+
+`;
+
+    updateCartSummary();
+
+    return;
+
+  }
+
+  let total = 0;
+
+  if(bbqCart.length === 0){
+
+    target.innerHTML = `
+
+<div class="product-card">
+
+<div class="product-content">
+
+<h3>
+
+商品がありません
+
+</h3>
+
+</div>
+
+</div>
+
+`;
+
+    updateCartSummary();
+
+    return;
+
+  }
+
+  bbqCart.forEach(item=>{
+
+    const subtotal =
+
+      Number(item.price) *
+
+      Number(item.qty);
+
+    total += subtotal;
+
+    target.innerHTML += `
+
+<div class="product-card">
+
+<div class="product-content">
+
+<h3>
+
+${item.name}
+
+</h3>
+
+<div class="qty-area">
+
+<button
+
+class="qty-btn"
+
+onclick="changeOrderQty(
+
+'${item.id}',
+
+-1
+
+)"
+
+>
+
+－
+
+</button>
+
+<span class="qty-value">
+
+${item.qty}
+
+</span>
+
+<button
+
+class="qty-btn"
+
+onclick="changeOrderQty(
+
+'${item.id}',
+
+1
+
+)"
+
+>
+
+＋
+
+</button>
+
+</div>
+
+<div class="price">
+
+¥${subtotal.toLocaleString()}
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+  });
+
+  target.innerHTML += `
+
+<h2 style="margin-top:20px;">
+
+合計
+
+¥${total.toLocaleString()}
+
+</h2>
+
+`;
+
+  updateCartSummary();
+
+}
+
+
+// =========================
+// カートサマリー
+// =========================
+function updateCartSummary(){
+
+  const target =
+    document.getElementById(
+      "cartSummary"
+    );
+
+  if(!target){
+
+    return;
+
+  }
+
+  let qty = 0;
+
+  let total = 0;
+
+  bbqCart.forEach(item=>{
+
+    qty +=
+      Number(item.qty);
+
+    total +=
+
+      Number(item.qty) *
+
+      Number(item.price);
+
+  });
+
+  target.innerHTML = `
+
+カート
+
+${qty}点
+
+／
+
+¥${total.toLocaleString()}
+
+`;
+
+}
+
+
+// =========================
+// カートクリア
+// =========================
+function clearCart(){
+
+  if(!currentReservation){
+
+    return;
+
+  }
+
+  if(
+
+    !confirm(
+
+      "カートを空にしますか？"
+
+    )
+
+  ){
+
+    return;
+
+  }
+
+  bbqCart = [];
+
+  saveCart();
+
+  renderCart();
+
+}
+
+// =========================
+// 追加注文送信
+// =========================
+async function sendBbqOptionOrder(){
+
+  if(!currentReservation){
+
+    alert("予約を選択してください");
+
+    return;
+
+  }
+
+  if(
+
+    currentReservation.status !==
+    "来店済"
+
+  ){
+
+    alert("受付開始後に追加注文できます");
+
+    return;
+
+  }
+
+  if(bbqCart.length === 0){
+
+    alert("商品を追加してください");
+
+    return;
+
+  }
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/bbq/addOrder",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+
+            reservationNo:
+              currentReservation.reservationNo,
+
+            useDate:
+              currentReservation.useDate,
+
+            customerName:
+              currentReservation.customerName,
+
+            customerTel:
+              currentReservation.customerTel,
+
+            memo:"",
+
+            items:bbqCart
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      alert("追加注文を受け付けました");
+
+      // カート削除
+      bbqCart = [];
+
+      saveCart();
+
+      renderCart();
+
+      // 最新情報取得
+      await searchReservation(
+
+        currentReservation.reservationNo
+
+      );
+
+    }else{
+
+      alert(
+
+        result.message ||
+
+        "送信エラー"
+
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("通信エラー");
+
+  }
+
+}
+
+
+// =========================
+// 追加注文履歴取得
+// =========================
+async function loadOrderHistory(
+
+  reservationNo
+
+){
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+
+        "/api/bbq/history?reservationNo=" +
+
+        encodeURIComponent(
+
+          reservationNo
+
+        )
+
+      );
+
+    return await res.json();
+
+  }catch(error){
+
+    console.error(error);
+
+    return{
+
+      items:[],
+
+      total:0
+
+    };
+
+  }
+
 }
