@@ -1,110 +1,213 @@
-async function loadProducts() {
-
-  const response =
-    await fetch(
-      API_URL + '/api/products'
-    );
+// =========================
+// 商品一覧表示
+// =========================
+async function loadProducts(){
 
   const products =
-    await response.json();
+    await loadProductsCache();
 
   const onigiri =
     products.filter(
-      p => p.type === 'onigiri'
+      p =>
+        p.type ===
+        "onigiri"
     );
 
   const grid =
-    document.getElementById('productGrid');
+    document.getElementById(
+      "productGrid"
+    );
 
-  grid.innerHTML = '';
+  if(!grid){
+    return;
+  }
 
-  onigiri.forEach(product => {
+  grid.innerHTML = "";
+
+  onigiri.forEach(product=>{
 
     grid.innerHTML += `
-      <div class="product-card">
 
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-        >
+<div class="product-card">
 
-        <div class="product-content">
+<img
 
-          <h3>${product.name}</h3>
+src="${product.image}"
 
-          <p>${product.description}</p>
+alt="${product.name}"
 
-          <div class="price">
-            ¥${Number(product.price).toLocaleString()}
-          </div>
+>
 
-          <div class="qty-area">
+<div class="product-content">
 
-            <button
-              class="qty-btn"
-              onclick="changeQty(${product.id}, -1)"
-            >
-              －
-            </button>
+<h3>
 
-            <span
-              id="qty-${product.id}"
-              class="qty-value"
-            >
-              1
-            </span>
+${product.name}
 
-            <button
-              class="qty-btn"
-              onclick="changeQty(${product.id}, 1)"
-            >
-              ＋
-            </button>
+</h3>
 
-          </div>
+<p>
 
-          <button
-            onclick="addToCartQty(${product.id})"
-          >
-            カートに追加
-          </button>
+${product.description}
 
-        </div>
+</p>
 
-      </div>
-    `;
+<div class="price">
+
+¥${Number(product.price).toLocaleString()}
+
+</div>
+
+<div class="qty-area">
+
+<button
+
+class="qty-btn"
+
+onclick="changeQty(${product.id},-1)"
+
+>
+
+－
+
+</button>
+
+<span
+
+id="qty-${product.id}"
+
+class="qty-value"
+
+>
+
+1
+
+</span>
+
+<button
+
+class="qty-btn"
+
+onclick="changeQty(${product.id},1)"
+
+>
+
+＋
+
+</button>
+
+</div>
+
+<button
+
+onclick="addToCartQty(${product.id})"
+
+>
+
+カートへ追加
+
+</button>
+
+</div>
+
+</div>
+
+`;
 
   });
 
 }
 
-function changeQty(productId, diff) {
+// =========================
+// 数量変更
+// =========================
+function changeQty(
+
+  productId,
+  diff
+
+){
 
   const target =
-    document.getElementById(`qty-${productId}`);
+    document.getElementById(
+      "qty-" +
+      productId
+    );
+
+  if(!target){
+    return;
+  }
 
   let qty =
-    Number(target.innerText);
+    Number(
+      target.innerText
+    );
 
   qty += diff;
 
-  if (qty < 1) qty = 1;
+  if(qty < 1){
 
-  target.innerText = qty;
+    qty = 1;
+
+  }
+
+  target.innerText =
+    qty;
+
 }
 
-function addToCartQty(productId) {
+
+// =========================
+// カート追加
+// =========================
+async function addToCartQty(
+
+  productId
+
+){
 
   const qty =
     Number(
-      document.getElementById(`qty-${productId}`).innerText
+
+      document.getElementById(
+
+        "qty-" +
+        productId
+
+      ).innerText
+
     );
 
-  addToCart(productId, qty);
+  await addToCart(
+
+    productId,
+    qty
+
+  );
+
+  document.getElementById(
+
+    "qty-" +
+    productId
+
+  ).innerText = 1;
+
 }
 
-loadProducts();
 
-window.addEventListener('pageshow', () => {
-  updateCartCount();
-});
+// =========================
+// 初期表示
+// =========================
+window.addEventListener(
+
+  "DOMContentLoaded",
+
+  ()=>{
+
+    loadProducts();
+
+    displayCart();
+
+  }
+
+);

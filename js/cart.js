@@ -1,15 +1,29 @@
 // =========================
-// セッション管理
+// 共通変数
 // =========================
-function getSessionId() {
+let productCache = [];
 
-  let id = localStorage.getItem('sessionId');
+let cartCache = [];
 
-  if (!id) {
+// =========================
+// セッションID取得
+// =========================
+function getSessionId(){
 
-    id = crypto.randomUUID();
+  let id =
+    localStorage.getItem(
+      "sessionId"
+    );
 
-    localStorage.setItem('sessionId', id);
+  if(!id){
+
+    id =
+      crypto.randomUUID();
+
+    localStorage.setItem(
+      "sessionId",
+      id
+    );
 
   }
 
@@ -19,19 +33,80 @@ function getSessionId() {
 
 
 // =========================
+// 商品一覧取得
+// （初回のみ）
+// =========================
+async function loadProductsCache(){
+
+  if(
+    productCache.length
+  ){
+
+    return productCache;
+
+  }
+
+  const response =
+    await fetch(
+
+      API_URL +
+      "/api/products"
+
+    );
+
+  productCache =
+    await response.json();
+
+  return productCache;
+
+}
+
+
+// =========================
 // カート取得
 // =========================
-async function getCart() {
+async function getCart(
 
-  const sessionId = getSessionId();
+  force = false
 
-  const res = await fetch(
-    `${API_URL}/api/cart?sessionId=${sessionId}`
-  );
+){
 
-  if (!res.ok) return [];
+  if(
 
-  return await res.json();
+    !force &&
+
+    cartCache.length
+
+  ){
+
+    return cartCache;
+
+  }
+
+  const sessionId =
+    getSessionId();
+
+  const response =
+    await fetch(
+
+      API_URL +
+      "/api/cart?sessionId=" +
+      sessionId
+
+    );
+
+  if(!response.ok){
+
+    cartCache = [];
+
+    return [];
+
+  }
+
+  cartCache =
+    await response.json();
+
+  return cartCache;
 
 }
 
@@ -39,76 +114,84 @@ async function getCart() {
 // =========================
 // カート追加
 // =========================
-async function addToCart(productId, qty = 1) {
+async function addToCart(
 
-  const sessionId = getSessionId();
+  productId,
+  qty = 1
 
-  const res = await fetch(`${API_URL}/api/cart/add`, {
+){
 
-    method: 'POST',
+  const sessionId =
+    getSessionId();
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
+  const response =
+    await fetch(
 
-    body: JSON.stringify({
-      sessionId,
-      productId,
-      qty
-    })
+      API_URL +
+      "/api/cart/add",
 
-  });
+      {
 
-  if (!res.ok) {
-    alert('追加に失敗しました');
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:JSON.stringify({
+
+          sessionId,
+
+          productId,
+
+          qty
+
+        })
+
+      }
+
+    );
+
+  const result =
+    await response.json();
+
+  if(
+    !result.success
+  ){
+
+    alert(
+      "追加に失敗しました"
+    );
+
     return;
+
   }
 
-  alert('カートへ追加しました');
-
-  updateCartCount();
-
-}
-
-
-// =========================
-// カート件数
-// =========================
-async function updateCartCount() {
-
-  const cart = await getCart();
-
-  const count = cart.reduce(
-    (sum, item) => sum + Number(item.qty || 0),
-    0
+  alert(
+    "カートへ追加しました"
   );
 
-  const target = document.getElementById('cartCount');
+  cartCache = [];
 
-  if (target) {
-    target.innerText = count;
-  }
+  await displayCart();
 
 }
-
 
 // =========================
 // カート表示
 // =========================
-async function displayCart() {
-
-  const [productsRes, cart] = await Promise.all([
-
-    fetch(
-      `${API_URL}/api/products`
-    ),
-
-    getCart()
-
-  ]);
+async function displayCart(){
 
   const products =
-    await productsRes.json();
+    await loadProductsCashe();
+
+  const cart =
+  cartCache.length
+
+    ? cartCache
+
+    : await getCart();
 
   const cartItems =
     document.getElementById(
@@ -121,7 +204,34 @@ async function displayCart() {
 
   cartItems.innerHTML = "";
 
-  if(cart.length === 0){
+  // -------------------------
+  // カート件数
+  // -------------------------
+  const cartCount =
+    document.getElementById(
+      "cartCount"
+    );
+
+  let count = 0;
+
+  cart.forEach(item=>{
+
+    count +=
+      Number(item.qty);
+
+  });
+
+  if(cartCount){
+
+    cartCount.innerText =
+      count;
+
+  }
+
+  // -------------------------
+  // 空
+  // -------------------------
+  if(cart.length===0){
 
     cartItems.innerHTML = `
 
@@ -137,218 +247,151 @@ async function displayCart() {
 
   }
 
+  // -------------------------
+  // 商品表示
+  // -------------------------
   let total = 0;
 
   cart.forEach(item=>{
 
     const product =
       products.find(
-        p =>
-          String(p.id) ===
+
+        p=>
+
+          String(p.id)===
+
           String(item.id)
+
       );
 
     if(!product){
+
       return;
+
     }
 
     const subtotal =
+
       Number(product.price) *
+
       Number(item.qty);
 
     total += subtotal;
 
     cartItems.innerHTML += `
 
-      <div class="product-card">
+<div class="product-card">
 
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-        >
+<img
 
-        <div class="product-content">
+src="${product.image}"
 
-          <h3>
+alt="${product.name}"
 
-            ${product.name}
+>
 
-          </h3>
+<div class="product-content">
 
-          <div class="qty-area">
+<h3>
 
-            <button
+${product.name}
 
-              class="qty-btn"
+</h3>
 
-              onclick="
-                changeCartQty(
-                  ${product.id},
-                  -1
-                )
-              "
+<div class="qty-area">
 
-            >
+<button
 
-              －
+class="qty-btn"
 
-            </button>
+onclick="
 
-            <span
-              class="qty-value"
-            >
+changeCartQty(
 
-              ${item.qty}
+${product.id},
 
-            </span>
+-1
 
-            <button
+)
 
-              class="qty-btn"
+"
 
-              onclick="
-                changeCartQty(
-                  ${product.id},
-                  1
-                )
-              "
+>
 
-            >
+－
 
-              ＋
+</button>
 
-            </button>
+<span
 
-          </div>
+class="qty-value"
 
-          <div class="price">
+>
 
-            ¥${subtotal.toLocaleString()}
+${item.qty}
 
-          </div>
+</span>
 
-        </div>
+<button
 
-      </div>
+class="qty-btn"
 
-    `;
+onclick="
+
+changeCartQty(
+
+${product.id},
+
+1
+
+)
+
+"
+
+>
+
+＋
+
+</button>
+
+</div>
+
+<div class="price">
+
+¥${subtotal.toLocaleString()}
+
+</div>
+
+</div>
+
+</div>
+
+`;
 
   });
 
   cartItems.innerHTML += `
 
-    <h2
-      style="margin-top:20px;"
-    >
+<h2
 
-      合計
-      ¥${total.toLocaleString()}
+style="margin-top:20px;"
 
-    </h2>
+>
 
-  `;
+合計
 
-}
+¥${total.toLocaleString()}
 
+</h2>
 
-// =========================
-// カートクリア
-// =========================
-async function clearCart() {
-
-  const sessionId = getSessionId();
-
-  const res = await fetch(
-  `${API_URL}/api/cart/clear?sessionId=${sessionId}`,
-  {
-    method: "DELETE"
-  }
-);
-
-if (!res.ok) {
-  alert("カート削除に失敗しました");
-  return;
-}
-
-await updateCartCount();
-
-location.reload();
-
-}
-// =========================
-// 注文画面へ
-// =========================
-async function goOrder() {
-
-  const cart = await getCart();
-
-  if (!cart.length) {
-    alert('カートが空です');
-    return;
-  }
-
-  location.href = 'order.html';
+`;
 
 }
 
-
 // =========================
-// 初期表示
+// カート数量変更
 // =========================
-displayCart();
-updateCartCount();
-
-
-// =========================
-// 注文確定
-// =========================
-async function placeOrder() {
-
-  const sessionId = getSessionId();
-
-  const customerName =
-    document.getElementById("customerName")?.value || "";
-
-  const customerTel =
-    document.getElementById("customerTel")?.value || "";
-
-  const memo =
-    document.getElementById("memo")?.value || "";
-
-  const res = await fetch(
-    `${API_URL}/api/order`,
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        sessionId,
-        customerName,
-        customerTel,
-        memo
-      })
-    }
-  );
-
-  const data =
-    await res.json();
-
-  if(!data.success){
-
-    alert("注文失敗");
-
-    return;
-
-  }
-
-  alert("注文完了");
-
-  location.href =
-    "complete.html";
-
-}
-
 async function changeCartQty(
 
   productId,
@@ -361,20 +404,34 @@ async function changeCartQty(
 
   const item =
     cart.find(
-      p =>
-        Number(p.id) ===
+
+      p=>
+
+        Number(p.id)===
+
         Number(productId)
+
     );
 
   if(!item){
+
     return;
+
   }
 
-  const qty =
-    Number(item.qty) +
-    diff;
+  let qty =
 
-  const res =
+    Number(item.qty) +
+
+    Number(diff);
+
+  if(qty < 0){
+
+    qty = 0;
+
+  }
+
+  const response =
     await fetch(
 
       API_URL +
@@ -385,7 +442,8 @@ async function changeCartQty(
         method:"POST",
 
         headers:{
-          "Content-Type":"application/json"
+          "Content-Type":
+          "application/json"
         },
 
         body:JSON.stringify({
@@ -404,14 +462,240 @@ async function changeCartQty(
     );
 
   const result =
-    await res.json();
+    await response.json();
 
-  if(result.success){
+  if(!result.success){
 
-    displayCart();
+    alert(
+      "数量変更に失敗しました"
+  )  ;
 
-    updateCartCount();
+    return;
+
+}
+
+  cartCache =
+    result.cart;
+
+await displayCart();
+
+}
+
+
+// =========================
+// カートを空にする
+// =========================
+async function clearCart(){
+
+  const response =
+    await fetch(
+
+      API_URL +
+
+      "/api/cart/clear?sessionId=" +
+
+      getSessionId(),
+
+      {
+
+        method:"DELETE"
+
+      }
+
+    );
+
+  const result =
+    await response.json();
+
+  if(!result.success){
+
+    alert(
+      "削除に失敗しました"
+    );
+
+    return;
 
   }
+
+  cartCache = [];
+
+  await displayCart();
+
+}
+
+
+// =========================
+// 注文画面へ
+// =========================
+async function goOrder(){
+
+  const cart =
+    await getCart();
+
+  if(cart.length===0){
+
+    alert(
+      "カートが空です"
+    );
+
+    return;
+
+  }
+
+  location.href =
+    "order.html";
+
+}
+
+// =========================
+// カート数量変更
+// =========================
+async function changeCartQty(
+
+  productId,
+  diff
+
+){
+
+  const cart =
+    await getCart();
+
+  const item =
+    cart.find(
+
+      p=>
+
+        Number(p.id)===
+
+        Number(productId)
+
+    );
+
+  if(!item){
+
+    return;
+
+  }
+
+  let qty =
+
+    Number(item.qty) +
+
+    Number(diff);
+
+  if(qty < 0){
+
+    qty = 0;
+
+  }
+
+  const response =
+    await fetch(
+
+      API_URL +
+      "/api/cart/update",
+
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+          "application/json"
+        },
+
+        body:JSON.stringify({
+
+          sessionId:
+            getSessionId(),
+
+          productId,
+
+          qty
+
+        })
+
+      }
+
+    );
+
+  const result =
+    await response.json();
+
+  if(!result.success){
+
+    alert(
+      "数量変更に失敗しました"
+    );
+
+    return;
+
+  }
+
+  await displayCart();
+
+}
+
+
+// =========================
+// カートを空にする
+// =========================
+async function clearCart(){
+
+  const response =
+    await fetch(
+
+      API_URL +
+
+      "/api/cart/clear?sessionId=" +
+
+      getSessionId(),
+
+      {
+
+        method:"DELETE"
+
+      }
+
+    );
+
+  const result =
+    await response.json();
+
+  if(!result.success){
+
+    alert(
+      "削除に失敗しました"
+    );
+
+    return;
+
+  }
+
+  await displayCart();
+
+}
+
+
+// =========================
+// 注文画面へ
+// =========================
+async function goOrder(){
+
+  const cart =
+    await getCart();
+
+  if(cart.length===0){
+
+    alert(
+      "カートが空です"
+    );
+
+    return;
+
+  }
+
+  location.href =
+    "order.html";
 
 }
