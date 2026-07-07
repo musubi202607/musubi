@@ -56,70 +56,174 @@ async function getCart(force = false) {
 // =========================
 async function displayCart() {
 
-  const cartItems = document.getElementById("cartItems");
+  const products =
+    await loadProductsCache();
 
-  if (!cartItems) return; // ★これ必須
+  const cart =
+    await getCart();
 
-  const products = await loadProductsCache();
-  const cart = await getCart();
-
-  const cartCount = document.getElementById("cartCount");
+  // -------------------------
+  // カート件数更新
+  // （index.html・cart.html共通）
+  // -------------------------
+  const cartCount =
+    document.getElementById("cartCount");
 
   if (cartCount) {
-    cartCount.innerText = cart.reduce(
-      (sum, item) => sum + Number(item.qty),
-      0
-    );
+
+    cartCount.innerText =
+      cart.reduce(
+
+        (sum, item) =>
+
+          sum + Number(item.qty),
+
+        0
+
+      );
+
+  }
+
+  // -------------------------
+  // cart.html以外はここで終了
+  // -------------------------
+  const cartItems =
+    document.getElementById("cartItems");
+
+  if (!cartItems) {
+
+    return;
+
   }
 
   cartItems.innerHTML = "";
 
-  // 空
+  // -------------------------
+  // カートが空
+  // -------------------------
   if (cart.length === 0) {
-    cartItems.innerHTML = `<h2>カートは空です</h2>`;
+
+    cartItems.innerHTML = `
+
+      <h2>
+
+        カートは空です
+
+      </h2>
+
+    `;
+
     return;
+
   }
 
+  // -------------------------
+  // 商品表示
+  // -------------------------
   let total = 0;
 
-  // 商品描画
   cart.forEach(item => {
-    const product = products.find(
-      p => String(p.id) === String(item.id)
-    );
 
-    if (!product) return;
+    const product =
+      products.find(
+
+        p =>
+
+          String(p.id) ===
+
+          String(item.id)
+
+      );
+
+    if (!product) {
+
+      return;
+
+    }
 
     const subtotal =
-      Number(product.price) * Number(item.qty);
+
+      Number(product.price) *
+
+      Number(item.qty);
 
     total += subtotal;
 
     cartItems.innerHTML += `
-      <div class="product-card">
-        <img src="${product.image}" alt="${product.name}">
-        <div class="product-content">
-          <h3>${product.name}</h3>
 
-          <div class="qty-area">
-            <button class="qty-btn" onclick="changeCartQty(${product.id}, -1)">－</button>
-            <span class="qty-value">${item.qty}</span>
-            <button class="qty-btn" onclick="changeCartQty(${product.id}, 1)">＋</button>
-          </div>
+<div class="product-card">
 
-          <div class="price">
-            ¥${subtotal.toLocaleString()}
-          </div>
-        </div>
-      </div>
-    `;
+<img
+src="${product.image}"
+alt="${product.name}"
+>
+
+<div class="product-content">
+
+<h3>
+
+${product.name}
+
+</h3>
+
+<div class="qty-area">
+
+<button
+class="qty-btn"
+onclick="changeCartQty(${product.id}, -1)"
+>
+
+－
+
+</button>
+
+<span
+class="qty-value"
+>
+
+${item.qty}
+
+</span>
+
+<button
+class="qty-btn"
+onclick="changeCartQty(${product.id}, 1)"
+>
+
+＋
+
+</button>
+
+</div>
+
+<div class="price">
+
+¥${subtotal.toLocaleString()}
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
   });
 
   cartItems.innerHTML += `
-    <h2 style="margin-top:20px;">
-      合計 ¥${total.toLocaleString()}
-    </h2>
-  `;
+
+<h2
+style="margin-top:20px;"
+>
+
+合計
+
+¥${total.toLocaleString()}
+
+</h2>
+
+`;
+
 }
 
 // =========================
@@ -155,7 +259,7 @@ async function addToCart(productId, qty = 1) {
 
   const cart = await getCart(true);
 
-  console.log("GET cart =", cart);
+  console.log("cartCache =", cartCache);
 
   await displayCart();
 
