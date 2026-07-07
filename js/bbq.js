@@ -112,124 +112,257 @@ async function loadCalendar() {
 // =========================
 // カレンダー描画
 // =========================
-function renderCalendar() {
+function renderCalendar(){
 
   const target =
     document.getElementById("calendar");
 
-  if (!target) return;
+  if(!target) return;
 
-  target.innerHTML = "";
 
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
+  target.innerHTML="";
 
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
 
-  const startDay = firstDay.getDay();
-  const totalDays = lastDay.getDate();
+  const year =
+    currentMonth.getFullYear();
+
+  const month =
+    currentMonth.getMonth();
+
+
+  const firstDay =
+    new Date(year,month,1);
+
+
+  const lastDay =
+    new Date(year,month+1,0);
+
+
+  const startDay =
+    firstDay.getDay();
+
+
+  const totalDays =
+    lastDay.getDate();
+
+
 
   target.innerHTML += `
-    <div class="calendar-header">
-      <button onclick="prevMonth()">←</button>
-      <h2>${year}年 ${month + 1}月</h2>
-      <button onclick="nextMonth()">→</button>
+
+    <div class="bbq-calendar-header">
+
+      <button onclick="prevMonth()">
+        ←
+      </button>
+
+
+      <h3>
+        ${year}年 ${month+1}月
+      </h3>
+
+
+      <button onclick="nextMonth()">
+        →
+      </button>
+
+
     </div>
 
-    <div class="calendar-grid">
 
-      <div class="calendar-week">日</div>
-      <div class="calendar-week">月</div>
-      <div class="calendar-week">火</div>
-      <div class="calendar-week">水</div>
-      <div class="calendar-week">木</div>
-      <div class="calendar-week">金</div>
-      <div class="calendar-week">土</div>
+
+    <div class="bbq-week">
+
+      <div>日</div>
+      <div>月</div>
+      <div>火</div>
+      <div>水</div>
+      <div>木</div>
+      <div>金</div>
+      <div>土</div>
+
+    </div>
+
+
+    <div class="bbq-calendar-grid">
+
   `;
 
-  for (let i = 0; i < startDay; i++) {
-    target.innerHTML += "<div></div>";
+
+
+  // 空白
+
+  for(let i=0;i<startDay;i++){
+
+    target.innerHTML += `
+      <div></div>
+    `;
+
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
-  for (let day = 1; day <= totalDays; day++) {
 
-    const dateObj = new Date(year, month, day);
-    const dateStr = formatDate(dateObj);
+  const today =
+    new Date();
+
+  today.setHours(0,0,0,0);
+
+
+
+  for(
+    let day=1;
+    day<=totalDays;
+    day++
+  ){
+
+
+    const dateObj =
+      new Date(year,month,day);
+
+
+    const dateStr =
+      formatDate(dateObj);
+
+
 
     const item =
       calendarData.find(
-        d => d.date === dateStr
+        d=>d.date===dateStr
       );
 
-    if (!item) {
 
-      target.innerHTML += "<div></div>";
-      continue;
+
+    let className =
+      "bbq-day";
+
+
+    let status =
+      "";
+
+
+
+    let disabled =
+      "";
+
+
+
+    // 過去日
+
+    if(dateObj < today){
+
+      className += " full";
+
+      status =
+        "終了";
+
+      disabled =
+        "disabled";
 
     }
 
-    let className = "calendar-day";
-    let disabled = "";
-    let statusText = "";
-
-    // 過去日は受付終了
-    if (dateObj < today) {
-
-      className += " closed";
-      disabled = "disabled";
-      statusText = "受付終了";
-
-    }
 
     // 予約可能
-    else if(item.status==="○" && Number(item.limit)>0){
 
-      className += " available";
-      statusText = `あと${item.limit}組`;
+    else if(
+      item &&
+      item.status==="○" &&
+      Number(item.limit)>0
+    ){
+
+
+      const limit =
+        Number(item.limit);
+
+
+      if(limit<=2){
+
+        className += " few";
+
+      }
+      else{
+
+        className += " available";
+
+      }
+
+
+      status =
+        `あと${limit}枠`;
 
     }
 
-    // 予約不可
-    else {
 
-      className += " closed";
-      disabled = "disabled";
-      statusText = "予約不可";
+    // 満席
+
+    else{
+
+      className += " full";
+
+      status =
+        "満席";
+
+      disabled =
+        "disabled";
 
     }
 
-    // 選択済み
-    if (reservation.date === dateStr) {
+
+
+    // 選択状態
+
+    if(
+      reservation.date===dateStr
+    ){
 
       className += " selected";
 
     }
 
+
+
     target.innerHTML += `
+
+
       <button
+
         class="${className}"
+
         ${disabled}
-        onclick="selectDate('${dateStr}', this)"
+
+        onclick="selectDate('${dateStr}',this)"
+
       >
 
-        <div class="calendar-date">
+
+        <div class="date">
+
           ${day}
+
         </div>
 
-        <div class="calendar-status">
-          ${statusText}
+
+        <div class="status">
+
+          ${status}
+
         </div>
+
 
       </button>
+
+
     `;
+
 
   }
 
-  target.innerHTML += "</div>";
+
+
+  target.innerHTML += `
+
+    </div>
+
+  `;
+
 
 }
 
@@ -264,7 +397,7 @@ function selectDate(date, button){
   updateGoButton();
 
   document
-    .querySelectorAll(".calendar-day")
+    .querySelectorAll(".bbq-day")
     .forEach(btn =>
       btn.classList.remove("selected")
     );

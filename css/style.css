@@ -1282,3 +1282,298 @@ textarea{
   border:3px solid #2196f3;
 
 }
+
+/* =========================================================
+   BBQ Reservation Calendar
+========================================================= */
+
+
+#calendarSection{
+
+  padding-bottom:80px;
+
+}
+
+
+/* 月タイトル */
+
+.bbq-calendar-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  background:#fff;
+
+  padding:16px;
+
+  border-radius:18px;
+
+  box-shadow:var(--shadow-sm);
+
+  margin-bottom:16px;
+
+}
+
+
+.bbq-calendar-header h3{
+
+  font-size:24px;
+
+}
+
+
+/* 月移動ボタン */
+
+.bbq-calendar-header button{
+
+  width:50px;
+
+  height:45px;
+
+  padding:0;
+
+  border-radius:50%;
+
+  background:#222;
+
+  color:#fff;
+
+}
+
+
+
+/* 曜日 */
+
+.bbq-week{
+
+  display:grid;
+
+  grid-template-columns:repeat(7,1fr);
+
+  gap:6px;
+
+  margin-bottom:8px;
+
+}
+
+
+.bbq-week div{
+
+  text-align:center;
+
+  font-weight:bold;
+
+  font-size:14px;
+
+}
+
+
+
+/* 日付エリア */
+
+.bbq-calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(7,1fr);
+
+  gap:8px;
+
+}
+
+
+
+/* 日付カード */
+
+.bbq-day{
+
+  min-height:85px;
+
+  background:#fff;
+
+  border-radius:14px;
+
+  border:1px solid #ddd;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  cursor:pointer;
+
+  box-shadow:var(--shadow-sm);
+
+  transition:.15s;
+
+}
+
+
+.bbq-day:hover{
+
+  transform:translateY(-2px);
+
+}
+
+
+/* 日付 */
+
+.bbq-day .date{
+
+  font-size:20px;
+
+  font-weight:bold;
+
+}
+
+
+
+/* 空きあり */
+
+.bbq-day.available{
+
+  border:2px solid #28a745;
+
+}
+
+
+.bbq-day.available .status{
+
+  color:#28a745;
+
+}
+
+
+/* 残り少ない */
+
+.bbq-day.few{
+
+  border:2px solid #ff9800;
+
+}
+
+
+.bbq-day.few .status{
+
+  color:#ff9800;
+
+}
+
+
+
+/* 満席 */
+
+.bbq-day.full{
+
+  background:#eee;
+
+  color:#999;
+
+  cursor:not-allowed;
+
+}
+
+
+.bbq-day.full .status{
+
+  color:#dc3545;
+
+}
+
+
+
+/* 選択 */
+
+.bbq-day.selected{
+
+  background:#2196f3;
+
+  color:#fff;
+
+  border:3px solid #1565c0;
+
+}
+
+
+.bbq-day.selected .status{
+
+  color:#fff;
+
+}
+
+
+
+/* 枠表示 */
+
+.status{
+
+  margin-top:8px;
+
+  font-size:13px;
+
+  font-weight:bold;
+
+}
+
+
+
+/* 選択日表示 */
+
+.selected-info{
+
+  margin-top:20px;
+
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:20px;
+
+  box-shadow:var(--shadow-sm);
+
+  text-align:center;
+
+}
+
+
+.selected-info strong{
+
+  font-size:28px;
+
+}
+
+
+
+/* スマホ */
+
+@media(max-width:600px){
+
+
+  .bbq-day{
+
+    min-height:70px;
+
+  }
+
+
+  .bbq-day .date{
+
+    font-size:18px;
+
+  }
+
+
+  .status{
+
+    font-size:11px;
+
+  }
+
+
+}
