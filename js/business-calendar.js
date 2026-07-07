@@ -8,7 +8,7 @@ async function loadBusinessCalendar(){
 
     const response =
       await fetch(
-        API_URL + "/api/business-calendar"
+        API_URL + "/api/calendar"
       );
 
     const data =
@@ -34,10 +34,10 @@ ${row.date}
 id="status-${row.date}">
 
 <option
-value="営業中"
-${row.status==="営業中"?"selected":""}>
+value="営業日"
+${row.status==="営業日"?"selected":""}>
 
-営業中
+営業日
 
 </option>
 
@@ -100,7 +100,7 @@ async function saveBusinessCalendar(date){
       await fetch(
 
         API_URL +
-        "/api/business-calendar",
+        "/api/calendar",
 
         {
 
