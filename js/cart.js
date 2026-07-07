@@ -145,8 +145,7 @@ async function addToCart(productId, qty = 1) {
   alert("カートへ追加しました");
 
   // ★ここが重要
-  cartCache = [];
-  await getCart(true);   // ←強制更新
+  cartCache = await getCart(true);
   await displayCart();   // ←再描画
 }
 
