@@ -860,4 +860,425 @@ textarea{
 
 }
 
+/* =========================================================
+   ⑲ Staff Menu
+========================================================= */
 
+.staff-menu{
+
+    display:grid;
+
+    gap:18px;
+
+    margin:24px 0;
+
+    padding-bottom:
+        calc(
+            24px +
+            env(safe-area-inset-bottom)
+        );
+
+}
+
+.staff-menu-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    min-height:88px;
+
+    padding:20px;
+
+    background:#fff;
+
+    color:#222;
+
+    text-decoration:none;
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow-sm);
+
+    transition:.2s;
+
+}
+
+.staff-menu-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.staff-menu-btn:active{
+
+    transform:scale(.98);
+
+}
+
+.staff-icon{
+
+    font-size:34px;
+
+    width:44px;
+
+    text-align:center;
+
+    flex-shrink:0;
+
+}
+
+.staff-menu-btn span:last-child{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+@media(min-width:768px){
+
+    .staff-menu{
+
+        max-width:600px;
+
+        margin:30px auto;
+
+    }
+
+}
+
+/* =========================
+   現在受付中
+========================= */
+
+.current-reservation{
+
+  background:#ffffff;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.current-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:15px;
+
+}
+
+.current-status{
+
+  display:inline-block;
+
+  background:#28a745;
+
+  color:#fff;
+
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:14px;
+
+  font-weight:bold;
+
+}
+
+.current-name{
+
+  font-size:28px;
+
+  font-weight:bold;
+
+  margin-bottom:10px;
+
+}
+
+.current-info{
+
+  margin:6px 0;
+
+  font-size:17px;
+
+}
+
+.current-total{
+
+  background:#f8f8f8;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  margin-top:15px;
+
+}
+
+.current-total h2{
+
+  margin-top:10px;
+
+  font-size:30px;
+
+  color:#d32f2f;
+
+}
+
+.empty-state{
+
+  text-align:center;
+
+  color:#888;
+
+  padding:40px 10px;
+
+}
+
+/* =========================
+   Tablet Layout
+========================= */
+
+.tablet-layout{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:20px;
+
+  padding-bottom:280px;
+
+}
+
+.tablet-layout .panel{
+
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.tablet-layout h2{
+
+  margin-bottom:15px;
+
+}
+
+/* 商品 */
+
+#productArea{
+
+  display:none;
+
+}
+
+/* 商品グリッド */
+
+#optionGrid,
+#drinkGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:15px;
+
+}
+
+/* スマホ */
+
+@media(max-width:768px){
+
+  #optionGrid,
+  #drinkGrid{
+
+    grid-template-columns:1fr;
+
+  }
+
+}
+
+/* カート */
+
+.cart-footer{
+
+  position:fixed;
+
+  bottom:0;
+
+  left:0;
+
+  right:0;
+
+  background:#fff;
+
+  padding:15px;
+
+  border-top:2px solid #ddd;
+
+  box-shadow:0 -3px 10px rgba(0,0,0,.1);
+
+}
+
+.cart-buttons{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+.cart-buttons button{
+
+  flex:1;
+
+}
+
+/* =========================
+   Tablet 商品カード
+========================= */
+
+#productArea .product-card{
+
+  border-radius:18px;
+
+}
+
+#productArea img{
+
+  height:180px;
+
+}
+
+#productArea button{
+
+  padding:18px;
+
+  font-size:18px;
+
+}
+
+/*=========================
+営業日管理カレンダー
+=========================*/
+
+.calendar-container{
+
+  max-width:900px;
+
+  margin:auto;
+
+}
+
+.calendar-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:20px;
+
+}
+
+.calendar-header button{
+
+  padding:8px 18px;
+
+  font-size:18px;
+
+}
+
+.calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(7,1fr);
+
+  gap:8px;
+
+}
+
+.calendar-week{
+
+  text-align:center;
+
+  font-weight:bold;
+
+  padding:8px;
+
+}
+
+.calendar-day{
+
+  min-height:90px;
+
+  border:1px solid #ccc;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  background:#fff;
+
+  transition:.2s;
+
+}
+
+.calendar-day:hover{
+
+  transform:scale(1.03);
+
+}
+
+.calendar-date{
+
+  font-size:18px;
+
+  font-weight:bold;
+
+}
+
+.calendar-status{
+
+  margin-top:12px;
+
+  font-size:13px;
+
+}
+
+.business{
+
+  background:#e8f7e8;
+
+}
+
+.holiday{
+
+  background:#ffdcdc;
+
+}
+
+.today{
+
+  border:3px solid #2196f3;
+
+}
