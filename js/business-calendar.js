@@ -10,9 +10,18 @@ async function loadBusinessCalendar(){
       await fetch(
         API_URL + "/api/calendar"
       );
+//一時的に変更    
+    const text =
+     await response.text();
+
+    console.log("calendar response:", text);
 
     const data =
-      await response.json();
+      JSON.parse(text);
+
+
+//    const data =
+//      await response.json();
 
     let html = "";
 
