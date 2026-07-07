@@ -1,4 +1,4 @@
-```javascript
+console.log("business-calendar.js loaded");
 // =========================
 // 営業日カレンダー取得
 // =========================
@@ -159,4 +159,3 @@ async function saveBusinessCalendar(date){
 
 // 初期表示
 loadBusinessCalendar();
-```
