@@ -129,24 +129,38 @@ async function addToCart(productId, qty = 1) {
 
   const sessionId = getSessionId();
 
-  const res = await fetch(API_URL + "/api/cart/add", {
+  const res = await fetch(`${API_URL}/api/cart/add`, {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, productId, qty })
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      sessionId,
+      productId,
+      qty
+    })
+
   });
+
+  console.log("POST status =", res.status);
 
   const result = await res.json();
 
-  if (!result.success) {
-    alert("追加に失敗しました");
-    return;
-  }
+  console.log("POST result =", result);
+
+  cartCache = [];
+
+  const cart = await getCart(true);
+
+  console.log("GET cart =", cart);
+
+  await displayCart();
 
   alert("カートへ追加しました");
 
-  // ★ここが重要
-  cartCache = await getCart(true);
-  await displayCart();   // ←再描画
 }
 
 // =========================
