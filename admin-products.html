@@ -435,22 +435,24 @@ async function addProduct() {
   const result =
     await res.json();
 
-  if (result.success) {
+    if (result.success) {
 
-    alert(
-      '追加しました'
-    );
+      alert("追加しました");
 
-    loadProducts();
+      // 入力欄クリア
+      document.getElementById("newName").value = "";
+      document.getElementById("newPrice").value = "";
+      document.getElementById("newDescription").value = "";
+      document.getElementById("newType").value = "onigiri";
+      document.getElementById("newSort").value = "";
 
-  } else {
+      await loadProducts();
 
-    alert(
-      result.message ||
-      '追加失敗'
-    );
+     } else {
 
-  }
+       alert(result.message || "追加失敗");
+
+     }
 
 }
 
