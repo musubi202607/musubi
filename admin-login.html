@@ -180,16 +180,18 @@ async function login(){
 
     if(result.success){
 
-
       localStorage.setItem(
         "adminToken",
         result.token
       );
 
+      localStorage.setItem(
+        "adminUser",
+        JSON.stringify(result.user)
+      );
 
       location.href =
         "admin.html";
-
 
     }else{
 

@@ -227,11 +227,50 @@ content="width=device-width, initial-scale=1.0"
     
   </div>
 
-</div>
+
+  <div
+    class="admin-card"
+    id="adminUserCard"
+    style="display:none;"
+  >
+
+    <h2>
+      管理者管理
+    </h2>
+
+    <a href="admin-users.html">
+      開く
+    </a>
+
+  </div>
+
+ </div>
 
 </div>
+
+<script src="js/config.js"></script>
 
 <script src="js/admin-auth.js"></script>
+
+<script>
+
+const adminUser =
+  JSON.parse(
+    localStorage.getItem("adminUser")
+  );
+
+if(
+  adminUser &&
+  adminUser.role === "owner"
+){
+
+  document
+    .getElementById("adminUserCard")
+    .style.display = "block";
+
+}
+
+</script>
 
 </body>
 
