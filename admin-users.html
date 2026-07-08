@@ -4,7 +4,8 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
 
 <title>管理者管理</title>
 
@@ -30,10 +31,16 @@ th{
 
 .form-area{
 
-  background:#fff;
   margin-top:30px;
+
+  background:#fff;
+
   padding:20px;
+
   border-radius:10px;
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.1);
 
 }
 
@@ -41,20 +48,120 @@ th{
 .form-area select{
 
   width:100%;
+
   padding:10px;
+
   margin-bottom:15px;
+
+  box-sizing:border-box;
+
+}
+
+.check-label{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-bottom:20px;
+
+}
+
+.check-label input{
+
+  width:auto;
+
+  margin:0;
 
 }
 
 .save-btn{
 
   width:100%;
+
   padding:12px;
+
   background:#007bff;
+
   color:#fff;
+
   border:none;
+
   border-radius:8px;
+
   cursor:pointer;
+
+}
+
+.save-btn:hover{
+
+  opacity:.9;
+
+}
+
+.cancel-btn{
+
+  width:100%;
+
+  padding:12px;
+
+  margin-top:10px;
+
+  background:#777;
+
+  color:#fff;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+.cancel-btn:hover{
+
+  opacity:.9;
+
+}
+
+.header-right{
+
+  margin-left:auto;
+
+  text-align:right;
+
+}
+
+.header-right div{
+
+  font-size:14px;
+
+  margin-bottom:5px;
+
+}
+
+.logout-btn{
+
+  display:inline-block;
+
+  padding:8px 15px;
+
+  background:#dc3545;
+
+  color:#fff;
+
+  text-decoration:none;
+
+  border-radius:6px;
+
+}
+
+.logout-btn:hover{
+
+  opacity:.9;
 
 }
 
@@ -68,7 +175,31 @@ th{
 
 <div class="container header-inner">
 
+<div>
+
 <h1>管理者管理</h1>
+
+<p>管理者アカウント</p>
+
+</div>
+
+<div class="header-right">
+
+<div id="loginUser">
+ログイン中
+</div>
+
+<a
+href="#"
+class="logout-btn"
+onclick="logout();return false;"
+>
+
+ログアウト
+
+</a>
+
+</div>
 
 </div>
 
@@ -80,7 +211,9 @@ th{
 href="admin.html"
 class="back-btn"
 >
+
 ← 管理画面へ戻る
+
 </a>
 
 <br><br>
@@ -113,49 +246,116 @@ class="back-btn"
 
 <div class="form-area">
 
-<h2>管理者追加</h2>
+<h2 id="formTitle">
 
-<label>ログインID</label>
+管理者追加
+
+</h2>
+
+<input
+type="hidden"
+id="editId"
+>
+
+<label>
+
+ログインID
+
+</label>
 
 <input
 id="id"
 type="text"
 >
 
-<label>表示名</label>
+<label>
+
+表示名
+
+</label>
 
 <input
 id="name"
 type="text"
 >
 
-<label>パスワード</label>
+<label>
+
+パスワード
+
+</label>
 
 <input
 id="password"
 type="password"
+placeholder="編集時は空欄なら変更しません"
 >
 
-<label>権限</label>
+<label>
+
+権限
+
+</label>
 
 <select id="role">
 
 <option value="staff">
+
 スタッフ
+
 </option>
 
 <option value="owner">
+
 管理者
+
 </option>
 
 </select>
 
+<label class="check-label">
+
+<input
+type="checkbox"
+id="enabled"
+checked
+>
+
+<span>
+
+有効
+
+</span>
+
+</label>
+
 <button
+
+id="saveBtn"
+
 class="save-btn"
-onclick="addUser()"
+
+onclick="saveUser()"
+
 >
 
 登録
+
+</button>
+
+<button
+
+id="cancelBtn"
+
+class="cancel-btn"
+
+style="display:none"
+
+onclick="cancelEdit()"
+
+>
+
+キャンセル
 
 </button>
 
@@ -164,7 +364,9 @@ onclick="addUser()"
 </div>
 
 <script src="js/config.js"></script>
+
 <script src="js/admin-auth.js"></script>
+
 <script src="js/admin-users.js"></script>
 
 </body>
