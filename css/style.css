@@ -1663,3 +1663,21 @@ textarea{
   height:80px !important;
 
 }
+
+#calendar > .bbq-calendar-grid{
+
+  display:grid !important;
+
+  grid-template-columns:
+    repeat(7, 1fr) !important;
+
+  gap:8px !important;
+
+}
+
+
+#calendar > .bbq-calendar-grid > .bbq-day{
+
+  width:100% !important;
+
+}
