@@ -1347,3 +1347,33 @@ textarea{
   line-height:35px;
 
 }
+
+/* =========================
+   BBQ Calendar Selected Date
+========================= */
+
+#calendar .bbq-day.selected{
+
+//枠の中の色//
+  background:#2196f3;
+
+//日付文字・残り枠の色//
+  color:#fff;
+
+//枠線の色//
+  border:3px solid #1565c0;
+
+  transform:scale(1.05);
+
+  box-shadow:
+    0 4px 12px rgba(33,150,243,.35);
+
+}
+
+
+#calendar .bbq-day.selected .date,
+#calendar .bbq-day.selected .status{
+
+  color:#fff;
+
+}

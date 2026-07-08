@@ -331,13 +331,29 @@ function selectDate(date, button){
 
   updateGoButton();
 
-  document
+    document
     .querySelectorAll(".bbq-day")
     .forEach(btn =>
       btn.classList.remove("selected")
     );
 
   button.classList.add("selected");
+
+
+  // 選択日表示
+
+  const info =
+    document.getElementById("selectedDateInfo");
+
+  if(info){
+
+    info.innerHTML =
+      `
+      選択日：
+      <strong>${date}</strong>
+      `;
+
+  }
 
 }
 
