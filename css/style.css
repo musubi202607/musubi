@@ -1577,3 +1577,43 @@ textarea{
 
 
 }
+
+/* =========================
+   BBQ Calendar Layout Fix
+========================= */
+
+
+#calendar{
+
+  width:100%;
+
+}
+
+
+#calendar .bbq-calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(7, minmax(0,1fr));
+
+  gap:8px;
+
+}
+
+
+#calendar .bbq-day{
+
+  width:100%;
+
+  min-width:0;
+
+}
+
+
+#calendar .bbq-week{
+
+  display:grid;
+
+  grid-template-columns:repeat(7, minmax(0,1fr));
+
+}
