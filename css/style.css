@@ -1288,13 +1288,19 @@ textarea{
 ========================= */
 
 
-#calendar .bbq-week{
+#calendar .bbq-week div{
 
-  display:grid;
+  display:flex;
 
-  grid-template-columns:repeat(7,1fr);
+  justify-content:center;
 
-  gap:8px;
+  align-items:center;
+
+  text-align:center;
+
+  height:35px;
+
+  font-weight:bold;
 
 }
 
