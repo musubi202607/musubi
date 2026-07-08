@@ -1578,34 +1578,39 @@ textarea{
 
 }
 
-/* =========================
-   BBQ Calendar Layout Fix
-========================= */
-
-
-#calendar{
-
-  width:100%;
-
-}
+/* =========================================================
+   BBQ Calendar Final Fix
+========================================================= */
 
 
 #calendar .bbq-calendar-grid{
 
   display:grid;
 
-  grid-template-columns:repeat(7, minmax(0,1fr));
+  grid-template-columns:repeat(7, 1fr);
 
   gap:8px;
 
 }
 
 
-#calendar .bbq-day{
+#calendar .bbq-calendar-grid .bbq-day{
+
+  display:flex;
 
   width:100%;
 
-  min-width:0;
+  height:85px;
+
+  min-height:0;
+
+  padding:5px;
+
+  margin:0;
+
+  border-radius:14px;
+
+  flex-direction:column;
 
 }
 
@@ -1614,6 +1619,15 @@ textarea{
 
   display:grid;
 
-  grid-template-columns:repeat(7, minmax(0,1fr));
+  grid-template-columns:repeat(7,1fr);
+
+  gap:8px;
+
+}
+
+
+#calendar .bbq-week div{
+
+  text-align:center;
 
 }
