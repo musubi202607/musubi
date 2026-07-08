@@ -317,34 +317,41 @@ async function saveUser(){
   try{
 
     const response =
-      await fetch(
+  await fetch(
+    API_URL + url,
+    {
 
-        API_URL + url,
+      method:"POST",
 
-        {
+      headers:{
 
-          method:"POST",
+        "Content-Type":
+          "application/json",
 
-          headers:
-            authHeaders(),
+        "Authorization":
+          "Bearer " +
+          localStorage.getItem(
+            "adminToken"
+          )
 
-          body:JSON.stringify({
+      },
 
-            id,
+      body:JSON.stringify({
 
-            name,
+        id,
 
-            password,
+        name,
 
-            role,
+        password,
 
-            enabled
+        role,
 
-          })
+        enabled
 
-        }
+      })
 
-      );
+    }
+  );
 
     if(response.status===401){
 
