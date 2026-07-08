@@ -88,9 +88,10 @@ async function loadPayments(){
 
   data.forEach(item => {
 
-    const bbq = Number(item.bbqPrice || 0);
-    const option = Number(item.optionTotal || 0);
-    const total = bbq + option;
+//    const bbq = Number(item.bbqPrice || 0);
+//    const option = Number(item.optionTotal || 0);
+//    const total = bbq + option;
+    const total = Number(item.total || 0);
 
     html += `
       <div class="payment-card">
@@ -99,13 +100,15 @@ async function loadPayments(){
 
         <p>予約番号：${item.reservationNo}</p>
 
-        <p>BBQ：¥${bbq.toLocaleString()}</p>
+        <p>種類：${item.type === "bbq" ? "BBQ" : "おにぎり"}</p>
 
-        <p>追加：¥${option.toLocaleString()}</p>
+        <p>${item.detail || ""}</p>
 
-        <div class="total">
-          合計：¥${total.toLocaleString()}
-        </div>
+      <div class="total">
+
+        合計：¥${total.toLocaleString()}
+
+      </div>
 
         <button class="pay-btn"
           onclick="paidUpdate('${item.reservationNo}')">
