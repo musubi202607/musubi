@@ -396,7 +396,6 @@ async function submitStaffOrder(){
         "/api/orders",
 
         {
-
           method:"POST",
 
           headers:{
