@@ -232,234 +232,180 @@ row.status==="○"
 }
 
 // =========================
-// BBQカレンダー管理 Ver2
+// 編集モーダル表示
 // =========================
+function openModal(date){
 
-let calendarData = [];
+  editingDate = date;
 
-let currentMonth = new Date();
+  const row =
+    calendarData.find(r=>r.date===date);
 
-currentMonth.setDate(1);
+  if(!row) return;
 
-let editingDate = "";
+  document.getElementById(
+    "modalDate"
+  ).textContent = date;
 
-// =========================
-// 初期化
-// =========================
-window.onload = async function(){
+  document.getElementById(
+    "modalStatus"
+  ).value = row.status;
 
-  await loadCalendar();
+  document.getElementById(
+    "modalLimit"
+  ).value = row.limit;
 
-  document
-    .getElementById("prevMonth")
-    .addEventListener(
-      "click",
-      prevMonth
-    );
+  document.getElementById(
+    "editModal"
+  ).style.display = "flex";
 
-  document
-    .getElementById("nextMonth")
-    .addEventListener(
-      "click",
-      nextMonth
-    );
-
-  document
-    .getElementById("closeModal")
-    .addEventListener(
-      "click",
-      closeModal
-    );
-
-  document
-    .getElementById("saveModal")
-    .addEventListener(
-      "click",
-      saveCalendar
-    );
-
-};
+}
 
 // =========================
-// データ取得
+// モーダル閉じる
 // =========================
-async function loadCalendar(){
+function closeModal(){
+
+  document.getElementById(
+    "editModal"
+  ).style.display = "none";
+
+}
+
+// =========================
+// 保存
+// =========================
+async function saveCalendar(){
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
-        "/api/business-calendar"
+    const status =
+      document.getElementById(
+        "modalStatus"
+      ).value;
+
+    const limit =
+      Number(
+        document.getElementById(
+          "modalLimit"
+        ).value
       );
 
-    calendarData =
-      await response.json();
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/business-calendar",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+            "application/json"
+          },
+
+          body:JSON.stringify({
+
+            mode:
+            "updateBusinessCalendar",
+
+            date:
+              editingDate,
+
+            status,
+
+            limit
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(!result.success){
+
+      alert(
+        result.message ||
+        "保存失敗"
+      );
+
+      return;
+
+    }
+
+    const row =
+      calendarData.find(r=>
+        r.date===editingDate
+      );
+
+    if(row){
+
+      row.status = status;
+      row.limit = limit;
+
+    }
+
+    closeModal();
 
     renderCalendar();
+
+    alert("保存しました");
 
   }catch(e){
 
     console.error(e);
 
-    alert("取得エラー");
+    alert("通信エラー");
 
   }
 
 }
 
 // =========================
-// カレンダー描画
+// 前月
 // =========================
-function renderCalendar(){
+function prevMonth(){
 
-  const body =
+  currentMonth.setMonth(
+    currentMonth.getMonth()-1
+  );
+
+  renderCalendar();
+
+}
+
+// =========================
+// 次月
+// =========================
+function nextMonth(){
+
+  currentMonth.setMonth(
+    currentMonth.getMonth()+1
+  );
+
+  renderCalendar();
+
+}
+
+// =========================
+// モーダル外クリック
+// =========================
+window.onclick = function(e){
+
+  const modal =
     document.getElementById(
-      "calendarBody"
+      "editModal"
     );
 
-  body.innerHTML = "";
+  if(e.target===modal){
 
-  const year =
-    currentMonth.getFullYear();
-
-  const month =
-    currentMonth.getMonth();
-
-  document.getElementById(
-    "monthTitle"
-  ).textContent =
-    `${year}年${month+1}月`;
-
-  // 曜日
-  const weeks=[
-    "月",
-    "火",
-    "水",
-    "木",
-    "金",
-    "土",
-    "日"
-  ];
-
-  weeks.forEach(day=>{
-
-    body.innerHTML +=
-    `<div class="bbq-week">${day}</div>`;
-
-  });
-
-  // 月初
-  const first =
-    new Date(
-      year,
-      month,
-      1
-    );
-
-  let start =
-    first.getDay();
-
-  start =
-    start===0
-    ? 6
-    : start-1;
-
-  for(
-    let i=0;
-    i<start;
-    i++
-  ){
-
-    body.innerHTML +=
-      `<div class="bbq-cell bbq-empty"></div>`;
+    closeModal();
 
   }
 
-  const monthData =
-    calendarData.filter(row=>{
-
-      const d =
-        new Date(row.date);
-
-      return(
-
-        d.getFullYear()===year &&
-
-        d.getMonth()===month
-
-      );
-
-    });
-
-  monthData.forEach(row=>{
-
-    const d =
-      new Date(row.date);
-
-    const day =
-      d.getDate();
-
-    const today =
-      new Date();
-
-    const isToday =
-
-      today.getFullYear()===d.getFullYear()
-
-      &&
-
-      today.getMonth()===d.getMonth()
-
-      &&
-
-      today.getDate()===d.getDate();
-
-    body.innerHTML += `
-
-<div
-
-class="bbq-cell
-
-${row.status==="×"
-?"bbq-closed"
-:""}
-
-${isToday
-?"bbq-today"
-:""}"
-
-onclick="openModal('${row.date}')">
-
-<div class="bbq-date">
-
-${day}
-
-</div>
-
-<div>
-
-${
-row.status==="○"
-
-?'<span class="bbq-open">予約可</span>'
-
-:'<span class="bbq-close">予約不可</span>'
-
-}
-
-</div>
-
-<div class="bbq-limit">
-
-最大 ${row.limit}組
-
-</div>
-
-</div>
-
-`;
-
-  });
-
-}
+};
