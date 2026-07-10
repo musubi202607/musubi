@@ -147,17 +147,19 @@ input, select {
 // =========================
 // 商品画像選択
 // =========================
-document
-  .getElementById("newImageFile")
-  .addEventListener(
-    "change",
-    async function(e){
+  document
+     .getElementById("newImageFile")
+     .addEventListener(
+     "change",
+  async function(e){
 
-      const resizedFile =
-       await resizeImage(file);
+    const file =
+      e.target.files[0];
 
-      if(!file) return;
+    if(!file) return;
 
+    const resizedFile =
+      await resizeImage(file);
 
 // =========================
 // ドラッグ＆ドロップ
