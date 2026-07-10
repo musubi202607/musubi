@@ -393,7 +393,7 @@ async function submitStaffOrder(){
       await fetch(
 
         API_URL +
-        "/api/staff-orders",
+        "/api/staff-order",
 
         {
           method:"POST",
