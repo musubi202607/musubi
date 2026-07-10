@@ -100,13 +100,13 @@ function renderCalendar(){
 
   // 曜日
   const weeks=[
-    "日"
+    "日",
     "月",
     "火",
     "水",
     "木",
     "金",
-    "土",
+    "土"
     ];
 
   weeks.forEach(day=>{
