@@ -63,7 +63,22 @@ input, select {
 
 <div class="container">
 
-<a href="admin.html" class="back-btn">← 管理画面へ戻る</a>
+<div class="admin-top-buttons">
+
+<a href="admin.html" class="back-btn">
+← 管理画面へ戻る
+</a>
+
+
+<button
+class="add-product-btn"
+onclick="openAddProduct()">
+
+＋ 商品追加
+
+</button>
+
+</div>
 
 <br><br>
 
@@ -73,7 +88,10 @@ input, select {
   </div>
 
 <!-- 商品追加 -->
-<div class="add-card">
+<div 
+  id="addProductArea"
+  class="add-card"
+  style="display:none;">
 
   <h2>商品追加</h2>
 
@@ -750,7 +768,38 @@ async function loadProducts() {
 
 
 }
+//追加ボタン//
+function openAddProduct(){
 
+  const area =
+    document.getElementById(
+      "addProductArea"
+    );
+
+
+  if(area.style.display === "none"){
+
+    area.style.display = "block";
+
+    window.scrollTo({
+
+      top:
+      area.offsetTop,
+
+      behavior:"smooth"
+
+    });
+
+
+  }else{
+
+    area.style.display="none";
+
+  }
+
+}
+
+//編集画面表示//
 function openProductEdit(id){
 
   const box =

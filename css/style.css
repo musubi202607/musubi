@@ -1657,3 +1657,30 @@ textarea{
   color:white;
 
 }
+
+.admin-top-buttons{
+
+  display:flex;
+
+  gap:10px;
+
+  margin-bottom:20px;
+
+}
+
+
+.add-product-btn{
+
+  background:#007bff;
+
+  color:white;
+
+  border:none;
+
+  padding:10px 15px;
+
+  border-radius:8px;
+
+  font-size:16px;
+
+}
