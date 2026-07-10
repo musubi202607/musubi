@@ -1428,3 +1428,232 @@ textarea{
   border-color:#2196f3;
 
 }
+
+/* =========================
+   商品管理カード
+========================= */
+
+.product-management-list{
+
+  display:block;
+
+}
+
+
+.product-card{
+
+  background:#fff;
+
+  border-radius:12px;
+
+  padding:15px;
+
+  margin-bottom:20px;
+
+  box-shadow:
+  0 2px 8px rgba(0,0,0,.15);
+
+}
+
+
+.product-card h3{
+
+  margin-top:0;
+
+  font-size:20px;
+
+}
+
+
+.product-card-row{
+
+  margin-bottom:15px;
+
+}
+
+
+.product-card-row label{
+
+  display:block;
+
+  font-size:14px;
+
+  font-weight:bold;
+
+  color:#555;
+
+  margin-bottom:5px;
+
+}
+
+
+.product-card input,
+.product-card select{
+
+  width:100%;
+
+  padding:8px;
+
+  box-sizing:border-box;
+
+}
+
+
+.product-card img.preview-image{
+
+  width:140px;
+
+  height:140px;
+
+  object-fit:cover;
+
+  border-radius:10px;
+
+}
+
+
+/* ボタン */
+
+.product-card button{
+
+  padding:10px 18px;
+
+  margin-right:8px;
+
+  border-radius:6px;
+
+  border:none;
+
+  cursor:pointer;
+
+}
+
+
+.product-card .save-btn{
+
+  background:#28a745;
+
+  color:white;
+
+}
+
+
+/* =========================
+   スマホ調整
+========================= */
+
+@media(max-width:767px){
+
+
+  .product-card{
+
+    padding:12px;
+
+  }
+
+
+  .product-card h3{
+
+    font-size:18px;
+
+  }
+
+
+  .product-card img.preview-image{
+
+    width:120px;
+
+    height:120px;
+
+  }
+
+
+}
+
+.image-change-btn{
+
+  display:inline-block;
+
+  background:#007bff;
+
+  color:white;
+
+  padding:10px 15px;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+
+.image-change-btn input{
+
+  display:none;
+
+}
+
+.product-card .save-btn{
+
+  position:sticky;
+
+  bottom:15px;
+
+}
+
+.image-change-btn{
+
+  display:inline-block;
+
+  background:#007bff;
+
+  color:white;
+
+  padding:10px 15px;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+
+.image-change-btn input{
+
+  display:none;
+
+}
+
+.product-actions{
+
+  display:flex;
+
+  gap:10px;
+
+  margin-top:15px;
+
+}
+
+
+
+.product-actions button{
+
+  flex:1;
+
+  padding:12px;
+
+  font-size:16px;
+
+  border-radius:8px;
+
+}
+
+
+
+.delete-btn{
+
+  background:#dc3545;
+
+  color:white;
+
+}
