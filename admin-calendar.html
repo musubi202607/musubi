@@ -1,41 +1,324 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>BBQカレンダー管理</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link
+rel="stylesheet"
+href="css/style.css">
 
 <style>
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
+/* ========================================
+   BBQカレンダー専用
+======================================== */
+
+.bbq-toolbar{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:20px;
+
 }
 
-th, td{
-  border:1px solid #ddd;
-  padding:10px;
+.bbq-toolbar button{
+
+padding:8px 14px;
+font-size:18px;
+
+cursor:pointer;
+
 }
 
-th{
-  background:#f5f5f5;
+#monthTitle{
+
+font-size:24px;
+font-weight:bold;
+
 }
 
-input, select{
-  width:100%;
-  box-sizing:border-box;
+.bbq-calendar{
+
+display:grid;
+
+grid-template-columns:repeat(7,1fr);
+
+gap:8px;
+
 }
 
-button{
-  padding:6px 10px;
-  cursor:pointer;
+.bbq-week{
+
+background:#333;
+
+color:#fff;
+
+text-align:center;
+
+padding:10px;
+
+font-weight:bold;
+
+border-radius:6px;
+
+}
+
+.bbq-cell{
+
+background:#fff;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+min-height:110px;
+
+padding:8px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.bbq-cell:hover{
+
+box-shadow:0 3px 10px rgba(0,0,0,.15);
+
+}
+
+.bbq-empty{
+
+background:none;
+
+border:none;
+
+cursor:default;
+
+box-shadow:none;
+
+}
+
+.bbq-date{
+
+font-size:20px;
+
+font-weight:bold;
+
+margin-bottom:8px;
+
+}
+
+.bbq-open{
+
+display:inline-block;
+
+padding:3px 8px;
+
+border-radius:20px;
+
+background:#28a745;
+
+color:#fff;
+
+font-size:12px;
+
+margin-bottom:6px;
+
+}
+
+.bbq-close{
+
+display:inline-block;
+
+padding:3px 8px;
+
+border-radius:20px;
+
+background:#dc3545;
+
+color:#fff;
+
+font-size:12px;
+
+margin-bottom:6px;
+
+}
+
+.bbq-limit{
+
+font-size:14px;
+
+color:#666;
+
+}
+
+.bbq-today{
+
+border:2px solid #007bff;
+
+}
+
+/* ===========================
+   モーダル
+=========================== */
+
+.modal{
+
+display:none;
+
+position:fixed;
+
+left:0;
+top:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,.45);
+
+justify-content:center;
+align-items:center;
+
+z-index:999;
+
+}
+
+.modal-content{
+
+background:#fff;
+
+padding:25px;
+
+border-radius:10px;
+
+width:340px;
+
+max-width:90%;
+
+}
+
+.modal-content h3{
+
+margin-top:0;
+
+}
+
+.modal-content label{
+
+display:block;
+
+margin-top:15px;
+
+margin-bottom:6px;
+
+font-weight:bold;
+
+}
+
+.modal-content input,
+
+.modal-content select{
+
+width:100%;
+
+padding:8px;
+
+box-sizing:border-box;
+
+}
+
+.modal-buttons{
+
+display:flex;
+
+justify-content:flex-end;
+
+gap:10px;
+
+margin-top:20px;
+
+}
+
+.modal-buttons button{
+
+padding:8px 16px;
+
+}
+
+@media(max-width:900px){
+
+.bbq-calendar{
+
+grid-template-columns:repeat(7,1fr);
+
+gap:5px;
+
+}
+
+.bbq-cell{
+
+min-height:90px;
+
+padding:6px;
+
+}
+
+.bbq-date{
+
+font-size:16px;
+
+}
+
+}
+
+@media(max-width:600px){
+
+.bbq-calendar{
+
+gap:3px;
+
+}
+
+.bbq-week{
+
+padding:6px;
+
+font-size:12px;
+
+}
+
+.bbq-date{
+
+font-size:14px;
+
+}
+
+.bbq-open,
+.bbq-close{
+
+font-size:10px;
+
+padding:2px 5px;
+
+}
+
+.bbq-limit{
+
+font-size:11px;
+
+}
+
 }
 
 </style>
@@ -46,17 +329,23 @@ button{
 
 <header>
 
-  <div class="container header-inner">
+<div class="container header-inner">
 
-    <h1>BBQカレンダー管理</h1>
+<h1>
 
-  </div>
+BBQカレンダー管理
+
+</h1>
+
+</div>
 
 </header>
 
 <div class="container">
 
-<a href="admin.html" class="back-btn">
+<a
+href="admin.html"
+class="back-btn">
 
 ← 管理画面へ戻る
 
@@ -64,23 +353,21 @@ button{
 
 <br><br>
 
-<div class="bbq-calendar-header">
+<div class="bbq-toolbar">
 
-<button
-id="prevMonth">
+<button id="prevMonth">
 
 ◀
 
 </button>
 
-<h2 id="monthTitle">
+<div id="monthTitle">
 
 2026年7月
 
-</h2>
+</div>
 
-<button
-id="nextMonth">
+<button id="nextMonth">
 
 ▶
 
@@ -88,8 +375,82 @@ id="nextMonth">
 
 </div>
 
-<div id="calendarBody"
-class="bbq-calendar-grid">
+<div
+id="calendarBody"
+class="bbq-calendar">
+
+</div>
+
+<!-- =========================
+     編集モーダル
+========================= -->
+
+<div
+id="editModal"
+class="modal">
+
+<div class="modal-content">
+
+<h3>
+
+BBQ営業日編集
+
+</h3>
+
+<p id="modalDate"></p>
+
+<label>
+
+状態
+
+</label>
+
+<select id="modalStatus">
+
+<option value="○">
+
+予約可
+
+</option>
+
+<option value="×">
+
+予約不可
+
+</option>
+
+</select>
+
+<label>
+
+最大組数
+
+</label>
+
+<input
+type="number"
+min="0"
+id="modalLimit">
+
+<div class="modal-buttons">
+
+<button
+id="closeModal">
+
+閉じる
+
+</button>
+
+<button
+id="saveModal">
+
+保存
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -97,183 +458,10 @@ class="bbq-calendar-grid">
 
 <script src="js/config.js"></script>
 
-<script>
-
-// =========================
-// BBQカレンダー取得
-// =========================
-async function loadCalendar(){
-
-  try{
-
-    const response =
-      await fetch(
-        API_URL + "/api/business-calendar"
-      );
-
-    const data =
-      await response.json();
-
-    let html = "";
-
-    data.forEach(row=>{
-
-      html += `
-
-<tr>
-
-<td>
-
-${row.date}
-
-</td>
-
-<td>
-
-<select
-id="status-${row.date}">
-
-<option
-value="○"
-${row.status==="○"?"selected":""}>
-
-○
-
-</option>
-
-<option
-value="×"
-${row.status==="×"?"selected":""}>
-
-×
-
-</option>
-
-</select>
-
-</td>
-
-<td>
-
-<input
-type="number"
-min="0"
-id="limit-${row.date}"
-value="${row.limit}">
-
-</td>
-
-<td>
-
-<button
-onclick="saveCalendar('${row.date}')">
-
-保存
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-    });
-
-    document.getElementById(
-      "calendarBody"
-    ).innerHTML = html;
-
-  }catch(e){
-
-    console.error(e);
-
-    alert("カレンダー取得エラー");
-
-  }
-
-}
-
-// =========================
-// BBQカレンダー保存
-// =========================
-async function saveCalendar(date){
-
-  try{
-
-    const status =
-      document.getElementById(
-        "status-"+date
-      ).value;
-
-    const limit =
-      Number(
-        document.getElementById(
-          "limit-"+date
-        ).value
-      );
-
-    const res =
-      await fetch(
-
-        API_URL +
-        "/api/business-calendar",
-
-        {
-
-          method:"POST",
-
-          headers:{
-            "Content-Type":"application/json"
-          },
-
-          body:JSON.stringify({
-
-            date,
-
-            status,
-
-            limit
-
-          })
-
-        }
-
-      );
-
-    const result =
-      await res.json();
-
-    if(result.success){
-
-      alert("保存しました");
-
-    }else{
-
-      alert(
-        result.message ||
-        "保存失敗"
-      );
-
-    }
-
-  }catch(e){
-
-    console.error(e);
-
-    alert("通信エラー");
-
-  }
-
-}
-
-// 初期表示
-loadCalendar();
-
-</script>
+<script src="js/bbq-calendar.js"></script>
 
 <script src="js/admin-auth.js"></script>
 
 </body>
+
 </html>
-```

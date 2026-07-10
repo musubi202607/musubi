@@ -1,5 +1,5 @@
 // =========================
-// BBQカレンダー Ver2
+// BBQカレンダー管理 Ver2
 // =========================
 
 let calendarData = [];
@@ -8,6 +8,8 @@ let currentMonth = new Date();
 
 currentMonth.setDate(1);
 
+let editingDate = "";
+
 // =========================
 // 初期化
 // =========================
@@ -15,10 +17,38 @@ window.onload = async function(){
 
   await loadCalendar();
 
+  document
+    .getElementById("prevMonth")
+    .addEventListener(
+      "click",
+      prevMonth
+    );
+
+  document
+    .getElementById("nextMonth")
+    .addEventListener(
+      "click",
+      nextMonth
+    );
+
+  document
+    .getElementById("closeModal")
+    .addEventListener(
+      "click",
+      closeModal
+    );
+
+  document
+    .getElementById("saveModal")
+    .addEventListener(
+      "click",
+      saveCalendar
+    );
+
 };
 
 // =========================
-// BBQ営業日取得
+// データ取得
 // =========================
 async function loadCalendar(){
 
@@ -68,11 +98,8 @@ function renderCalendar(){
   ).textContent =
     `${year}年${month+1}月`;
 
-  // -------------------------
   // 曜日
-  // -------------------------
-
-  const weeks = [
+  const weeks=[
     "月",
     "火",
     "水",
@@ -84,19 +111,13 @@ function renderCalendar(){
 
   weeks.forEach(day=>{
 
-    body.innerHTML += `
-      <div class="bbq-week">
-        ${day}
-      </div>
-    `;
+    body.innerHTML +=
+    `<div class="bbq-week">${day}</div>`;
 
   });
 
-  // -------------------------
-  // 月初の曜日
-  // -------------------------
-
-  const firstDay =
+  // 月初
+  const first =
     new Date(
       year,
       month,
@@ -104,17 +125,12 @@ function renderCalendar(){
     );
 
   let start =
-    firstDay.getDay();
+    first.getDay();
 
-  // 月曜始まりへ変換
   start =
     start===0
     ? 6
     : start-1;
-
-  // -------------------------
-  // 空白セル
-  // -------------------------
 
   for(
     let i=0;
@@ -123,13 +139,9 @@ function renderCalendar(){
   ){
 
     body.innerHTML +=
-      `<div class="bbq-day bbq-empty"></div>`;
+      `<div class="bbq-cell bbq-empty"></div>`;
 
   }
-
-  // -------------------------
-  // 表示する月だけ抽出
-  // -------------------------
 
   const monthData =
     calendarData.filter(row=>{
@@ -137,208 +149,317 @@ function renderCalendar(){
       const d =
         new Date(row.date);
 
-      return (
+      return(
+
         d.getFullYear()===year &&
+
         d.getMonth()===month
+
       );
 
     });
 
-  // -------------------------
-  // 日付カード
-  // -------------------------
-
   monthData.forEach(row=>{
 
-  const d =
-    new Date(row.date);
+    const d =
+      new Date(row.date);
 
-  const day =
-    d.getDate();
+    const day =
+      d.getDate();
 
-  body.innerHTML += `
+    const today =
+      new Date();
 
-<div class="bbq-day ${row.status==="×"?"bbq-closed":""}">
+    const isToday =
 
-  <div class="bbq-date">
-    ${day}
-  </div>
+      today.getFullYear()===d.getFullYear()
 
-  <div class="bbq-status">
+      &&
 
-    <select
-      id="status-${row.date}">
+      today.getMonth()===d.getMonth()
 
-      <option
-        value="○"
-        ${row.status==="○"?"selected":""}>
-        予約可
-      </option>
+      &&
 
-      <option
-        value="×"
-        ${row.status==="×"?"selected":""}>
-        予約不可
-      </option>
+      today.getDate()===d.getDate();
 
-    </select>
+    body.innerHTML += `
 
-  </div>
+<div
 
-  <div class="bbq-limit">
+class="bbq-cell
 
-    最大組数
+${row.status==="×"
+?"bbq-closed"
+:""}
 
-    <br>
+${isToday
+?"bbq-today"
+:""}"
 
-    <input
-      type="number"
-      min="0"
-      id="limit-${row.date}"
-      value="${row.limit}">
+onclick="openModal('${row.date}')">
 
-  </div>
+<div class="bbq-date">
 
-  <button
-    class="bbq-save"
-    onclick="saveCalendar('${row.date}')">
+${day}
 
-    保存
+</div>
 
-  </button>
+<div>
+
+${
+row.status==="○"
+
+?'<span class="bbq-open">予約可</span>'
+
+:'<span class="bbq-close">予約不可</span>'
+
+}
+
+</div>
+
+<div class="bbq-limit">
+
+最大 ${row.limit}組
+
+</div>
 
 </div>
 
 `;
 
-});
+  });
 
 }
 
 // =========================
-// 前月
+// BBQカレンダー管理 Ver2
 // =========================
-document
-.getElementById("prevMonth")
-.addEventListener(
-"click",
-()=>{
 
-  currentMonth.setMonth(
-    currentMonth.getMonth()-1
-  );
+let calendarData = [];
 
-  renderCalendar();
+let currentMonth = new Date();
 
-});
+currentMonth.setDate(1);
+
+let editingDate = "";
 
 // =========================
-// 次月
+// 初期化
 // =========================
-document
-.getElementById("nextMonth")
-.addEventListener(
-"click",
-()=>{
+window.onload = async function(){
 
-  currentMonth.setMonth(
-    currentMonth.getMonth()+1
-  );
+  await loadCalendar();
 
-  renderCalendar();
+  document
+    .getElementById("prevMonth")
+    .addEventListener(
+      "click",
+      prevMonth
+    );
 
-});
+  document
+    .getElementById("nextMonth")
+    .addEventListener(
+      "click",
+      nextMonth
+    );
+
+  document
+    .getElementById("closeModal")
+    .addEventListener(
+      "click",
+      closeModal
+    );
+
+  document
+    .getElementById("saveModal")
+    .addEventListener(
+      "click",
+      saveCalendar
+    );
+
+};
 
 // =========================
-// 保存
+// データ取得
 // =========================
-async function saveCalendar(date){
+async function loadCalendar(){
 
   try{
 
-    const limit =
-      Number(
-        document.getElementById(
-          "limit-"+date
-        ).value
-      );
-
-    const status =
-      limit>0
-      ? "○"
-      : "×";
-
-    const res =
+    const response =
       await fetch(
-
         API_URL +
-        "/api/business-calendar",
-
-        {
-
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-            "application/json"
-          },
-
-          body:JSON.stringify({
-
-            mode:
-            "updateBusinessCalendar",
-
-            date,
-
-            status,
-
-            limit
-
-          })
-
-        }
-
+        "/api/business-calendar"
       );
 
-    const result =
-      await res.json();
+    calendarData =
+      await response.json();
 
-    if(result.success){
-
-      const row =
-        calendarData.find(r=>
-          r.date===date
-        );
-
-      if(row){
-
-        row.status =
-          status;
-
-        row.limit =
-          limit;
-
-      }
-
-      renderCalendar();
-
-      alert("保存しました");
-
-    }else{
-
-      alert(
-        result.message ||
-        "保存失敗"
-      );
-
-    }
+    renderCalendar();
 
   }catch(e){
 
     console.error(e);
 
-    alert("通信エラー");
+    alert("取得エラー");
 
   }
+
+}
+
+// =========================
+// カレンダー描画
+// =========================
+function renderCalendar(){
+
+  const body =
+    document.getElementById(
+      "calendarBody"
+    );
+
+  body.innerHTML = "";
+
+  const year =
+    currentMonth.getFullYear();
+
+  const month =
+    currentMonth.getMonth();
+
+  document.getElementById(
+    "monthTitle"
+  ).textContent =
+    `${year}年${month+1}月`;
+
+  // 曜日
+  const weeks=[
+    "月",
+    "火",
+    "水",
+    "木",
+    "金",
+    "土",
+    "日"
+  ];
+
+  weeks.forEach(day=>{
+
+    body.innerHTML +=
+    `<div class="bbq-week">${day}</div>`;
+
+  });
+
+  // 月初
+  const first =
+    new Date(
+      year,
+      month,
+      1
+    );
+
+  let start =
+    first.getDay();
+
+  start =
+    start===0
+    ? 6
+    : start-1;
+
+  for(
+    let i=0;
+    i<start;
+    i++
+  ){
+
+    body.innerHTML +=
+      `<div class="bbq-cell bbq-empty"></div>`;
+
+  }
+
+  const monthData =
+    calendarData.filter(row=>{
+
+      const d =
+        new Date(row.date);
+
+      return(
+
+        d.getFullYear()===year &&
+
+        d.getMonth()===month
+
+      );
+
+    });
+
+  monthData.forEach(row=>{
+
+    const d =
+      new Date(row.date);
+
+    const day =
+      d.getDate();
+
+    const today =
+      new Date();
+
+    const isToday =
+
+      today.getFullYear()===d.getFullYear()
+
+      &&
+
+      today.getMonth()===d.getMonth()
+
+      &&
+
+      today.getDate()===d.getDate();
+
+    body.innerHTML += `
+
+<div
+
+class="bbq-cell
+
+${row.status==="×"
+?"bbq-closed"
+:""}
+
+${isToday
+?"bbq-today"
+:""}"
+
+onclick="openModal('${row.date}')">
+
+<div class="bbq-date">
+
+${day}
+
+</div>
+
+<div>
+
+${
+row.status==="○"
+
+?'<span class="bbq-open">予約可</span>'
+
+:'<span class="bbq-close">予約不可</span>'
+
+}
+
+</div>
+
+<div class="bbq-limit">
+
+最大 ${row.limit}組
+
+</div>
+
+</div>
+
+`;
+
+  });
 
 }
