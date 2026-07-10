@@ -1698,3 +1698,105 @@ textarea{
   font-size:16px;
 
 }
+
+/* =========================
+   BBQカレンダー専用
+========================= */
+
+.bbq-calendar-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:20px;
+
+}
+
+.bbq-calendar-header h2{
+
+  margin:0;
+  font-size:24px;
+
+}
+
+.bbq-calendar-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(7,1fr);
+
+  gap:10px;
+
+}
+
+.bbq-week{
+
+  text-align:center;
+  font-weight:bold;
+  padding:10px 0;
+  background:#f5f5f5;
+  border-radius:6px;
+
+}
+
+.bbq-day{
+
+  background:#fff;
+
+  border:1px solid #ddd;
+
+  border-radius:10px;
+
+  padding:10px;
+
+  min-height:150px;
+
+}
+
+.bbq-empty{
+
+  visibility:hidden;
+
+}
+
+.bbq-date{
+
+  font-weight:bold;
+
+  font-size:18px;
+
+  margin-bottom:10px;
+
+}
+
+.bbq-status{
+
+  margin-bottom:10px;
+
+}
+
+.bbq-limit{
+
+  margin-bottom:10px;
+
+}
+
+.bbq-limit input{
+
+  width:70px;
+  text-align:center;
+
+}
+
+.bbq-save{
+
+  width:100%;
+
+}
+
+.bbq-closed{
+
+  background:#f8f8f8;
+
+}
