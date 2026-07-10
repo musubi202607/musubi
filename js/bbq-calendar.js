@@ -100,14 +100,14 @@ function renderCalendar(){
 
   // 曜日
   const weeks=[
+    "日"
     "月",
     "火",
     "水",
     "木",
     "金",
     "土",
-    "日"
-  ];
+    ];
 
   weeks.forEach(day=>{
 
@@ -127,12 +127,7 @@ function renderCalendar(){
   let start =
     first.getDay();
 
-  start =
-    start===0
-    ? 6
-    : start-1;
-
-  for(
+    for(
     let i=0;
     i<start;
     i++
