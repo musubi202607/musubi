@@ -437,10 +437,11 @@ async function loadProducts() {
   let html = "";
 
 
-  data.forEach(item => {
+    data
+    .filter(item => item.id)
+    .forEach(item => {
 
-
-    html += `
+      html += `
 
 <div class="product-card">
 
