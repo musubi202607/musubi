@@ -1397,9 +1397,23 @@ textarea{
 
 .loading{
 
-  color:#d9534f;
+  margin-top:10px;
 
   font-weight:bold;
+
+  min-height:24px;
+
+}
+
+.loading.success{
+
+  color:#28a745;
+
+}
+
+.loading.uploading{
+
+  color:#007bff;
 
 }
 

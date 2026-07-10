@@ -284,10 +284,16 @@ dropArea.addEventListener(
 
       button.disabled = true;
 
-        document.getElementById(
+        const status =
+          document.getElementById(
           "uploadStatus"
-        ).textContent =
-        "画像アップロード中...";
+          );
+
+        status.className =
+         "loading uploading";
+
+        status.textContent =
+         "⏳ 画像アップロード中...";
 
       const response =
         await fetch(
@@ -313,29 +319,42 @@ dropArea.addEventListener(
 
         button.disabled = false;
 
-        document.getElementById(
-          "uploadStatus"
-        ).textContent =
-        "";
+        const status =
+          document.getElementById(
+            "uploadStatus"
+          );
 
-        console.log(
-          result.secure_url
-        );
+        status.className =
+          "loading success";
 
-      }else{
+        status.textContent =
+          "✅ アップロード完了";
+
+        setTimeout(()=>{
+
+          status.textContent = "";
+          status.className = "loading";
+
+        },1500);
+
+        }else{
 
         button.disabled = false;
 
-        document.getElementById(
-          "uploadStatus"
-        ).textContent =
-        "";
+        const status =
+          document.getElementById(
+            "uploadStatus"
+          );
+
+        status.className =
+          "loading";
+
+        status.textContent =
+          "";
 
         alert(
           "画像アップロード失敗"
         );
-
-        console.log(result);
 
       }
 
@@ -449,9 +468,6 @@ async function loadProducts() {
 
   const data =
     await res.json();
-
-  console.log(data);
-
 
   let html = "";
 
@@ -882,8 +898,6 @@ async function uploadProductImage(id){
   }else{
 
     alert("画像アップロード失敗");
-
-    console.log(result);
 
   }
 
