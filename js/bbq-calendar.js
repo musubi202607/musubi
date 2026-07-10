@@ -78,152 +78,98 @@ async function loadCalendar(){
 // =========================
 // カレンダー描画
 // =========================
-function renderCalendar(){
+function renderCalendar() {
 
-  const body =
-    document.getElementById(
-      "calendarBody"
-    );
-
+  const body = document.getElementById("calendarBody");
   body.innerHTML = "";
 
-  const year =
-    currentMonth.getFullYear();
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
 
-  const month =
-    currentMonth.getMonth();
+  document.getElementById("monthTitle").textContent =
+    `${year}年${month + 1}月`;
 
-  document.getElementById(
-    "monthTitle"
-  ).textContent =
-    `${year}年${month+1}月`;
+  // 曜日ヘッダ（日曜始まり）
+  const weeks = ["日", "月", "火", "水", "木", "金", "土"];
 
-  // 曜日
-  const weeks=[
-    "日",
-    "月",
-    "火",
-    "水",
-    "木",
-    "金",
-    "土"
-    ];
-
-  weeks.forEach(day=>{
-
-    body.innerHTML +=
-    `<div class="bbq-week">${day}</div>`;
-
+  weeks.forEach(day => {
+    body.innerHTML += `<div class="bbq-week">${day}</div>`;
   });
 
-  // 月初
-  const first =
-    new Date(
-      year,
-      month,
-      1
-    );
+  // 月初と開始曜日
+  const first = new Date(year, month, 1);
+  const start = first.getDay();   // 0=日〜6=土
 
-  let start =
-    first.getDay();
-
-    for(
-    let i=0;
-    i<start;
-    i++
-  ){
-
-    body.innerHTML +=
-      `<div class="bbq-cell bbq-empty"></div>`;
-
+  // 空白セル
+  for (let i = 0; i < start; i++) {
+    body.innerHTML += `<div class="bbq-cell bbq-empty"></div>`;
   }
 
-  const monthData =
-    calendarData.filter(row=>{
+  // 月末日
+  const last = new Date(year, month + 1, 0);
+  const totalDays = last.getDate();
 
-      const d =
-        new Date(row.date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-      return(
+  // 1日〜月末までループ
+  for (let day = 1; day <= totalDays; day++) {
 
-        d.getFullYear()===year &&
+    const dateObj = new Date(year, month, day);
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const d = String(dateObj.getDate()).padStart(2, "0");
+    const dateStr = `${y}-${m}-${d}`;
 
-        d.getMonth()===month
+    // この日のデータを calendarData から探す
+    const row = calendarData.find(r => r.date === dateStr);
 
-      );
-
-    });
-
-  monthData.forEach(row=>{
-
-    const d =
-      new Date(row.date);
-
-    const day =
-      d.getDate();
-
-    const today =
-      new Date();
-
+    // 「今日」判定
     const isToday =
+      today.getFullYear() === y &&
+      today.getMonth() === dateObj.getMonth() &&
+      today.getDate() === day;
 
-      today.getFullYear()===d.getFullYear()
+    // デフォルト：平日は予約不可／limit 0
+    let statusText = "予約不可";
+    let limitText = "最大 0組";
+    let cellClass = "bbq-cell bbq-closed";
 
-      &&
+    if (row) {
+      // データがあればそれを優先
+      if (row.status === "○") {
+        statusText = "予約可";
+        cellClass = "bbq-cell";
+      } else {
+        statusText = "予約不可";
+        cellClass = "bbq-cell bbq-closed";
+      }
+      limitText = `最大 ${row.limit}組`;
+    }
 
-      today.getMonth()===d.getMonth()
-
-      &&
-
-      today.getDate()===d.getDate();
+    if (isToday) {
+      cellClass += " bbq-today";
+    }
 
     body.innerHTML += `
-
-<div
-
-class="bbq-cell
-
-${row.status==="×"
-?"bbq-closed"
-:""}
-
-${isToday
-?"bbq-today"
-:""}"
-
-onclick="openModal('${row.date}')">
-
-<div class="bbq-date">
-
-${day}
-
-</div>
-
-<div>
-
-${
-row.status==="○"
-
-?'<span class="bbq-open">予約可</span>'
-
-:'<span class="bbq-close">予約不可</span>'
-
-}
-
-</div>
-
-<div class="bbq-limit">
-
-最大 ${row.limit}組
-
-</div>
-
-</div>
-
-`;
-
-  });
-
+      <div
+        class="${cellClass}"
+        onclick="openModal('${dateStr}')"
+      >
+        <div class="bbq-date">
+          ${day}
+        </div>
+        <div>
+          <span class="${statusText === "予約可" ? "bbq-open" : "bbq-close"}">
+            ${statusText}
+          </span>
+        </div>
+        <div class="bbq-limit">
+          ${limitText}
+        </div>
+      </div>
+    `;
+  }
 }
 
 // =========================
