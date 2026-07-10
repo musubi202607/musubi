@@ -431,17 +431,19 @@ async function loadProducts() {
 
   const data =
     await res.json();
-    
-    console.log(data);//ログ追加
+
+  console.log(data);
+
 
   let html = "";
 
 
-    data
-    .filter(item => item.id)
-    .forEach(item => {
+  data
+  .filter(item => item.id)
+  .forEach(item => {
 
-      html += `
+
+    html += `
 
 <div class="product-card">
 
@@ -456,6 +458,7 @@ async function loadProducts() {
     <img
       src="${item.image || ""}"
       class="preview-image"
+      loading="lazy"
       style="
       display:${item.image ? "block" : "none"};
       "
@@ -464,207 +467,276 @@ async function loadProducts() {
   </div>
 
 
-
   <div class="product-card-row">
 
-    <label>
-      ID
-    </label>
-
-    ${item.id}
+    <b>
+      ${item.price || 0}円
+    </b>
 
   </div>
 
 
-
   <div class="product-card-row">
 
-    <label>
-      商品名
-    </label>
+    状態：
 
-    <input
-      id="name_${item.id}"
-      value="${item.name || ""}"
-    >
+    ${item.status || "停止"}
 
   </div>
 
-
-
-  <div class="product-card-row">
-
-    <label>
-      価格
-    </label>
-
-    <input
-      type="number"
-      id="price_${item.id}"
-      value="${item.price || 0}"
-    >
-
-  </div>
-
-
-
-  <div class="product-card-row">
-
-    <label>
-      説明
-    </label>
-
-    <input
-      id="desc_${item.id}"
-      value="${item.description || ""}"
-    >
-
-  </div>
-
-
-
-  <div class="product-card-row">
-
-    <label>
-      画像URL
-    </label>
-
-    <input
-      id="image_${item.id}"
-      value="${item.image || ""}"
-      readonly
-    >
-
-    <br><br>
-
-    <label
-     class="image-change-btn">
-
-     📷 画像を変更
-
-    <input
-      type="file"
-      id="file_${item.id}"
-      accept="image/*"
-      capture="environment"
-      onchange="uploadProductImage(${item.id})"
-    >
-
-    </label>
-
-  </div>
-
-  <div class="product-card-row">
-
-    <label>
-      種類
-    </label>
-
-
-    <select id="type_${item.id}">
-
-      <option value="onigiri"
-      ${item.type==="onigiri"?"selected":""}>
-      onigiri
-      </option>
-
-
-      <option value="bbq"
-      ${item.type==="bbq"?"selected":""}>
-      bbq
-      </option>
-
-
-      <option value="bbq-option"
-      ${item.type==="bbq-option"?"selected":""}>
-      bbq-option
-      </option>
-
-
-      <option value="drink"
-      ${item.type==="drink"?"selected":""}>
-      drink
-      </option>
-
-
-    </select>
-
-
-  </div>
-
-
-
-
-  <div class="product-card-row">
-
-    <div class="product-card-row">
-
-  <label>
-    販売状態
-  </label>
-
-
-  <label class="switch">
-
-    <input
-      type="checkbox"
-      id="status_${item.id}"
-      ${item.status==="販売中" ? "checked" : ""}
-    >
-
-    <span></span>
-
-  </label>
-
-
-</div>
-
-
-
-
-  <div class="product-card-row">
-
-    <label>
-      表示順
-    </label>
-
-    <input
-      type="number"
-      id="sort_${item.id}"
-      value="${item.sort || ""}"
-    >
-
-  </div>
-
-
-
-
-  <div class="product-actions">
 
 
   <button
     class="save-btn"
-    onclick="saveProduct(${item.id})">
+    onclick="openProductEdit(${item.id})">
 
-    💾 保存
-
-  </button>
-
-
-
-  <button
-    class="delete-btn"
-    onclick="deleteProduct(${item.id})">
-
-    🗑 削除
+    ✏️ 編集
 
   </button>
+
+
+
+  <div
+    id="edit_${item.id}"
+    class="product-edit-card"
+    style="display:none;">
+
+
+
+    <hr>
+
+
+
+    <div class="product-card-row">
+
+      <label>
+        ID
+      </label>
+
+      ${item.id}
+
+    </div>
+
+
+
+
+    <div class="product-card-row">
+
+      <label>
+        商品名
+      </label>
+
+      <input
+        id="name_${item.id}"
+        value="${item.name || ""}"
+      >
+
+    </div>
+
+
+
+
+    <div class="product-card-row">
+
+      <label>
+        価格
+      </label>
+
+      <input
+        type="number"
+        id="price_${item.id}"
+        value="${item.price || 0}"
+      >
+
+    </div>
+
+
+
+
+    <div class="product-card-row">
+
+      <label>
+        説明
+      </label>
+
+      <input
+        id="desc_${item.id}"
+        value="${item.description || ""}"
+      >
+
+    </div>
+
+
+
+
+    <div class="product-card-row">
+
+      <label>
+        画像URL
+      </label>
+
+
+      <input
+        id="image_${item.id}"
+        value="${item.image || ""}"
+        readonly
+      >
+
+
+      <br><br>
+
+
+      <label
+       class="image-change-btn">
+
+       📷 画像を変更
+
+
+        <input
+          type="file"
+          id="file_${item.id}"
+          accept="image/*"
+          capture="environment"
+          onchange="uploadProductImage(${item.id})"
+        >
+
+
+      </label>
+
+
+    </div>
+
+
+
+
+
+    <div class="product-card-row">
+
+
+      <label>
+        種類
+      </label>
+
+
+      <select id="type_${item.id}">
+
+
+        <option value="onigiri"
+        ${item.type==="onigiri"?"selected":""}>
+        onigiri
+        </option>
+
+
+        <option value="bbq"
+        ${item.type==="bbq"?"selected":""}>
+        bbq
+        </option>
+
+
+        <option value="bbq-option"
+        ${item.type==="bbq-option"?"selected":""}>
+        bbq-option
+        </option>
+
+
+        <option value="drink"
+        ${item.type==="drink"?"selected":""}>
+        drink
+        </option>
+
+
+      </select>
+
+
+    </div>
+
+
+
+
+
+    <div class="product-card-row">
+
+
+      <label>
+        販売状態
+      </label>
+
+
+      <label class="switch">
+
+
+        <input
+          type="checkbox"
+          id="status_${item.id}"
+          ${item.status==="販売中" ? "checked" : ""}
+        >
+
+
+        <span></span>
+
+
+      </label>
+
+
+    </div>
+
+
+
+
+
+    <div class="product-card-row">
+
+
+      <label>
+        表示順
+      </label>
+
+
+      <input
+        type="number"
+        id="sort_${item.id}"
+        value="${item.sort || ""}"
+      >
+
+
+    </div>
+
+
+
+
+
+    <div class="product-actions">
+
+
+      <button
+        class="save-btn"
+        onclick="saveProduct(${item.id})">
+
+        💾 保存
+
+      </button>
+
+
+
+
+      <button
+        class="delete-btn"
+        onclick="deleteProduct(${item.id})">
+
+        🗑 削除
+
+      </button>
+
+
+    </div>
+
 
 
   </div>
 
 
 </div>
+
 
 `;
 
@@ -676,6 +748,28 @@ async function loadProducts() {
     "productList"
   ).innerHTML = html;
 
+
+}
+
+function openProductEdit(id){
+
+  const box =
+    document.getElementById(
+      "edit_" + id
+    );
+
+
+  if(
+    box.style.display === "none"
+  ){
+
+    box.style.display = "block";
+
+  }else{
+
+    box.style.display = "none";
+
+  }
 
 }
 
