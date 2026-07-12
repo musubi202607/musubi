@@ -17,6 +17,10 @@
   href="css/style.css"
 >
 
+<meta
+  name="mobile-web-app-capable"
+  content="yes"
+>
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -38,8 +42,17 @@
   href="icon.png"
 >
 
-
 <style>
+
+/* =========================
+   レイアウト
+========================= */
+
+main{
+
+  padding-bottom:110px;
+
+}
 
 .staff-order-header{
 
@@ -54,13 +67,32 @@
 }
 
 
+/* =========================
+   商品一覧
+========================= */
+
 .staff-order-list{
 
   display:flex;
 
   flex-direction:column;
 
-  gap:10px;
+  gap:12px;
+
+}
+
+
+.category-title{
+
+  margin-top:25px;
+
+  padding-bottom:8px;
+
+  border-bottom:2px solid #ddd;
+
+  font-size:22px;
+
+  font-weight:bold;
 
 }
 
@@ -69,12 +101,9 @@
 
   background:#fff;
 
+  border-radius:12px;
+
   padding:15px;
-
-  border-radius:10px;
-
-  box-shadow:
-  0 2px 5px rgba(0,0,0,.1);
 
   display:flex;
 
@@ -82,12 +111,19 @@
 
   align-items:center;
 
+  box-shadow:
+  0 2px 5px rgba(0,0,0,.1);
+
 }
 
 
 .staff-product-name{
 
   flex:1;
+
+  font-size:18px;
+
+  font-weight:bold;
 
 }
 
@@ -100,6 +136,10 @@
 
 }
 
+
+/* =========================
+   数量
+========================= */
 
 .qty-area{
 
@@ -114,15 +154,15 @@
 
 .qty-btn{
 
-  width:40px;
+  width:42px;
 
-  height:40px;
-
-  font-size:22px;
+  height:42px;
 
   border:none;
 
   border-radius:8px;
+
+  font-size:22px;
 
   cursor:pointer;
 
@@ -131,41 +171,48 @@
 
 .qty-number{
 
-  width:30px;
+  width:32px;
 
   text-align:center;
 
   font-size:18px;
-
-}
-
-
-.order-total{
-
-  background:#fff;
-
-  padding:20px;
-
-  margin-top:20px;
-
-  border-radius:10px;
-
-  font-size:22px;
 
   font-weight:bold;
 
 }
 
 
+/* =========================
+   入力フォーム
+========================= */
+
 .order-form{
 
   background:#fff;
+
+  border-radius:12px;
 
   padding:20px;
 
   margin-top:20px;
 
-  border-radius:10px;
+}
+
+
+.order-form h2{
+
+  margin-top:0;
+
+}
+
+
+.order-form label{
+
+  display:block;
+
+  margin-bottom:5px;
+
+  font-weight:bold;
 
 }
 
@@ -175,22 +222,129 @@
 
   width:100%;
 
-  padding:10px;
-
   box-sizing:border-box;
+
+  padding:10px;
 
   margin-bottom:15px;
 
 }
 
 
-.order-button{
+/* =========================
+   完了モーダル
+========================= */
 
-  width:100%;
+.complete-modal{
 
-  padding:15px;
+  position:fixed;
 
-  font-size:18px;
+  inset:0;
+
+  background:rgba(0,0,0,.45);
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  z-index:3000;
+
+}
+
+
+.complete-box{
+
+  width:90%;
+
+  max-width:350px;
+
+  background:#fff;
+
+  border-radius:15px;
+
+  padding:30px;
+
+  text-align:center;
+
+}
+
+
+.complete-icon{
+
+  font-size:60px;
+
+}
+
+
+/* =========================
+   固定バー
+========================= */
+
+.bottom-order-bar{
+
+  position:fixed;
+
+  left:0;
+
+  right:0;
+
+  bottom:0;
+
+  background:#fff;
+
+  border-top:2px solid #ddd;
+
+  box-shadow:0 -2px 8px rgba(0,0,0,.15);
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:15px;
+
+  padding:12px;
+
+  z-index:2000;
+
+}
+
+
+.bottom-info{
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+.bottom-count{
+
+  font-size:15px;
+
+  color:#666;
+
+}
+
+
+.bottom-total{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+}
+
+
+.bottom-order-button{
+
+  width:180px;
+
+  height:52px;
 
   border:none;
 
@@ -198,163 +352,217 @@
 
   background:#28a745;
 
-  color:white;
+  color:#fff;
+
+  font-size:18px;
+
+  cursor:pointer;
 
 }
-
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <header>
 
-<div class="container header-inner">
+  <div class="container header-inner">
 
-<h1>
-店舗注文受付
-</h1>
+    <h1>
 
-</div>
+      店舗注文受付
+
+    </h1>
+
+  </div>
 
 </header>
 
-
-
 <main class="container">
-
 
 <div class="staff-order-header">
 
-
 <a
- href="staff.html"
- class="back-btn"
+  href="staff.html"
+  class="back-btn"
 >
-← 店舗メニューへ戻る
-</a>
 
+← 店舗メニューへ戻る
+
+</a>
 
 </div>
 
-
-
 <div
- id="productList"
- class="staff-order-list"
+  id="productList"
+  class="staff-order-list"
 >
 
 読み込み中...
 
 </div>
 
-
-
-
-<div
-class="order-total"
->
-
-合計：
-
-<span id="totalPrice">
-0
-</span>
-
-円
-
-</div>
-
-
-
+<!-- =========================
+     注文情報
+========================= -->
 
 <div class="order-form">
 
+  <h2>
 
-<h2>
-注文情報
-</h2>
+    注文情報
 
+  </h2>
 
+  <label>
 
-<label>
-氏名
-</label>
+    氏名
 
-<input
-id="customerName"
-placeholder="お名前"
->
+  </label>
 
+  <input
+    id="customerName"
+    placeholder="お名前"
+  >
 
+  <label>
 
+    電話番号
 
-<label>
-電話番号
-</label>
+  </label>
 
-<input
-id="customerPhone"
-placeholder="電話番号"
->
+  <input
+    id="customerPhone"
+    placeholder="電話番号"
+  >
 
+  <label>
 
+    受取時間
 
+  </label>
 
-<label>
-受取時間
-</label>
+  <input
+    id="pickupTime"
+    placeholder="例 12:30"
+  >
 
-<input
-id="pickupTime"
-placeholder="例 12:30"
->
+  <label>
 
+    備考
 
+  </label>
 
-
-<label>
-備考
-</label>
-
-<textarea
-id="note"
-rows="3"
-placeholder="備考"
-></textarea>
-
-
-
-
-<button
-class="order-button"
-onclick="submitStaffOrder()"
->
-
-注文登録
-
-</button>
-
-
+  <textarea
+    id="note"
+    rows="3"
+    placeholder="備考"
+  ></textarea>
 
 </div>
 
 
+<!-- =========================
+     注文完了モーダル
+========================= -->
+
+<div
+  id="completeModal"
+  class="complete-modal"
+  style="display:none;"
+>
+
+  <div class="complete-box">
+
+    <div class="complete-icon">
+
+      ✅
+
+    </div>
+
+    <h2>
+
+      注文を登録しました
+
+    </h2>
+
+    <p>
+
+      注文番号
+
+      <br><br>
+
+      <strong
+        id="completeOrderNo"
+      ></strong>
+
+    </p>
+
+    <button
+      class="bottom-order-button"
+      onclick="resetOrder()"
+      style="width:100%;margin-top:20px;"
+    >
+
+      新しい注文を受付
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     画面下固定バー
+========================= -->
+
+<div class="bottom-order-bar">
+
+  <div class="bottom-info">
+
+    <div
+      id="totalCount"
+      class="bottom-count"
+    >
+
+      0点
+
+    </div>
+
+    <div class="bottom-total">
+
+      <span id="totalPrice">
+
+        0
+
+      </span>
+
+      円
+
+    </div>
+
+  </div>
+
+  <button
+    class="bottom-order-button"
+    onclick="submitStaffOrder()"
+  >
+
+    注文登録
+
+  </button>
+
+</div>
 
 </main>
-
-
 
 
 <script src="js/config.js"></script>
 
 <script src="js/staff-order.js"></script>
-
-
 
 </body>
 
