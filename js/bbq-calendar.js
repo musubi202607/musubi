@@ -369,7 +369,7 @@ function renderCalendar(){
   }
 
   // 表示対象
-  const today =
+  const todayDate =
   formatDate(
     new Date()
   );
@@ -388,7 +388,7 @@ function renderCalendar(){
 
         d.getMonth()===month &&
 
-        item.date >= today
+        item.date >= todayDate
 
       );
 
@@ -426,7 +426,7 @@ function renderCalendar(){
 
 <div
 class="bbq-cell
-${today===item.date?" bbq-today":""}"
+${todayDate===item.date?" bbq-today":""}"
 onclick="openModal('${item.date}')">
 
 <div class="bbq-date">
