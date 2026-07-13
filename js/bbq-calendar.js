@@ -67,7 +67,7 @@ async function loadHolidayCalendar(){
 // =========================
 // BBQ例外取得
 // =========================
-async function loadBusinessCalendar(){
+async function loadBbqExceptionCalendar(){
 
   try{
 
@@ -892,7 +892,7 @@ async function saveBbqException(){
     if(result.success){
 
 
-      await loadBusinessCalendar();
+      await loadBbqExceptionCalendar();
 
 
       buildCalendar();
