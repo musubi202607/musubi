@@ -141,128 +141,120 @@ function buildCalendar(){
   calendarData = [];
 
   const start =
-    new Date();
+    new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      1
+    );
+
 
   start.setHours(
     0,0,0,0
   );
 
+
   const end =
     new Date(start);
 
+
   end.setMonth(
-    end.getMonth() +
-    MONTHS_TO_SHOW
+    end.getMonth()+1
   );
 
+
   for(
-
-    let d =
-      new Date(start);
-
-    d <= end;
-
+    let d = new Date(start);
+    d < end;
     d.setDate(
       d.getDate()+1
     )
-
   ){
 
     const date =
       formatDate(d);
 
+
     const week =
       d.getDay();
 
-    // -------------------------
-    // デフォルト
-    // -------------------------
+
     let status =
       (week===0 || week===6)
       ? "○"
       : "×";
+
 
     let limit =
       (week===0 || week===6)
       ? 2
       : 0;
 
+
     let isHoliday =
       false;
+
 
     let isException =
       false;
 
-    // -------------------------
-    // 店休日判定
-    // -------------------------
+
+    // 店休日
     const holiday =
       holidayData.find(
         row =>
-          row.date === date
+          row.date===date
       );
+
 
     if(
       holiday &&
-      holiday.status ===
-      "店休日"
+      holiday.status==="店休日"
     ){
 
-      status = "×";
-
-      limit = 0;
-
-      isHoliday = true;
+      status="×";
+      limit=0;
+      isHoliday=true;
 
     }
 
-    // -------------------------
+
     // BBQ例外
-    // -------------------------
     const exception =
       bbqExceptionData.find(
         row =>
-          row.date === date
+          row.date===date
       );
 
+
     if(
-
       exception &&
-
       !isHoliday
-
     ){
 
       status =
         exception.status;
 
       limit =
-        Number(
-          exception.limit
-        );
+        Number(exception.limit);
 
-      isException =
-        true;
+      isException=true;
 
     }
+
 
     calendarData.push({
 
       date,
-
       status,
-
       limit,
-
       week,
-
       isHoliday,
-
       isException
 
     });
 
   }
+
 
   renderCalendar();
 
@@ -377,21 +369,30 @@ function renderCalendar(){
   }
 
   // 表示対象
+  const today =
+  formatDate(
+    new Date()
+  );
+
+
   const list =
     calendarData.filter(item=>{
 
       const d =
         new Date(item.date);
 
+
       return(
 
         d.getFullYear()===year &&
 
-        d.getMonth()===month
+        d.getMonth()===month &&
+
+        item.date >= today
 
       );
 
-    });
+  });
 
   const today =
     formatDate(
