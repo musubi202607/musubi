@@ -26,7 +26,7 @@ window.onload = async function(){
 
   await loadHolidayCalendar();
 
-  await loadBusinessCalendar();
+  await loadBbqExceptionCalendar();
 
   buildCalendar();
 
@@ -42,7 +42,7 @@ async function loadHolidayCalendar(){
     const res =
       await fetch(
         API_URL +
-        "/api/store-business-calendar"
+        "/api/calendar"
       );
 
     holidayData =
@@ -994,19 +994,19 @@ async function deleteBbqException(){
 
 
 
-    if(result.success){
+      if(result.success){
 
 
-      await loadBusinessCalendar();
+    await loadBbqExceptionCalendar();
 
 
-      buildCalendar();
+    buildCalendar();
 
 
-      closeCalendarModal();
+    closeCalendarModal();
 
 
-    }
+  }
 
 
 
