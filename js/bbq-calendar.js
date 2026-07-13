@@ -140,6 +140,9 @@ function buildCalendar(){
 
   calendarData = [];
 
+
+  // 表示月の月初から開始
+
   const start =
     new Date(
       currentMonth.getFullYear(),
@@ -153,30 +156,47 @@ function buildCalendar(){
   );
 
 
+
+  // 2ヶ月先まで
+
   const end =
     new Date(start);
 
 
   end.setMonth(
-    end.getMonth()+1
+    end.getMonth() +
+    MONTHS_TO_SHOW
   );
 
 
+
   for(
-    let d = new Date(start);
-    d < end;
+
+    let d =
+      new Date(start);
+
+    d <= end;
+
     d.setDate(
       d.getDate()+1
     )
+
   ){
+
 
     const date =
       formatDate(d);
 
 
+
     const week =
       d.getDay();
 
+
+
+    // =========================
+    // デフォルト設定
+    // =========================
 
     let status =
       (week===0 || week===6)
@@ -190,6 +210,7 @@ function buildCalendar(){
       : 0;
 
 
+
     let isHoliday =
       false;
 
@@ -198,65 +219,102 @@ function buildCalendar(){
       false;
 
 
-    // 店休日
+
+    // =========================
+    // 店休日判定
+    // =========================
+
     const holiday =
       holidayData.find(
         row =>
-          row.date===date
+          row.date === date
       );
+
 
 
     if(
       holiday &&
-      holiday.status==="店休日"
+      holiday.status === "店休日"
     ){
 
-      status="×";
-      limit=0;
-      isHoliday=true;
+      status =
+        "×";
+
+
+      limit =
+        0;
+
+
+      isHoliday =
+        true;
 
     }
 
 
-    // BBQ例外
+
+    // =========================
+    // BBQ例外判定
+    // =========================
+
     const exception =
       bbqExceptionData.find(
         row =>
-          row.date===date
+          row.date === date
       );
 
 
+
     if(
+
       exception &&
+
       !isHoliday
+
     ){
+
 
       status =
         exception.status;
 
-      limit =
-        Number(exception.limit);
 
-      isException=true;
+      limit =
+        Number(
+          exception.limit
+        );
+
+
+      isException =
+        true;
+
 
     }
+
 
 
     calendarData.push({
 
       date,
+
       status,
+
       limit,
+
       week,
+
       isHoliday,
+
       isException
 
     });
 
+
+
   }
 
 
+
   renderCalendar();
+
 
 }
 
@@ -314,12 +372,15 @@ function renderCalendar(){
       "calendarBody"
     );
 
+
   body.innerHTML = "";
+
 
   // 曜日
   const weeks = [
     "月","火","水","木","金","土","日"
   ];
+
 
   weeks.forEach(day=>{
 
@@ -328,35 +389,48 @@ function renderCalendar(){
 
   });
 
+
+
   const year =
     currentMonth.getFullYear();
 
+
   const month =
     currentMonth.getMonth();
+
+
 
   document.getElementById(
     "monthTitle"
   ).textContent =
     `${year}年${month+1}月`;
 
+
+
   // 月初
   const firstDay =
-    new Date(year,month,1);
+    new Date(
+      year,
+      month,
+      1
+    );
 
-  // 月末
-  const lastDay =
-    new Date(year,month+1,0);
 
-  // 月曜始まり
+  // 月曜始まり調整
+
   let blank =
     firstDay.getDay();
+
 
   blank =
     blank===0
     ? 6
     : blank-1;
 
-  // 空白
+
+
+  // 空白セル
+
   for(
     let i=0;
     i<blank;
@@ -364,52 +438,74 @@ function renderCalendar(){
   ){
 
     body.innerHTML +=
-      `<div class="bbq-cell bbq-empty"></div>`;
+      `
+      <div class="bbq-cell bbq-empty"></div>
+      `;
 
   }
 
-  // 表示対象
-  const todayDate =
-  formatDate(
-    new Date()
-  );
 
+
+  // 今日
+
+  const todayDate =
+    formatDate(
+      new Date()
+    );
+
+
+
+  // 表示対象
 
   const list =
     calendarData.filter(item=>{
 
+
       const d =
         new Date(item.date);
+
 
 
       return(
 
         d.getFullYear()===year &&
 
-        d.getMonth()===month &&
-
-        item.date >= todayDate
+        d.getMonth()===month
 
       );
 
-  });
 
-  const today =
-    formatDate(
-      new Date()
-    );
+    });
+
+
+
+  // 日付セル
 
   list.forEach(item=>{
 
+
     const d =
       new Date(item.date);
+
+
+
+    // 過去日判定
+
+    const isPast =
+      item.date < todayDate;
+
+
 
     let badge =
       item.status==="○"
       ? "bbq-open"
       : "bbq-close";
 
+
+
     let icon="";
+
+
 
     if(item.isHoliday){
 
@@ -422,18 +518,28 @@ function renderCalendar(){
 
     }
 
+
+
     body.innerHTML += `
+
 
 <div
 class="bbq-cell
-${todayDate===item.date?" bbq-today":""}"
-onclick="openModal('${item.date}')">
+${todayDate===item.date ? " bbq-today" : ""}"
+${isPast ? "" : `onclick="openModal('${item.date}')"`}
+
+>
+
+
+${isPast ? "" : `
+
 
 <div class="bbq-date">
 
 ${d.getDate()}
 
 </div>
+
 
 <div>
 
@@ -447,11 +553,13 @@ ${item.status==="○"
 
 </div>
 
+
 <div class="bbq-limit">
 
 ${item.limit}組
 
 </div>
+
 
 <div
 style="margin-top:8px;font-size:18px;">
@@ -460,11 +568,20 @@ ${icon}
 
 </div>
 
+
+`}
+
+
 </div>
+
 
 `;
 
+
+
   });
+
+
 
 }
 
@@ -473,20 +590,52 @@ ${icon}
 // =========================
 function prevMonth(){
 
+
+  const now =
+    new Date();
+
+
+
+  // 今日の月より前へ戻さない
+
+  if(
+
+    currentMonth.getFullYear() ===
+    now.getFullYear()
+
+    &&
+
+    currentMonth.getMonth() ===
+    now.getMonth()
+
+  ){
+
+    return;
+
+  }
+
+
+
   currentMonth.setMonth(
 
     currentMonth.getMonth()-1
 
   );
 
-  renderCalendar();
+
+
+  buildCalendar();
+
 
 }
+
+
 
 // =========================
 // 次月
 // =========================
 function nextMonth(){
+
 
   currentMonth.setMonth(
 
@@ -494,10 +643,12 @@ function nextMonth(){
 
   );
 
-  renderCalendar();
+
+
+  buildCalendar();
+
 
 }
-
 
 //ここから確認必//
 
