@@ -378,7 +378,7 @@ function renderCalendar(){
 
   // 曜日
   const weeks = [
-    "月","火","水","木","金","土","日"
+    "日","月","火","水","木","金","土"
   ];
 
 
@@ -416,18 +416,10 @@ function renderCalendar(){
     );
 
 
-  // 月曜始まり調整
+  // 日曜始まり調整
 
   let blank =
     firstDay.getDay();
-
-
-  blank =
-    blank===0
-    ? 6
-    : blank-1;
-
-
 
   // 空白セル
 
