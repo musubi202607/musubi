@@ -42,7 +42,7 @@ async function loadHolidayCalendar(){
     const res =
       await fetch(
         API_URL +
-        "/api/calendar"
+        "/api/store-business-calendar"
       );
 
     holidayData =
@@ -77,18 +77,45 @@ async function loadBbqExceptionCalendar(){
         "/api/business-calendar"
       );
 
-    bbqExceptionData =
-      await res.json();
+    if(!res.ok){
 
-    if(!Array.isArray(bbqExceptionData)){
-
-      bbqExceptionData = [];
+      throw new Error(
+        "BBQ例外取得失敗"
+      );
 
     }
 
+    const data =
+      await res.json();
+
+    if(!Array.isArray(data)){
+
+      bbqExceptionData = [];
+
+      return;
+
+    }
+
+    bbqExceptionData =
+      data.map(item=>({
+
+        date:
+          item.date,
+
+        status:
+          item.status || "×",
+
+        limit:
+          Number(item.limit) || 0
+
+      }));
+
   }catch(e){
 
-    console.error(e);
+    console.error(
+      "BBQ例外取得エラー",
+      e
+    );
 
     bbqExceptionData = [];
 
@@ -278,10 +305,9 @@ function buildCalendar(){
 
 
       limit =
-        Number(
-          exception.limit
-        );
-
+  exception.status === "×"
+    ? 0
+    : Number(exception.limit);
 
       isException =
         true;
@@ -548,10 +574,13 @@ ${item.status==="○"
 
 <div class="bbq-limit">
 
-${item.limit}組
+${
+  item.status === "○"
+    ? `${item.limit}組`
+    : ""
+}
 
 </div>
-
 
 <div
 style="margin-top:8px;font-size:18px;">
@@ -716,9 +745,11 @@ ${normal.text}
 
 
   document.getElementById(
-    "modalLimit"
-  ).value =
-    item.limit;
+  "modalLimit"
+).value =
+  item.isHoliday
+    ? ""
+    : item.limit;
 
 
 

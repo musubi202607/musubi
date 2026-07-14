@@ -20,7 +20,7 @@ window.onload = async () => {
 };
 
 // =========================
-// 営業日取得
+// 店休日取得
 // =========================
 async function loadBusinessCalendar() {
 
@@ -30,17 +30,26 @@ async function loadBusinessCalendar() {
 
     const response =
       await fetch(
-        API_URL + "/api/calendar"
+        API_URL +
+        "/api/store-business-calendar"
       );
 
     if (!response.ok) {
 
-      throw new Error("営業日取得失敗");
+      throw new Error(
+        "営業日取得失敗"
+      );
 
     }
 
     businessCalendarData =
       await response.json();
+
+    if (!Array.isArray(businessCalendarData)) {
+
+      businessCalendarData = [];
+
+    }
 
     renderBusinessCalendar();
 
@@ -90,11 +99,11 @@ function isHoliday(dateStr) {
 
   return businessCalendarData.some(
 
-    d =>
+    row =>
 
-      d.date === dateStr &&
+      row.date === dateStr &&
 
-      d.status === "店休日"
+      row.status === "店休日"
 
   );
 
@@ -107,7 +116,12 @@ function isToday(dateObj) {
 
   const today = new Date();
 
-  today.setHours(0, 0, 0, 0);
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
 
   return (
 
@@ -131,10 +145,18 @@ function getMonthInfo() {
     businessCurrentMonth.getMonth();
 
   const firstDay =
-    new Date(year, month, 1);
+    new Date(
+      year,
+      month,
+      1
+    );
 
   const lastDay =
-    new Date(year, month + 1, 0);
+    new Date(
+      year,
+      month + 1,
+      0
+    );
 
   return {
 
@@ -146,9 +168,11 @@ function getMonthInfo() {
 
     lastDay,
 
-    startDay: firstDay.getDay(),
+    startDay:
+      firstDay.getDay(),
 
-    totalDays: lastDay.getDate()
+    totalDays:
+      lastDay.getDate()
 
   };
 
@@ -164,7 +188,11 @@ function renderBusinessCalendar() {
       "businessCalendar"
     );
 
-  if (!target) return;
+  if (!target) {
+
+    return;
+
+  }
 
   const {
 
@@ -231,14 +259,22 @@ onclick="nextBusinessMonth()">
 `;
 
   // 月初空白
-  for (let i = 0; i < startDay; i++) {
+  for (
+    let i = 0;
+    i < startDay;
+    i++
+  ) {
 
     html += "<div></div>";
 
   }
 
   // 日付
-  for (let day = 1; day <= totalDays; day++) {
+  for (
+    let day = 1;
+    day <= totalDays;
+    day++
+  ) {
 
     const dateObj =
       new Date(
@@ -247,13 +283,22 @@ onclick="nextBusinessMonth()">
         day
       );
 
-    dateObj.setHours(0, 0, 0, 0);
+    dateObj.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
     const dateStr =
-      formatDate(dateObj);
+      formatDate(
+        dateObj
+      );
 
     const holiday =
-      isHoliday(dateStr);
+      isHoliday(
+        dateStr
+      );
 
     let className =
       "calendar-day";
@@ -263,7 +308,9 @@ onclick="nextBusinessMonth()">
         ? " holiday"
         : " business";
 
-    if (isToday(dateObj)) {
+    if (
+      isToday(dateObj)
+    ) {
 
       className +=
         " today";
@@ -370,142 +417,6 @@ function goTodayBusiness() {
 }
 
 // =========================
-// 営業日切替
-// =========================
-async function toggleBusiness(date) {
-
-  // 二重クリック防止
-  if (businessLoading) {
-
-    return;
-
-  }
-
-  businessLoading = true;
-
-  try {
-
-    const holiday =
-      isHoliday(date);
-
-    const nextStatus =
-      holiday
-        ? "営業日"
-        : "店休日";
-
-    const response =
-      await fetch(
-
-        API_URL + "/api/calendar",
-
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type": "application/json"
-
-          },
-
-          body: JSON.stringify({
-
-            date,
-
-            status: nextStatus
-
-          })
-
-        }
-
-      );
-
-    if (!response.ok) {
-
-      throw new Error("保存失敗");
-
-    }
-
-    const result =
-      await response.json();
-
-    if (!result.success) {
-
-      alert(
-
-        result.message ||
-
-        "保存に失敗しました"
-
-      );
-
-      return;
-
-    }
-
-    // =========================
-    // メモリ更新
-    // 店休日だけ保持
-    // =========================
-
-    if (nextStatus === "店休日") {
-
-      const exists =
-        businessCalendarData.find(
-
-          d => d.date === date
-
-        );
-
-      if (!exists) {
-
-        businessCalendarData.push({
-
-          date,
-
-          status: "店休日"
-
-        });
-
-      }
-
-    } else {
-
-      businessCalendarData =
-        businessCalendarData.filter(
-
-          d => d.date !== date
-
-        );
-
-    }
-
-    // 日付順に並び替え
-    businessCalendarData.sort(
-
-      (a, b) =>
-
-        a.date.localeCompare(b.date)
-
-    );
-
-    renderBusinessCalendar();
-
-  } catch (e) {
-
-    console.error(e);
-
-    alert("通信エラー");
-
-  } finally {
-
-    businessLoading = false;
-
-  }
-
-}
-
-// =========================
 // 営業日データ再取得
 // =========================
 async function reloadBusinessCalendar() {
@@ -577,6 +488,141 @@ async function refreshBusinessCalendar() {
 }
 
 // =========================
+// 営業日切替
+// =========================
+async function toggleBusiness(date) {
+
+  // 二重クリック防止
+  if (businessLoading) {
+
+    return;
+
+  }
+
+  businessLoading = true;
+
+  try {
+
+    const holiday =
+      isHoliday(date);
+
+    let response;
+
+    // =========================
+    // 営業日 → 店休日登録
+    // =========================
+    if (!holiday) {
+
+      response =
+        await fetch(
+
+          API_URL +
+          "/api/store-business-calendar",
+
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+              date: date,
+
+              status: "店休日"
+
+            })
+
+          }
+
+        );
+
+    }
+
+    // =========================
+    // 店休日 → 削除（営業日に戻す）
+    // =========================
+    else {
+
+      response =
+        await fetch(
+
+          API_URL +
+          "/api/store-business-calendar",
+
+          {
+
+            method: "DELETE",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+              date: date
+
+            })
+
+          }
+
+        );
+
+    }
+
+    if (!response.ok) {
+
+      throw new Error(
+        "保存失敗"
+      );
+
+    }
+
+    const result =
+      await response.json();
+
+    if (!result.success) {
+
+      alert(
+
+        result.message ||
+
+        "保存できませんでした"
+
+      );
+
+      return;
+
+    }
+
+    // =========================
+    // 最新データ取得
+    // =========================
+    await loadBusinessCalendar();
+
+  } catch (e) {
+
+    console.error(e);
+
+    alert("通信エラー");
+
+  } finally {
+
+    businessLoading = false;
+
+  }
+
+}
+
+// =========================
 // Enterキーで今日へ戻る
 // =========================
 document.addEventListener(
@@ -585,23 +631,25 @@ document.addEventListener(
 
   (event) => {
 
-    if (event.key === "Enter") {
+    if (event.key !== "Enter") {
 
-      const active =
+      return;
 
-        document.activeElement;
+    }
 
-      if (
+    const active =
 
-        active &&
+      document.activeElement;
 
-        active.tagName === "BODY"
+    if (
 
-      ) {
+      active &&
 
-        goTodayBusiness();
+      active.tagName === "BODY"
 
-      }
+    ) {
+
+      goTodayBusiness();
 
     }
 
@@ -618,11 +666,13 @@ window.addEventListener(
 
   async () => {
 
-    if (!businessLoading) {
+    if (businessLoading) {
 
-      await refreshBusinessCalendar();
+      return;
 
     }
+
+    await refreshBusinessCalendar();
 
   }
 
@@ -634,6 +684,18 @@ window.addEventListener(
 function getBusinessCalendarData() {
 
   return businessCalendarData;
+
+}
+
+// =========================
+// 初期表示を今月に固定
+// =========================
+function initBusinessCalendar() {
+
+  businessCurrentMonth =
+    new Date();
+
+  renderBusinessCalendar();
 
 }
 
