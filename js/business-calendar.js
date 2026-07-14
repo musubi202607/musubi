@@ -11,6 +11,42 @@ let businessCurrentMonth = new Date();
 let businessLoading = false;
 
 // =========================
+// 更新表示
+// =========================
+function showBusinessLoading(){
+
+  const bar =
+    document.getElementById(
+      "businessLoadingBar"
+    );
+
+  if(bar){
+
+    bar.style.display =
+      "block";
+
+  }
+
+}
+
+
+function hideBusinessLoading(){
+
+  const bar =
+    document.getElementById(
+      "businessLoadingBar"
+    );
+
+  if(bar){
+
+    bar.style.display =
+      "none";
+
+  }
+
+}
+
+// =========================
 // 初期化
 // =========================
 window.onload = async () => {
@@ -61,9 +97,11 @@ async function loadBusinessCalendar() {
 
   } finally {
 
-    businessLoading = false;
+  businessLoading = false;
 
-  }
+  hideBusinessLoading();
+
+}
 
 }
 
@@ -499,7 +537,9 @@ async function toggleBusiness(date) {
 
   }
 
-  businessLoading = true;
+    businessLoading = true;
+
+    showBusinessLoading();
 
   try {
 

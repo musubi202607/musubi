@@ -2012,3 +2012,33 @@ main{
   }
 
 }
+
+/* =========================
+   営業日更新バー
+========================= */
+
+#businessLoadingBar{
+
+  display:none;
+
+  position:fixed;
+
+  top:0;
+
+  left:0;
+
+  width:100%;
+
+  background:#333;
+
+  color:white;
+
+  text-align:center;
+
+  padding:12px;
+
+  z-index:9999;
+
+  font-size:16px;
+
+}
