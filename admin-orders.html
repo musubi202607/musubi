@@ -83,6 +83,21 @@ async function loadOrders(type = "onigiri") {
 
   currentType = type;
 
+// 更新中表示
+  document.getElementById("orderBody").innerHTML = `
+
+  <div style="
+    text-align:center;
+    padding:30px;
+    font-weight:bold;
+  ">
+
+  更新中...
+
+  </div>
+
+  `;
+
   const res = await fetch(
     API_URL +
     "/api/orders?type=" +
