@@ -437,15 +437,15 @@ async function displayReservation(data){
       data.reservationNo
     );
 
-  const bbqPrice =
-    Number(data.price || 0);
+const bbqTotal =
+  Number(data.total || 0);
 
-  const optionTotal =
-    Number(history.total || 0);
+const optionTotal =
+  Number(history.total || 0);
 
-  const grandTotal =
-    bbqPrice + optionTotal;
-
+const grandTotal =
+  bbqTotal + optionTotal;
+  
   let historyHtml = "";
 
   if(
@@ -633,29 +633,63 @@ ${historyHtml}
 
 <div class="current-total">
 
-<p>
+<h3>
+
+ご利用料金
+
+</h3>
+
+<div class="total-row">
+
+<span>
 
 BBQ予約
 
-¥${bbqPrice.toLocaleString()}
+（${data.people}名 × ¥${bbqTotal.toLocaleString()}）
 
-</p>
+</span>
 
-<p>
+<span>
+
+¥${Number(data.total).toLocaleString()}
+
+</span>
+
+</div>
+
+<div class="total-row">
+
+<span>
 
 追加注文
 
+</span>
+
+<span>
+
 ¥${optionTotal.toLocaleString()}
 
-</p>
+</span>
 
-<h2>
+</div>
+
+<hr>
+
+<div class="total-grand">
+
+<span>
 
 合計
 
+</span>
+
+<span>
+
 ¥${grandTotal.toLocaleString()}
 
-</h2>
+</span>
+
+</div>
 
 </div>
 
