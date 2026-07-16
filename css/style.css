@@ -2042,3 +2042,19 @@ main{
   font-size:16px;
 
 }
+
+.payment-group{
+
+  margin-top:30px;
+
+  margin-bottom:15px;
+
+  padding-bottom:8px;
+
+  border-bottom:3px solid #4caf50;
+
+  font-size:24px;
+
+  font-weight:bold;
+
+}
