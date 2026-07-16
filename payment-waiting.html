@@ -10,7 +10,11 @@
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>会計</title>
+<title>
+
+会計
+
+</title>
 
 <link
   rel="stylesheet"
@@ -42,9 +46,9 @@
 
   border-radius:20px;
 
-  font-size:12px;
-
   color:#fff;
+
+  font-size:12px;
 
   margin-bottom:10px;
 
@@ -52,7 +56,7 @@
 
 .payment-type.onigiri{
 
-  background:#4caf50;
+  background:#43a047;
 
 }
 
@@ -62,13 +66,23 @@
 
 }
 
+.price-row{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  margin:4px 0;
+
+}
+
 .total{
 
   font-size:24px;
 
   font-weight:bold;
 
-  margin-top:10px;
+  margin-top:12px;
 
 }
 
@@ -80,13 +94,13 @@
 
   padding:12px;
 
-  background:#4caf50;
-
-  color:#fff;
-
   border:none;
 
   border-radius:8px;
+
+  background:#4caf50;
+
+  color:#fff;
 
   cursor:pointer;
 
@@ -106,23 +120,23 @@
 
 <header>
 
-  <div class="container header-inner">
+<div class="container header-inner">
 
-    <h1>
+<h1>
 
-      会計
+会計
 
-    </h1>
+</h1>
 
-  </div>
+</div>
 
 </header>
 
 <div class="container">
 
 <a
-  href="staff.html"
-  class="back-btn"
+href="staff.html"
+class="back-btn"
 >
 
 ← 店舗メニューへ戻る
@@ -135,7 +149,9 @@
 
 </h2>
 
-<div id="paymentList">
+<div
+id="paymentList"
+>
 
 読み込み中...
 
@@ -144,7 +160,6 @@
 </div>
 
 <script src="js/config.js"></script>
-
 <script src="js/admin-auth.js"></script>
 
 <script>
@@ -179,12 +194,13 @@ async function loadPayments(){
 
   }
 
-  // おにぎり→BBQの順に表示
   data.sort((a,b)=>{
 
-    if(
-      a.type===b.type
-    ) return 0;
+    if(a.type===b.type){
+
+      return 0;
+
+    }
 
     return a.type==="onigiri"
       ? -1
@@ -194,90 +210,160 @@ async function loadPayments(){
 
   data.forEach(item=>{
 
-    const total =
-      Number(item.total||0);
-
-    const typeName =
-
-      item.type==="onigiri"
-
-      ? "🍙 おにぎり"
-
-      : "🔥 BBQ";
-
     const typeClass =
-
       item.type==="onigiri"
-
       ? "onigiri"
-
       : "bbq";
 
-    const noLabel =
-
+    const typeName =
       item.type==="onigiri"
+      ? "🍙 おにぎり"
+      : "🔥 BBQ";
 
+    const noLabel =
+      item.type==="onigiri"
       ? "注文番号"
-
       : "予約番号";
 
+    let detailHtml = "";
+
+    // =========================
+    // 表示内容
+    // =========================
+
+    if(item.type === "onigiri"){
+
+      item.items.forEach(product=>{
+
+        detailHtml += `
+
+<div class="price-row">
+
+<span>
+
+${product.name}
+×${product.qty}
+
+</span>
+
+<span>
+
+¥${Number(product.amount).toLocaleString()}
+
+</span>
+
+</div>
+
+`;
+
+      });
+
+    }else{
+
+      detailHtml = `
+
+<div class="price-row">
+
+<span>
+
+BBQ料金
+
+</span>
+
+<span>
+
+¥${Number(item.bbqPrice).toLocaleString()}
+
+</span>
+
+</div>
+
+<div class="price-row">
+
+<span>
+
+追加注文
+
+</span>
+
+<span>
+
+¥${Number(item.optionTotal).toLocaleString()}
+
+</span>
+
+</div>
+
+`;
+
+    }
+
     html += `
-    
-      <div class="payment-card">
 
-        <div class="payment-type ${typeClass}">
+<div class="payment-card">
 
-          ${typeName}
+<div class="payment-type ${typeClass}">
 
-        </div>
+${typeName}
 
-        <h2>
+</div>
 
-          ${item.customerName}
+<h2>
 
-        </h2>
+${item.customerName}
 
-        <p>
+</h2>
 
-          ${noLabel}：
+<p>
 
-          ${item.no}
+${noLabel}：
+${item.no}
 
-        </p>
+</p>
 
-        <p>
+${item.type==="bbq"
+?`
+<p>
 
-          ${item.detail || ""}
+プラン：
+${item.detail}
 
-        </p>
+</p>
+`
+:""}
 
-        <div class="total">
+${detailHtml}
 
-          合計：¥${total.toLocaleString()}
+<hr>
 
-        </div>
+<div class="total">
 
-        <button
+合計：
+¥${Number(item.total).toLocaleString()}
 
-          class="pay-btn"
+</div>
 
-          onclick="paidUpdate(
+<button
 
-            '${item.type}',
+class="pay-btn"
 
-            '${item.no}'
+onclick="paidUpdate(
 
-          )"
+'${item.type}',
 
-        >
+'${item.no}'
 
-          会計済みにする
+)"
 
-        </button>
+>
 
-      </div>
+会計済みにする
 
-    `;
+</button>
+
+</div>
+
+`;
 
   });
 
@@ -289,23 +375,30 @@ async function loadPayments(){
 
 }
 
-
 // =========================
-// 会計更新
+// 会計済
 // =========================
-async function paidUpdate(type, no){
+async function paidUpdate(type,no){
 
-  if(!confirm("会計済みにしますか？")){
+  if(
+
+    !confirm(
+
+      "会計済みにしますか？"
+
+    )
+
+  ){
 
     return;
 
   }
 
   let url = "";
+
   let body = {};
 
-  // おにぎり
-  if(type === "onigiri"){
+  if(type==="onigiri"){
 
     url =
       API_URL +
@@ -313,14 +406,11 @@ async function paidUpdate(type, no){
 
     body = {
 
-      orderNo: no
+      orderNo:no
 
     };
 
-  }
-
-  // BBQ
-  else{
+  }else{
 
     url =
       API_URL +
@@ -328,27 +418,34 @@ async function paidUpdate(type, no){
 
     body = {
 
-      reservationNo: no
+      reservationNo:no
 
     };
 
   }
 
   const response =
-    await fetch(url,{
+    await fetch(
 
-      method:"POST",
+      url,
 
-      headers:{
+      {
 
-        "Content-Type":
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":
           "application/json"
 
-      },
+        },
 
-      body:JSON.stringify(body)
+        body:
+          JSON.stringify(body)
 
-    });
+      }
+
+    );
 
   const result =
     await response.json();
@@ -372,7 +469,6 @@ async function paidUpdate(type, no){
   }
 
 }
-
 
 // =========================
 // 初期表示
