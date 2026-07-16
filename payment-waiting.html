@@ -322,27 +322,48 @@ ${item.no}
 </p>
 
 ${item.type==="bbq"
-?`
+?
+`
 <p>
-
 プラン：
 ${item.plan}
-
 </p>
 
 <p>
-
 単価：
 ¥${Number(item.unitPrice).toLocaleString()}
-
 </p>
 
 <p>
-
 人数：
 ${item.people}名
-
 </p>
+
+<p>
+BBQ料金：
+¥${Number(item.bbqPrice).toLocaleString()}
+</p>
+
+<h3>
+追加注文
+</h3>
+
+${item.optionItems.map(o=>`
+
+<p>
+${o.name}
+${o.qty}個
+<br>
+¥${Number(o.amount).toLocaleString()}
+</p>
+
+`).join("")}
+
+<p>
+追加注文合計：
+¥${Number(item.optionTotal).toLocaleString()}
+</p>
+
 `
 :""}
 
