@@ -233,7 +233,7 @@ function buildCalendar(){
 
     let limit =
       (week===0 || week===6)
-      ? 2
+      ? 1
       : 0;
 
 
