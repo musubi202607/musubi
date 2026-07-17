@@ -233,7 +233,7 @@ function buildCalendar(){
 
     let limit =
       (week===0 || week===6)
-      ? 1
+      ? 2
       : 0;
 
 
@@ -365,10 +365,10 @@ function getDefaultSetting(date){
 
       status:"○",
 
-      limit:2,
+      limit:1,
 
       text:
-        "通常設定：土日のため予約可（2組）"
+        "通常設定：土日のため予約可（1組）"
 
     };
 
