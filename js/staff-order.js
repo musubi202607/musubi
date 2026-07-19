@@ -352,53 +352,19 @@ async function submitStaffOrder(){
 
 
 
-  const items = [];
+  const items = cart.map(item => ({
 
+  productId: item.id,
 
+  name: item.name,
 
-  staffProducts.forEach(item=>{
+  price: item.price,
 
+  quantity: item.qty,
 
-    const qty =
-      staffCart[item.id] || 0;
+  amount: item.price * item.qty
 
-
-
-    if(qty > 0){
-
-
-      items.push({
-
-        productId:
-          item.id,
-
-
-        name:
-          item.name,
-
-
-        price:
-          Number(item.price || 0),
-
-
-        quantity:
-          qty,
-
-
-        amount:
-          Number(item.price || 0)
-          *
-          qty
-
-
-      });
-
-
-    }
-
-
-
-  });
+}));
 
 
 
@@ -543,15 +509,26 @@ function resetOrder(){
 
 
 
-  staffProducts.forEach(item=>{
+  cart = [];
 
-    staffCart[item.id]=0;
+products.forEach(item => {
 
+  const qty =
     document.getElementById(
-      "qty_"+item.id
-    ).textContent=0;
+      "qty_" + item.id
+    );
 
-  });
+  qty.textContent = 0;
+
+  qty.classList.add("qty-zero");
+
+  document
+    .getElementById(
+      "card_" + item.id
+    )
+    .classList.remove("selected");
+
+});
 
 
 
