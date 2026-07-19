@@ -394,20 +394,6 @@ async function submitStaffOrder(){
         "customerName"
       ).value,
 
-
-
-    phone:
-      document.getElementById(
-        "customerPhone"
-      ).value,
-
-
-
-    pickupTime:
-      document.getElementById(
-        "pickupTime"
-      ).value,
-
     note:
       document.getElementById(
         "note"
@@ -539,20 +525,6 @@ products.forEach(item => {
   document.getElementById(
     "customerName"
   ).value="";
-
-
-
-  document.getElementById(
-    "customerPhone"
-  ).value="";
-
-
-
-  document.getElementById(
-    "pickupTime"
-  ).value="";
-
-
 
   document.getElementById(
     "note"
