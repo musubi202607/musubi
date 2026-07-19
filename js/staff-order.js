@@ -51,8 +51,6 @@ async function loadProducts(){
 
       );
 
-    console.log(products);
-
     renderProducts();
 
     updateTotal();
