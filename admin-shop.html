@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+
+店舗情報管理
+
+</title>
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
+
+<style>
+
+.form-card{
+
+  background:#fff;
+
+  padding:20px;
+
+  border-radius:10px;
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.1);
+
+  margin-bottom:20px;
+
+}
+
+.form-group{
+
+  margin-bottom:18px;
+
+}
+
+.form-group label{
+
+  display:block;
+
+  font-weight:bold;
+
+  margin-bottom:6px;
+
+}
+
+.form-group input{
+
+  width:100%;
+
+  padding:10px;
+
+  border:1px solid #ccc;
+
+  border-radius:6px;
+
+  box-sizing:border-box;
+
+}
+
+.preview{
+
+  width:220px;
+
+  margin-top:10px;
+
+  border-radius:8px;
+
+  border:1px solid #ddd;
+
+}
+
+.save-btn{
+
+  width:100%;
+
+  padding:14px;
+
+  background:#4caf50;
+
+  color:#fff;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+}
+
+.save-btn:hover{
+
+  opacity:.9;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container header-inner">
+
+<h1>
+
+店舗情報管理
+
+</h1>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<a
+  href="admin.html"
+  class="back-btn"
+>
+
+← 管理画面へ戻る
+
+</a>
+
+<br><br>
+
+<div class="form-card">
+
+<div class="form-group">
+
+<label>
+
+店舗名
+
+</label>
+
+<input
+  id="shopName"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+電話番号
+
+</label>
+
+<input
+  id="phone"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+住所
+
+</label>
+
+<input
+  id="address"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+営業時間
+
+</label>
+
+<input
+  id="businessHours"
+  type="text"
+  placeholder="9:00～17:00"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+定休日説明
+
+</label>
+
+<input
+  id="holidayText"
+  type="text"
+  placeholder="毎週火曜日"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+Instagram
+
+</label>
+
+<input
+  id="instagram"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+LINE
+
+</label>
+
+<input
+  id="line"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+GoogleMap
+
+</label>
+
+<input
+  id="googleMap"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+お知らせ１
+
+</label>
+
+<input
+  id="notice1"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+お知らせ２
+
+</label>
+
+<input
+  id="notice2"
+  type="text"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+お知らせ３
+
+</label>
+
+<input
+  id="notice3"
+  type="text"
+>
+
+</div>
+
+<hr>
+
+<h2>
+
+トップ画像
+
+</h2>
+
+<div class="form-group">
+
+<input
+  id="topImage"
+  type="text"
+  placeholder="Cloudinary URL"
+>
+
+<img
+  id="topImagePreview"
+  class="preview"
+>
+
+</div>
+
+<h2>
+
+店舗画像
+
+</h2>
+
+<div class="form-group">
+
+<input
+  id="shopImage1"
+  type="text"
+  placeholder="Cloudinary URL"
+>
+
+<img
+  id="shopImage1Preview"
+  class="preview"
+>
+
+</div>
+
+<div class="form-group">
+
+<input
+  id="shopImage2"
+  type="text"
+  placeholder="Cloudinary URL"
+>
+
+<img
+  id="shopImage2Preview"
+  class="preview"
+>
+
+</div>
+
+<div class="form-group">
+
+<input
+  id="shopImage3"
+  type="text"
+  placeholder="Cloudinary URL"
+>
+
+<img
+  id="shopImage3Preview"
+  class="preview"
+>
+
+</div>
+
+<button
+  class="save-btn"
+  onclick="saveShopSettings()"
+>
+
+保存
+
+</button>
+
+</div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/admin-auth.js"></script>
+
+<script>
+
+// =========================
+// 初期読込
+// =========================
+window.onload = async function(){
+
+  await loadShopSettings();
+
+};
+
+
+// =========================
+// 店舗情報取得
+// =========================
+async function loadShopSettings(){
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/shop-settings"
+
+    );
+
+  const data =
+    await res.json();
+
+  const keys=[
+
+    "shopName",
+
+    "phone",
+
+    "address",
+
+    "businessHours",
+
+    "holidayText",
+
+    "topImage",
+
+    "shopImage1",
+
+    "shopImage2",
+
+    "shopImage3",
+
+    "instagram",
+
+    "line",
+
+    "googleMap",
+
+    "notice1",
+
+    "notice2",
+
+    "notice3"
+
+  ];
+
+  keys.forEach(key=>{
+
+    const el =
+      document.getElementById(key);
+
+    if(el){
+
+      el.value =
+        data[key] || "";
+
+    }
+
+  });
+
+  updatePreview(
+    "topImage"
+  );
+
+  updatePreview(
+    "shopImage1"
+  );
+
+  updatePreview(
+    "shopImage2"
+  );
+
+  updatePreview(
+    "shopImage3"
+  );
+
+}
+
+
+// =========================
+// プレビュー更新
+// =========================
+function updatePreview(id){
+
+  const input =
+    document.getElementById(id);
+
+  const img =
+    document.getElementById(
+      id + "Preview"
+    );
+
+  img.src =
+    input.value || "";
+
+}
+
+
+// =========================
+// 入力時プレビュー
+// =========================
+[
+
+  "topImage",
+
+  "shopImage1",
+
+  "shopImage2",
+
+  "shopImage3"
+
+].forEach(id=>{
+
+  document
+    .getElementById(id)
+    .addEventListener(
+
+      "input",
+
+      ()=>updatePreview(id)
+
+    );
+
+});
+
+
+// =========================
+// 保存
+// =========================
+async function saveShopSettings(){
+
+  const body={
+
+    shopName:
+      shopName.value,
+
+    phone:
+      phone.value,
+
+    address:
+      address.value,
+
+    businessHours:
+      businessHours.value,
+
+    holidayText:
+      holidayText.value,
+
+    topImage:
+      topImage.value,
+
+    shopImage1:
+      shopImage1.value,
+
+    shopImage2:
+      shopImage2.value,
+
+    shopImage3:
+      shopImage3.value,
+
+    instagram:
+      instagram.value,
+
+    line:
+      line.value,
+
+    googleMap:
+      googleMap.value,
+
+    notice1:
+      notice1.value,
+
+    notice2:
+      notice2.value,
+
+    notice3:
+      notice3.value
+
+  };
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/shop-settings",
+
+      {
+
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+        body:
+          JSON.stringify(body)
+
+      }
+
+    );
+
+  const result =
+    await res.json();
+
+  if(result.success){
+
+    alert(
+
+      "保存しました"
+
+    );
+
+  }else{
+
+    alert(
+
+      result.message ||
+
+      "保存失敗"
+
+    );
+
+  }
+
+}
+
+</script>
+
+</body>
+
+</html>
