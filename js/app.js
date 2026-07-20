@@ -158,6 +158,149 @@ async function loadShopSettings(){
     shop.holidayText;
 
 }
+
+// =========================
+// 次回店休日取得
+// =========================
+async function loadNextHoliday(){
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/store-business-calendar"
+
+      );
+
+
+    const holidays =
+      await res.json();
+
+
+
+    const today =
+      new Date();
+
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+
+    const nextHoliday =
+
+      holidays
+
+        .filter(item=>{
+
+          const date =
+            new Date(
+              item.date
+            );
+
+
+          return (
+
+            item.status === "店休日" &&
+
+            date >= today
+
+          );
+
+        })
+
+        .sort((a,b)=>{
+
+          return (
+
+            new Date(a.date) -
+            new Date(b.date)
+
+          );
+
+        })[0];
+
+
+
+    if(!nextHoliday){
+
+      return;
+
+    }
+
+
+
+    const date =
+      new Date(
+        nextHoliday.date
+      );
+
+
+
+    const text =
+
+      "次回店休日：" +
+
+      (date.getMonth()+1) +
+
+      "月" +
+
+      date.getDate() +
+
+      "日";
+
+
+
+    const holiday =
+      document.getElementById(
+        "holidayText"
+      );
+
+
+    if(holiday){
+
+      holiday.textContent =
+        text;
+
+    }
+
+
+
+    const footerHoliday =
+      document.getElementById(
+        "footerHolidayText"
+      );
+
+
+    if(footerHoliday){
+
+      footerHoliday.textContent =
+        text;
+
+    }
+
+
+
+  }catch(error){
+
+    console.error(
+
+      "次回店休日取得エラー",
+
+      error
+
+    );
+
+  }
+
+}
+
 // =========================
 // 商品一覧表示
 // =========================
@@ -375,6 +518,7 @@ async function updateCartCount() {
 // =========================
 window.addEventListener("DOMContentLoaded", async () => {
   await loadShopSettings();
+  await loadNextHoliday();
   await loadProducts();
   await updateCartCount(); // ← await必須
 });
