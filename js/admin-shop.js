@@ -38,7 +38,7 @@ async function loadShopSettings(){
 
       "businessHours",
 
-      "holidayText",
+      "holidayList",
 
       "topImage",
 
@@ -247,9 +247,9 @@ async function saveShopSettings(){
         "businessHours"
       ).value,
 
-    holidayText:
+    holidayList:
       document.getElementById(
-        "holidayText"
+        "holidayList"
       ).value,
 
     topImage:
