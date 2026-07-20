@@ -152,10 +152,17 @@ async function loadShopSettings(){
   ).textContent =
     shop.businessHours;
 
+  const holidayList =
   document.getElementById(
-    "footerHolidayList"
-  ).textContent =
-    shop.holidayList;
+    "holidayList"
+  );
+
+  if(holidayList){
+
+  holidayList.textContent =
+    shop.holidayList || "";
+
+  }
 
 }
 
