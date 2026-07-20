@@ -54,11 +54,11 @@ async function loadShopSettings(){
 
       "googleMap",
 
-      "notice1",
+//      "notice1",
 
-      "notice2",
+//      "notice2",
 
-      "notice3"
+//      "notice3"
 
     ];
 
@@ -287,20 +287,20 @@ async function saveShopSettings(){
         "googleMap"
       ).value,
 
-    notice1:
-      document.getElementById(
-        "notice1"
-      ).value,
+//    notice1:
+//     document.getElementById(
+//       "notice1"
+//      ).value,
 
-    notice2:
-      document.getElementById(
-        "notice2"
-      ).value,
+//    notice2:
+//      document.getElementById(
+//        "notice2"
+//      ).value,
 
-    notice3:
-      document.getElementById(
-        "notice3"
-      ).value
+//    notice3:
+//      document.getElementById(
+//        "notice3"
+//      ).value
 
   };
 
