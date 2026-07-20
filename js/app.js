@@ -160,7 +160,7 @@ async function loadShopSettings(){
 }
 
 // =========================
-// 次回店休日取得
+// 次回・次々回店休日取得
 // =========================
 async function loadNextHoliday(){
 
@@ -184,32 +184,31 @@ async function loadNextHoliday(){
       new Date();
 
 
-    today.setHours(
-      0,
-      0,
-      0,
-      0
-    );
+    const todayText =
+
+      today.getFullYear() +
+      "-" +
+      String(
+        today.getMonth()+1
+      ).padStart(2,"0") +
+      "-" +
+      String(
+        today.getDate()
+      ).padStart(2,"0");
 
 
 
-    const nextHoliday =
+    const nextHolidays =
 
       holidays
 
         .filter(item=>{
 
-          const date =
-            new Date(
-              item.date
-            );
-
-
           return (
 
             item.status === "店休日" &&
 
-            date >= today
+            item.date > todayText
 
           );
 
@@ -218,42 +217,59 @@ async function loadNextHoliday(){
         .sort((a,b)=>{
 
           return (
-
-            new Date(a.date) -
-            new Date(b.date)
-
+            a.date.localeCompare(
+              b.date
+            )
           );
 
-        })[0];
+        })
+
+        .slice(0,2);
 
 
 
-    if(!nextHoliday){
+    const texts =
+      nextHolidays.map(item=>{
 
-      return;
+        const parts =
+          item.date.split("-");
+
+
+        return (
+
+          Number(parts[1]) +
+          "月" +
+          Number(parts[2]) +
+          "日"
+
+        );
+
+      });
+
+
+
+    let holidayText = "";
+
+
+
+    if(texts.length >= 1){
+
+      holidayText +=
+
+        "次回店休日：" +
+        texts[0];
 
     }
 
 
+    if(texts.length >= 2){
 
-    const date =
-      new Date(
-        nextHoliday.date
-      );
+      holidayText +=
 
+        "<br>次々回店休日：" +
+        texts[1];
 
-
-    const text =
-
-      "次回店休日：" +
-
-      (date.getMonth()+1) +
-
-      "月" +
-
-      date.getDate() +
-
-      "日";
+    }
 
 
 
@@ -265,8 +281,8 @@ async function loadNextHoliday(){
 
     if(holiday){
 
-      holiday.textContent =
-        text;
+      holiday.innerHTML =
+        holidayText;
 
     }
 
@@ -280,8 +296,8 @@ async function loadNextHoliday(){
 
     if(footerHoliday){
 
-      footerHoliday.textContent =
-        text;
+      footerHoliday.innerHTML =
+        holidayText;
 
     }
 
@@ -290,11 +306,8 @@ async function loadNextHoliday(){
   }catch(error){
 
     console.error(
-
-      "次回店休日取得エラー",
-
+      "店休日取得エラー",
       error
-
     );
 
   }
