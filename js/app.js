@@ -153,9 +153,9 @@ async function loadShopSettings(){
     shop.businessHours;
 
   document.getElementById(
-    "footerHolidayText"
+    "footerHolidayList"
   ).textContent =
-    shop.holidayText;
+    shop.holidayList;
 
 }
 
