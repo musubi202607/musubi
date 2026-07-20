@@ -2058,3 +2058,121 @@ main{
   font-weight:bold;
 
 }
+
+/* =========================
+   ヘッダー操作ボタン
+========================= */
+
+.header-actions{
+
+  display:flex;
+
+  gap:12px;
+
+  align-items:center;
+
+}
+
+
+.header-btn{
+
+  display:inline-block;
+
+  padding:10px 16px;
+
+  border-radius:8px;
+
+  text-decoration:none;
+
+  font-weight:bold;
+
+  white-space:nowrap;
+
+}
+
+
+
+/* BBQ */
+
+.bbq-btn{
+
+  background:#ff8c42;
+
+  color:#fff;
+
+}
+
+
+
+/* カート */
+
+.cart-btn{
+
+  background:#28a745;
+
+  color:#fff;
+
+}
+
+
+
+/* =========================
+   店舗リンク
+========================= */
+
+.shop-links{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:12px;
+
+  margin-top:15px;
+
+}
+
+
+.shop-link{
+
+  display:inline-block;
+
+  padding:10px 14px;
+
+  border-radius:8px;
+
+  background:#333;
+
+  color:#fff;
+
+  text-decoration:none;
+
+}
+
+
+.shop-link:hover,
+.header-btn:hover{
+
+  opacity:.85;
+
+}
+
+@media(max-width:600px){
+
+.header-actions{
+
+  width:100%;
+
+  justify-content:center;
+
+}
+
+.header-btn{
+
+  flex:1;
+
+  text-align:center;
+
+}
+
+}
