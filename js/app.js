@@ -1,4 +1,164 @@
 // =========================
+// 店舗情報取得
+// =========================
+async function loadShopSettings(){
+
+  const res =
+
+    await fetch(
+
+      API_URL +
+
+      "/api/shop-settings"
+
+    );
+
+  const shop =
+
+    await res.json();
+
+  document.getElementById(
+
+    "shopName"
+
+  ).textContent =
+
+    shop.shopName;
+
+  document.getElementById(
+
+    "phone"
+
+  ).textContent =
+
+    shop.phone;
+
+  document.getElementById(
+
+    "address"
+
+  ).textContent =
+
+    shop.address;
+
+  document.getElementById(
+
+    "businessHours"
+
+  ).textContent =
+
+    shop.businessHours;
+
+  document.getElementById(
+
+    "holidayText"
+
+  ).textContent =
+
+    shop.holidayText;
+
+    document.getElementById(
+
+    "topImage"
+
+  ).src =
+
+    shop.topImage;
+
+  document.getElementById(
+
+    "shopImage1"
+
+  ).src =
+
+    shop.shopImage1;
+
+  document.getElementById(
+
+    "shopImage2"
+
+  ).src =
+
+    shop.shopImage2;
+
+  document.getElementById(
+
+    "shopImage3"
+
+  ).src =
+
+    shop.shopImage3;
+    
+    document.getElementById(
+
+    "instagram"
+
+  ).href =
+
+    shop.instagram;
+
+  document.getElementById(
+
+    "line"
+
+  ).href =
+
+    shop.line;
+
+  document.getElementById(
+
+    "googleMap"
+
+  ).href =
+
+    shop.googleMap;
+  
+  document.getElementById(
+
+    "notice1"
+
+  ).textContent =
+
+    shop.notice1;
+
+  document.getElementById(
+
+    "notice2"
+
+  ).textContent =
+
+    shop.notice2;
+
+  document.getElementById(
+
+    "notice3"
+
+  ).textContent =
+
+  shop.notice3;
+
+  document.getElementById(
+    "footerShopName"
+  ).textContent =
+    shop.shopName;
+
+  document.getElementById(
+    "footerPhone"
+  ).textContent =
+    shop.phone;
+
+  document.getElementById(
+    "footerBusinessHours"
+  ).textContent =
+    shop.businessHours;
+
+  document.getElementById(
+    "footerHolidayText"
+  ).textContent =
+    shop.holidayText;
+
+}
+// =========================
 // 商品一覧表示
 // =========================
 async function loadProducts(){
@@ -214,6 +374,7 @@ async function updateCartCount() {
 // 初期表示
 // =========================
 window.addEventListener("DOMContentLoaded", async () => {
+  await loadShopSettings();
   await loadProducts();
   await updateCartCount(); // ← await必須
 });

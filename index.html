@@ -3,22 +3,38 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <title>むすび｜手作りおにぎり注文・BBQ予約</title>
+<title>
 
-  <meta name="description" content="むすびの公式注文サイトです。手作りおにぎりのオンライン注文とBBQ予約を受付しています。">
+むすび｜手作りおにぎり注文・BBQ予約
 
-  <meta name="robots" content="index,follow">
+</title>
 
-  <meta name="google-site-verification" content="7B_sGZqwVIFknaIZkGAgVegkNd3sS2E_xjYJikwp8-U" />
+<meta
+  name="description"
+  content="むすびの公式注文サイトです。手作りおにぎりのオンライン注文とBBQ予約を受付しています。"
+>
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+<meta
+  name="robots"
+  content="index,follow"
+>
+
+<meta
+  name="google-site-verification"
+  content="7B_sGZqwVIFknaIZkGAgVegkNd3sS2E_xjYJikwp8-U"
+/>
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
 
 </head>
 
@@ -26,78 +42,232 @@
 
 <header>
 
-  <div class="container header-inner">
+<div class="container header-inner">
 
-    <div>
+<div>
 
-      <h1>むすび</h1>
+<h1 id="shopName">
 
-      <p>
-        手作りおにぎり
-      </p>
+むすび
 
-    </div>
+</h1>
 
-    <div>
+<p id="notice1">
 
-      <a
-        href="bbq.html"
-        class="cart-button"
-      >
-        BBQ予約
-      </a>
+手作りおにぎり
 
-      <a
-        href="cart.html"
-        class="cart-button"
-      >
-        カート
+</p>
 
-        <span id="cartCount">
-          0
-        </span>
+</div>
 
-      </a>
+<div>
 
-    </div>
+<a
+  href="bbq.html"
+  class="cart-button"
+>
 
-  </div>
+BBQ予約
+
+</a>
+
+<a
+  href="cart.html"
+  class="cart-button"
+>
+
+カート
+
+<span id="cartCount">
+
+0
+
+</span>
+
+</a>
+
+</div>
+
+</div>
 
 </header>
 
 <section class="hero">
 
-  <img
-    src="images/tenpotop.jpeg"
-    alt="むすび店舗外観　おにぎり販売・BBQ"
-  >
+<img
+  id="topImage"
+  src="images/tenpotop.jpeg"
+  alt="むすび店舗外観　おにぎり販売・BBQ"
+>
+
+</section>
+
+<section class="container">
+
+<div class="shop-info-card">
+
+<h2>
+
+店舗情報
+
+</h2>
+
+<p>
+
+🕒 営業時間
+
+<br>
+
+<span id="businessHours">
+
+9:00～17:00
+
+</span>
+
+</p>
+
+<p>
+
+📅 定休日
+
+<br>
+
+<span id="holidayText">
+
+毎週火曜日
+
+</span>
+
+</p>
+
+<p>
+
+🚩 臨時休業
+
+<br>
+
+<span id="holidayList">
+
+</span>
+
+</p>
+
+<p>
+
+☎ 電話番号
+
+<br>
+
+<span id="phone">
+
+</span>
+
+</p>
+
+<p>
+
+📍 住所
+
+<br>
+
+<span id="address">
+
+</span>
+
+</p>
+
+<div class="shop-links">
+
+<a
+  id="instagram"
+  class="cart-button"
+  href="#"
+  target="_blank"
+>
+
+Instagram
+
+</a>
+
+<a
+  id="line"
+  class="cart-button"
+  href="#"
+  target="_blank"
+>
+
+LINE
+
+</a>
+
+<a
+  id="googleMap"
+  class="cart-button"
+  href="#"
+  target="_blank"
+>
+
+GoogleMap
+
+</a>
+
+</div>
+
+</div>
 
 </section>
 
 <section class="shop-gallery container">
 
-  <h2>
-    店舗写真
-  </h2>
+<h2>
 
-  <div class="gallery-grid">
+店舗写真
 
-    <img
-      src="images/shop1.jpg"
-      alt="店舗写真1"
-    >
+</h2>
 
-    <img
-      src="images/shop2.jpg"
-      alt="店舗写真2"
-    >
+<div class="gallery-grid">
 
-    <img
-      src="images/shop3.jpg"
-      alt="店舗写真3"
-    >
+<img
+  id="shopImage1"
+  src="images/shop1.jpg"
+  alt="店舗写真1"
+>
 
-  </div>
+<img
+  id="shopImage2"
+  src="images/shop2.jpg"
+  alt="店舗写真2"
+>
+
+<img
+  id="shopImage3"
+  src="images/shop3.jpg"
+  alt="店舗写真3"
+>
+
+</div>
+
+</section>
+
+<section class="container">
+
+<div class="shop-info-card">
+
+<h2>
+
+お知らせ
+
+</h2>
+
+<ul id="noticeList">
+
+<li id="notice2"></li>
+
+<li id="notice3"></li>
+
+</ul>
+
+</div>
 
 </section>
 
@@ -106,7 +276,9 @@
   <div class="section-title">
 
     <h2>
+
       商品一覧
+
     </h2>
 
   </div>
@@ -115,9 +287,64 @@
     class="product-grid"
     id="productGrid"
   >
+
   </div>
 
 </section>
+
+<footer class="container">
+
+  <div class="footer-info">
+
+    <p>
+
+      <strong id="footerShopName">
+
+        むすび
+
+      </strong>
+
+    </p>
+
+    <p>
+
+      TEL：
+
+      <span id="footerPhone">
+
+      </span>
+
+    </p>
+
+    <p>
+
+      営業時間：
+
+      <span id="footerBusinessHours">
+
+      </span>
+
+    </p>
+
+    <p>
+
+      定休日：
+
+      <span id="footerHolidayText">
+
+      </span>
+
+    </p>
+
+    <p>
+
+      © 2026 MUSUBI
+
+    </p>
+
+  </div>
+
+</footer>
 
 <script src="js/config.js"></script>
 
@@ -126,4 +353,5 @@
 <script src="js/app.js"></script>
 
 </body>
+
 </html>
