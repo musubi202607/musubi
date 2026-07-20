@@ -13,60 +13,88 @@ async function resizeImage(file){
     const img =
       new Image();
 
+
     const reader =
       new FileReader();
 
+
     reader.onload = e=>{
+
 
       img.onload = ()=>{
 
+
         const MAX = 1200;
+
 
         let width =
           img.width;
 
+
         let height =
           img.height;
 
+
+
         if(width > height){
 
+
           if(width > MAX){
+
 
             height =
               height * MAX / width;
 
-            width = MAX;
+
+            width =
+              MAX;
+
 
           }
 
+
         }else{
 
+
           if(height > MAX){
+
 
             width =
               width * MAX / height;
 
-            height = MAX;
+
+            height =
+              MAX;
+
 
           }
 
+
         }
+
+
 
         const canvas =
           document.createElement(
             "canvas"
           );
 
+
         canvas.width =
           width;
 
+
         canvas.height =
           height;
+
+
 
         const ctx =
           canvas.getContext(
             "2d"
           );
+
+
 
         ctx.drawImage(
 
@@ -82,9 +110,13 @@ async function resizeImage(file){
 
         );
 
+
+
         canvas.toBlob(
 
+
           blob=>{
+
 
             resolve(
 
@@ -105,151 +137,231 @@ async function resizeImage(file){
 
             );
 
+
           },
+
 
           "image/jpeg",
 
+
           0.85
+
 
         );
 
+
       };
+
+
 
       img.src =
         e.target.result;
 
+
     };
+
+
 
     reader.readAsDataURL(file);
 
+
   });
+
 
 }
 
-// =========================
-// Cloudinary 共通
-// =========================
 
 
 // =========================
-// 画像縮小
+// Cloudinary Upload
 // =========================
-async function resizeImage(file){
+async function uploadImage({
 
-  return new Promise((resolve)=>{
+  fileInputId,
 
-    const img =
-      new Image();
+  urlInputId,
 
-    const reader =
-      new FileReader();
+  previewId
 
-    reader.onload = e=>{
+}){
 
-      img.onload = ()=>{
 
-        const MAX = 1200;
+  const fileInput =
+    document.getElementById(
+      fileInputId
+    );
 
-        let width =
-          img.width;
 
-        let height =
-          img.height;
 
-        if(width > height){
+  if(!fileInput){
 
-          if(width > MAX){
+    throw new Error(
+      "file input not found"
+    );
 
-            height =
-              height * MAX / width;
+  }
 
-            width = MAX;
 
-          }
 
-        }else{
+  const file =
+    fileInput.files[0];
 
-          if(height > MAX){
 
-            width =
-              width * MAX / height;
 
-            height = MAX;
+  if(!file){
 
-          }
+    return;
+
+  }
+
+
+
+  try{
+
+
+    // -------------------------
+    // 画像縮小
+    // -------------------------
+    const resized =
+      await resizeImage(file);
+
+
+
+    const formData =
+      new FormData();
+
+
+
+    formData.append(
+
+      "file",
+
+      resized
+
+    );
+
+
+
+    formData.append(
+
+      "upload_preset",
+
+      CLOUDINARY.uploadPreset
+
+    );
+
+
+
+    // -------------------------
+    // Cloudinary Upload
+    // -------------------------
+    const response =
+      await fetch(
+
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY.cloudName}/image/upload`,
+
+        {
+
+          method:"POST",
+
+          body:formData
 
         }
 
-        const canvas =
-          document.createElement(
-            "canvas"
-          );
+      );
 
-        canvas.width =
-          width;
 
-        canvas.height =
-          height;
 
-        const ctx =
-          canvas.getContext(
-            "2d"
-          );
+    const data =
+      await response.json();
 
-        ctx.drawImage(
 
-          img,
 
-          0,
+    console.log(
 
-          0,
+      "Cloudinary result",
 
-          width,
+      data
 
-          height
+    );
 
-        );
 
-        canvas.toBlob(
 
-          blob=>{
+    if(!data.secure_url){
 
-            resolve(
 
-              new File(
+      throw new Error(
 
-                [blob],
+        "Cloudinary upload failed"
 
-                file.name,
+      );
 
-                {
 
-                  type:
-                    "image/jpeg"
+    }
 
-                }
 
-              )
 
-            );
+    // -------------------------
+    // URLセット
+    // -------------------------
+    const urlInput =
+      document.getElementById(
+        urlInputId
+      );
 
-          },
 
-          "image/jpeg",
 
-          0.85
+    if(urlInput){
 
-        );
+      urlInput.value =
+        data.secure_url;
 
-      };
+    }
 
-      img.src =
-        e.target.result;
 
-    };
 
-    reader.readAsDataURL(file);
+    // -------------------------
+    // Preview
+    // -------------------------
+    const preview =
+      document.getElementById(
+        previewId
+      );
 
-  });
+
+
+    if(preview){
+
+
+      preview.src =
+        data.secure_url;
+
+
+
+      preview.style.display =
+        "block";
+
+
+    }
+
+
+
+  }catch(error){
+
+
+    console.error(
+
+      "uploadImage error",
+
+      error
+
+    );
+
+
+    throw error;
+
+
+  }
+
 
 }
