@@ -40,10 +40,17 @@ async function loadHolidayCalendar(){
   try{
 
     const res =
-      await fetch(
-        API_URL +
-        "/api/store-business-calendar"
-      );
+  await fetch(
+    API_URL +
+    "/api/store-business-calendar",
+    {
+      headers:{
+        Authorization:
+          "Bearer " +
+          localStorage.getItem("adminToken")
+      }
+    }
+  );
 
     holidayData =
       await res.json();
@@ -72,10 +79,17 @@ async function loadBbqExceptionCalendar(){
   try{
 
     const res =
-      await fetch(
-        API_URL +
-        "/api/business-calendar"
-      );
+  await fetch(
+    API_URL +
+    "/api/business-calendar",
+    {
+      headers:{
+        Authorization:
+          "Bearer " +
+          localStorage.getItem("adminToken")
+      }
+    }
+  );
 
     if(!res.ok){
 
@@ -902,9 +916,13 @@ async function saveBbqException(){
           method:"POST",
 
           headers:{
-            "Content-Type":
-              "application/json"
-          },
+  "Content-Type":
+    "application/json",
+
+  Authorization:
+    "Bearer " +
+    localStorage.getItem("adminToken")
+},
 
 
           body:
@@ -999,10 +1017,14 @@ async function deleteBbqException(){
           method:"DELETE",
 
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
+         headers:{
+  "Content-Type":
+    "application/json",
+
+  Authorization:
+    "Bearer " +
+    localStorage.getItem("adminToken")
+},
 
 
           body:
