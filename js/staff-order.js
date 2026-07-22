@@ -51,6 +51,8 @@ async function loadProducts(){
 
       );
 
+    console.log(products);
+
     renderProducts();
 
     updateTotal();
@@ -350,19 +352,53 @@ async function submitStaffOrder(){
 
 
 
-  const items = cart.map(item => ({
+  const items = [];
 
-  productId: item.id,
 
-  name: item.name,
 
-  price: item.price,
+  staffProducts.forEach(item=>{
 
-  quantity: item.qty,
 
-  amount: item.price * item.qty
+    const qty =
+      staffCart[item.id] || 0;
 
-}));
+
+
+    if(qty > 0){
+
+
+      items.push({
+
+        productId:
+          item.id,
+
+
+        name:
+          item.name,
+
+
+        price:
+          Number(item.price || 0),
+
+
+        quantity:
+          qty,
+
+
+        amount:
+          Number(item.price || 0)
+          *
+          qty
+
+
+      });
+
+
+    }
+
+
+
+  });
 
 
 
@@ -390,6 +426,20 @@ async function submitStaffOrder(){
     name:
       document.getElementById(
         "customerName"
+      ).value,
+
+
+
+    phone:
+      document.getElementById(
+        "customerPhone"
+      ).value,
+
+
+
+    pickupTime:
+      document.getElementById(
+        "pickupTime"
       ).value,
 
     note:
@@ -493,26 +543,15 @@ function resetOrder(){
 
 
 
-  cart = [];
+  staffProducts.forEach(item=>{
 
-products.forEach(item => {
+    staffCart[item.id]=0;
 
-  const qty =
     document.getElementById(
-      "qty_" + item.id
-    );
+      "qty_"+item.id
+    ).textContent=0;
 
-  qty.textContent = 0;
-
-  qty.classList.add("qty-zero");
-
-  document
-    .getElementById(
-      "card_" + item.id
-    )
-    .classList.remove("selected");
-
-});
+  });
 
 
 
@@ -523,6 +562,20 @@ products.forEach(item => {
   document.getElementById(
     "customerName"
   ).value="";
+
+
+
+  document.getElementById(
+    "customerPhone"
+  ).value="";
+
+
+
+  document.getElementById(
+    "pickupTime"
+  ).value="";
+
+
 
   document.getElementById(
     "note"

@@ -59,16 +59,38 @@ window.onload = async () => {
 // 店休日取得
 // =========================
 async function loadBusinessCalendar() {
+  
+  const token =
+  localStorage.getItem("adminToken");
+
+if(!token){
+
+  location.href =
+    "admin-login.html";
+
+  return;
+
+}
 
   try {
 
     businessLoading = true;
 
-    const response =
-      await fetch(
-        API_URL +
-        "/api/store-business-calendar"
-      );
+    const token =
+     localStorage.getItem("adminToken");
+
+
+  const response =
+    await fetch(
+      API_URL +
+      "/api/store-business-calendar",
+      {
+        headers:{
+          "Authorization":
+            "Bearer " + token
+        }
+      }
+    );
 
     if (!response.ok) {
 
@@ -565,10 +587,14 @@ async function toggleBusiness(date) {
 
             headers: {
 
-              "Content-Type":
-                "application/json"
+            "Content-Type":
+              "application/json",
 
-            },
+            "Authorization":
+              "Bearer " +
+              localStorage.getItem("adminToken")
+
+           },
 
             body: JSON.stringify({
 
@@ -602,9 +628,13 @@ async function toggleBusiness(date) {
             headers: {
 
               "Content-Type":
-                "application/json"
+                "application/json",
 
-            },
+              "Authorization":
+                "Bearer " +
+              localStorage.getItem("adminToken")
+
+          },
 
             body: JSON.stringify({
 
