@@ -1,6 +1,27 @@
+// =========================
+// API
+// =========================
 const API_URL =
   "https://musubi-online.musubi-202607.workers.dev";
 
+
+// =========================
+// Cloudinary
+// =========================
+const CLOUDINARY = {
+
+  cloudName:
+    "i5pbmztl",
+
+  uploadPreset:
+    "products_upload"
+
+};
+
+
+// =========================
+// Session
+// =========================
 let SESSION_ID =
   localStorage.getItem(
     "sessionId"
