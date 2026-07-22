@@ -7,6 +7,7 @@
   const token =
     localStorage.getItem("adminToken");
 
+
   // =========================
   // トークンなし
   // =========================
@@ -19,12 +20,15 @@
 
   }
 
+
   try{
+
 
     const res =
       await fetch(
 
-        API_URL + "/api/admin/verify",
+        API_URL +
+        "/api/admin/verify",
 
         {
 
@@ -39,32 +43,81 @@
 
       );
 
+
+    // =========================
+    // 認証失敗
+    // =========================
     if(!res.ok){
 
-      localStorage.removeItem("adminToken");
+
+      localStorage.removeItem(
+        "adminToken"
+      );
+
+      localStorage.removeItem(
+        "adminUser"
+      );
+
 
       location.href =
         "admin-login.html";
+
 
       return;
 
     }
 
+
+
     const result =
       await res.json();
 
+
+
+    // =========================
+    // ユーザー情報保存
+    // =========================
     window.adminUser =
       result.user;
 
+
+
+    localStorage.setItem(
+
+      "adminUser",
+
+      JSON.stringify(
+        result.user
+      )
+
+    );
+
+
   }
+
 
   catch(e){
 
+
     console.error(e);
+
+
+
+    localStorage.removeItem(
+      "adminToken"
+    );
+
+    localStorage.removeItem(
+      "adminUser"
+    );
+
+
 
     location.href =
       "admin-login.html";
 
+
   }
+
 
 })();

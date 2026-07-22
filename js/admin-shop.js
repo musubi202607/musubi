@@ -17,13 +17,23 @@ async function loadShopSettings(){
 
   try{
 
-    const response =
-      await fetch(
+    const token =
+  localStorage.getItem("adminToken");
 
-        API_URL +
-        "/api/shop-settings"
+const response =
+  await fetch(
 
-      );
+    API_URL +
+    "/api/shop-settings",
+
+    {
+      headers:{
+        "Authorization":
+          "Bearer " + token
+      }
+    }
+
+  );
 
     const data =
       await response.json();
@@ -318,10 +328,14 @@ async function saveShopSettings(){
 
           headers:{
 
-            "Content-Type":
-              "application/json"
+  "Content-Type":
+    "application/json",
 
-          },
+  "Authorization":
+    "Bearer " +
+    localStorage.getItem("adminToken")
+
+},
 
           body:
             JSON.stringify(body)
