@@ -144,12 +144,20 @@ function initImageUpload(){
 async function loadProducts(){
 
   const res =
-    await fetch(
+  await fetch(
 
-      API_URL +
-      "/api/products"
+    API_URL +
+    "/api/products",
 
-    );
+    {
+      headers:{
+        Authorization:
+          "Bearer " +
+          localStorage.getItem("adminToken")
+      }
+    }
+
+  );
 
   const data =
     await res.json();
@@ -628,28 +636,25 @@ async function saveProduct(id){
   try{
 
     const res =
-      await fetch(
+  await fetch(
+    API_URL + "/api/products/update",
+    {
+      method:"POST",
 
-        API_URL +
-        "/api/products/update",
+      headers:{
+        "Content-Type":
+          "application/json",
 
-        {
+        Authorization:
+          "Bearer " +
+          localStorage.getItem("adminToken")
+      },
 
-          method:"POST",
+      body:
+        JSON.stringify(body)
 
-          headers:{
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify(body)
-
-        }
-
-      );
+    }
+  );
 
     const result =
       await res.json();
@@ -713,10 +718,14 @@ async function deleteProduct(id){
 
           headers:{
 
-            "Content-Type":
-              "application/json"
+  "Content-Type":
+    "application/json",
 
-          },
+  Authorization:
+    "Bearer " +
+    localStorage.getItem("adminToken")
+
+},
 
           body:
             JSON.stringify({
@@ -820,10 +829,14 @@ async function addProduct(){
 
           headers:{
 
-            "Content-Type":
-              "application/json"
+  "Content-Type":
+    "application/json",
 
-          },
+  Authorization:
+    "Bearer " +
+    localStorage.getItem("adminToken")
+
+},
 
           body:
             JSON.stringify(body)
