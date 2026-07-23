@@ -21,53 +21,90 @@ let reservation = saved
 async function loadBbq() {
 
   const response =
-    await fetch(API_URL + '/api/products');
+    await fetch(API_URL + "/api/products");
 
   const products =
     await response.json();
 
   const bbqProducts =
-    products.filter(p => p.type === 'bbq');
+    products.filter(
+      p => p.type === "bbq"
+    );
 
   const target =
-    document.getElementById('bbqProducts');
+    document.getElementById(
+      "bbqProducts"
+    );
 
-  if (!target) return;
+  if(!target){
 
-  target.innerHTML = '';
+    return;
 
-  bbqProducts.forEach(product => {
+  }
 
-  target.innerHTML += `
+  target.innerHTML = "";
+
+  bbqProducts.forEach(product=>{
+
+    target.innerHTML += `
+
       <div class="product-card">
 
-        <img src="${product.image}" alt="${product.name}">
+        <img
+          src="${product.image}"
+          alt="${product.name}"
+        >
 
         <div class="product-content">
 
-          <h3>${product.name}</h3>
+          <h3>
 
-          <p>${product.description || ''}</p>
+            ${product.name}
+
+          </h3>
+
+          <p>
+
+            ${product.description || ""}
+
+          </p>
 
           <div class="price">
-            ¥${Number(product.price).toLocaleString()}
-          </div>
 
-          <button
-            class="bbq-select-btn"
-            data-id="${product.id}"
-            data-name="${product.name}"
-            data-price="${product.price}"
-            onclick="handleSelectBbq(this)"
-          >
-            この商品を予約
-          </button>
+            ¥${Number(product.price).toLocaleString()}
+
+          </div>
 
         </div>
 
       </div>
+
     `;
-});
+
+  });
+
+  // =========================
+  // BBQ商品が1つなら自動選択
+  // =========================
+  if(bbqProducts.length === 1){
+
+    const product =
+      bbqProducts[0];
+
+    reservation.productId =
+      Number(product.id);
+
+    reservation.productName =
+      product.name;
+
+    reservation.price =
+      Number(product.price);
+
+    saveReservation();
+
+    updateGoButton();
+
+  }
 
 }
 
@@ -404,9 +441,12 @@ function updateGoButton() {
 // =========================
 function goOrder() {
 
-  if (!reservation.productId) {
-    alert('BBQ商品を選択してください');
-    return;
+  if(!reservation.productId){
+
+  alert("商品情報を取得できませんでした。");
+
+  return;
+
   }
 
   if (!reservation.date) {
