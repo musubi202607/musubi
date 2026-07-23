@@ -119,30 +119,23 @@ function renderCalendar(){
 
   if(!target) return;
 
-
   const year =
     currentMonth.getFullYear();
 
   const month =
     currentMonth.getMonth();
 
-
   const firstDay =
     new Date(year,month,1);
-
 
   const lastDay =
     new Date(year,month+1,0);
 
-
   const startDay =
     firstDay.getDay();
 
-
   const totalDays =
     lastDay.getDate();
-
-
 
   let html = `
 
@@ -158,7 +151,6 @@ function renderCalendar(){
 
     </div>
 
-
     <div class="bbq-week">
 
       <div>日</div>
@@ -171,100 +163,97 @@ function renderCalendar(){
 
     </div>
 
-
     <div class="bbq-calendar-grid">
 
   `;
 
-
   // 空白
-
   for(let i=0;i<startDay;i++){
 
     html += `<div></div>`;
 
   }
 
-
+  // 今日
   const today = new Date();
 
   today.setHours(0,0,0,0);
 
-
+  const todayStr =
+    formatDate(today);
 
   for(let day=1; day<=totalDays; day++){
-
 
     const dateObj =
       new Date(year,month,day);
 
-
     const dateStr =
       formatDate(dateObj);
 
-
     const item =
       calendarData.find(
-        d=>d.date===dateStr
+        d => d.date === dateStr
       );
 
+    let className = "bbq-day";
 
-    let className="bbq-day";
+    let status = "";
 
-    let status="";
+    let disabled = "";
 
-    let disabled="";
+    // =========================
+    // 過去日は終了
+    // =========================
+    if(dateStr < todayStr){
 
+      className += " full";
 
+      status = "終了";
 
-    if(dateObj < today){
-
-      className+=" full";
-
-      status="終了";
-
-      disabled="disabled";
+      disabled = "disabled";
 
     }
 
+    // =========================
+    // 営業中
+    // =========================
     else if(
       item &&
-      item.status==="○" &&
-      Number(item.limit)>0
+      item.status === "○" &&
+      Number(item.limit) > 0
     ){
 
       const limit =
         Number(item.limit);
 
-
       className +=
-        limit<=2 ? " few" : " available";
-
+        limit <= 2
+        ? " few"
+        : " available";
 
       status =
         `あと${limit}枠`;
 
     }
 
+    // =========================
+    // 満席・休業
+    // =========================
     else{
 
-      className+=" full";
+      className += " full";
 
-      status="満席";
+      status = "満席";
 
-      disabled="disabled";
-
-    }
-
-
-
-    if(reservation.date===dateStr){
-
-      className+=" selected";
+      disabled = "disabled";
 
     }
 
+    if(reservation.date === dateStr){
 
+      className += " selected";
+
+    }
 
     html += `
 
@@ -279,11 +268,15 @@ function renderCalendar(){
       >
 
         <div class="date">
+
           ${day}
+
         </div>
 
         <div class="status">
+
           ${status}
+
         </div>
 
       </button>
@@ -292,10 +285,11 @@ function renderCalendar(){
 
   }
 
+  html += `
 
+    </div>
 
-  html += `</div>`;
-
+  `;
 
   target.innerHTML = html;
 
