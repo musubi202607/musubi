@@ -2304,3 +2304,41 @@ main{
   color:#555;
 
 }
+
+.header-right{
+
+  margin-left:auto;
+
+  text-align:right;
+
+}
+
+.header-right div{
+
+  font-size:14px;
+
+  margin-bottom:5px;
+
+}
+
+.logout-btn{
+
+  display:inline-block;
+
+  padding:8px 15px;
+
+  background:#dc3545;
+
+  color:#fff;
+
+  text-decoration:none;
+
+  border-radius:6px;
+
+}
+
+.logout-btn:hover{
+
+  opacity:.9;
+
+}
