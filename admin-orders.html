@@ -1,71 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>注文履歴</title>
-
 <link rel="stylesheet" href="css/style.css">
-
 <style>
-.order-card{
-  background:#fff;
-  padding:15px;
-  margin-bottom:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-
-.item{
-  font-size:14px;
-  padding-left:10px;
-}
-
-.total{
-  margin-top:10px;
-  font-weight:bold;
-}
+.order-card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.item{font-size:14px;padding-left:10px}
+.total{margin-top:10px;font-weight:bold}
 </style>
-
 </head>
 
 <body>
 
 <header>
-  <div class="container header-inner">
-    <h1>注文履歴</h1>
-  </div>
+<div class="container header-inner">
+<h1>注文履歴</h1>
+</div>
 </header>
 
 <div class="container">
 
 <a href="admin.html" class="back-btn">← 管理画面へ戻る</a>
 
-<div id="orderBody"></div>
-
+<div style="margin:20px 0;">
+<button onclick="loadOrders('onigiri')">おにぎり</button>
+<button onclick="loadOrders('bbq')">BBQ予約</button>
+<button onclick="loadOrders('option')">追加注文</button>
 </div>
 
-<div style="margin:20px 0;">
-
-<button onclick="loadOrders('onigiri')">
-
-おにぎり
-
-</button>
-
-<button onclick="loadOrders('bbq')">
-
-BBQ予約
-
-</button>
-
-<button onclick="loadOrders('option')">
-
-追加注文
-
-</button>
+<div id="orderBody"></div>
 
 </div>
 
@@ -74,311 +39,125 @@ BBQ予約
 
 <script>
 
-let currentType = "onigiri";
+let currentType="onigiri";
 
-// =========================
-// 一覧取得
-// =========================
-async function loadOrders(type = "onigiri") {
+async function loadOrders(type="onigiri"){
 
-  currentType = type;
+currentType=type;
 
-// 更新中表示
-  document.getElementById("orderBody").innerHTML = `
+const body=document.getElementById("orderBody");
+body.innerHTML="更新中...";
 
-  <div style="
-    text-align:center;
-    padding:30px;
-    font-weight:bold;
-  ">
+try{
 
-  更新中...
-
-  </div>
-
-  `;
-
-  const res = await fetch(
-  API_URL +
-  "/api/orders?type=" +
-  type,
-  {
-    headers:{
-      Authorization:
-        "Bearer " +
-        localStorage.getItem("adminToken")
-    }
-  }
+const res=await fetch(
+API_URL+"/api/orders?type="+type,
+{
+headers:{
+Authorization:"Bearer "+localStorage.getItem("adminToken")
+}
+}
 );
 
-  const result =
-  await res.json();
+const result=await res.json();
 
-  const orders =
-  result.orders || [];
+if(!res.ok){
+body.innerHTML=`<div class="order-card">${result.message||"取得失敗"}</div>`;
+return;
+}
 
-  let html = "";
+const orders=Array.isArray(result.orders)?result.orders:[];
 
-  // =========================
-  // おにぎり
-  // =========================
-  if(type==="onigiri"){
+if(!orders.length){
+body.innerHTML=`<div class="order-card">データがありません</div>`;
+return;
+}
 
-    orders.forEach(order=>{
+let html="";
 
-      html += `
 
-      <div class="order-card">
+orders.forEach(order=>{
 
-        <h3>
+if(type==="onigiri"){
 
-        注文番号
+html+=`
 
-        ${order.orderNo}
+<div class="order-card">
+<h3>注文番号 ${order.orderNo||""}</h3>
+<p>受付：${order.orderDate||""}</p>
+<p>受取：${order.pickupTime||""}</p>
+<p>氏名：${order.customerName||""}</p>
+<p>電話：${order.customerTel||""}</p>
+<p>商品：${order.itemName||""}</p>
+<p>数量：${order.qty||0}</p>
+<p>金額：¥${Number(order.amount||0).toLocaleString()}</p>
+<p>状態：${order.status||""}</p>
+<p>会計：${order.paid||""}</p>
+</div>
 
-        </h3>
-
-        <p>
-
-        受付：
-        ${order.orderDate}
-
-        </p>
-
-        <p>
-
-        受取：
-        ${order.pickupTime}
-
-        </p>
-
-        <p>
-
-        氏名：
-        ${order.customerName}
-
-        </p>
-
-        <p>
-
-        電話：
-        ${order.customerTel}
-
-        </p>
-
-        <p>
-
-        商品：
-        ${order.itemName}
-
-        </p>
-
-        <p>
-
-        数量：
-        ${order.qty}
-
-        </p>
-
-        <p>
-
-        金額：
-        ¥${Number(order.amount).toLocaleString()}
-
-        </p>
-
-        <p>
-
-        状態：
-        ${order.status}
-
-        </p>
-
-        <p>
-
-        会計：
-        ${order.paid}
-
-        </p>
-
-      </div>
-
-      `;
-
-    });
-
-  }
-
-  // =========================
-  // BBQ予約
-  // =========================
-  if(type==="bbq"){
-
-    orders.forEach(order=>{
-
-      html += `
-
-      <div class="order-card">
-
-        <h3>
-
-        予約番号
-
-        ${order.reservationNo}
-
-        </h3>
-
-        <p>
-
-        利用日：
-        ${order.useDate}
-
-        </p>
-
-        <p>
-
-        氏名：
-        ${order.customerName}
-
-        </p>
-
-        <p>
-
-        電話：
-        ${order.customerTel}
-
-        </p>
-
-        <p>
-
-        人数：
-        ${order.people}
-
-        </p>
-
-        <p>
-
-        プラン：
-        ${order.plan}
-
-        </p>
-
-        <p>
-
-        金額：
-        ¥${Number(order.price).toLocaleString()}
-
-        </p>
-
-        <p>
-
-        状態：
-        ${order.status}
-
-        </p>
-
-        <p>
-
-        会計：
-        ${order.paid}
-
-        </p>
-
-      </div>
-
-      `;
-
-    });
-
-  }
-
-  // =========================
-  // BBQ追加注文
-  // =========================
-  if(type==="option"){
-
-    orders.forEach(order=>{
-
-      html += `
-
-      <div class="order-card">
-
-        <h3>
-
-        予約番号
-
-        ${order.reservationNo}
-
-        </h3>
-
-        <p>
-
-        受付：
-        ${order.orderDate}
-
-        </p>
-
-        <p>
-
-        利用日：
-        ${order.useDate}
-
-        </p>
-
-        <p>
-
-        氏名：
-        ${order.customerName}
-
-        </p>
-
-        <p>
-
-        商品：
-        ${order.itemName}
-
-        </p>
-
-        <p>
-
-        数量：
-        ${order.qty}
-
-        </p>
-
-        <p>
-
-        金額：
-        ¥${Number(order.amount).toLocaleString()}
-
-        </p>
-
-        <p>
-
-        状態：
-        ${order.status}
-
-        </p>
-
-        <p>
-
-        会計：
-        ${order.paid}
-
-        </p>
-
-      </div>
-
-      `;
-
-    });
-
-  }
-
-  document.getElementById("orderBody").innerHTML =
-    html;
+`;
 
 }
+
+
+if(type==="bbq"){
+
+html+=`
+
+<div class="order-card">
+<h3>予約番号 ${order.reservationNo||""}</h3>
+<p>利用日：${order.useDate||""}</p>
+<p>氏名：${order.customerName||""}</p>
+<p>電話：${order.customerTel||""}</p>
+<p>人数：${order.people||0}</p>
+<p>プラン：${order.plan||""}</p>
+<p>金額：¥${Number(order.price||0).toLocaleString()}</p>
+<p>状態：${order.status||""}</p>
+<p>会計：${order.paid||""}</p>
+</div>
+
+`;
+
+}
+
+
+if(type==="option"){
+
+html+=`
+
+<div class="order-card">
+<h3>予約番号 ${order.reservationNo||""}</h3>
+<p>受付：${order.orderDate||""}</p>
+<p>利用日：${order.useDate||""}</p>
+<p>氏名：${order.customerName||""}</p>
+<p>商品：${order.itemName||""}</p>
+<p>数量：${order.qty||0}</p>
+<p>金額：¥${Number(order.amount||0).toLocaleString()}</p>
+<p>状態：${order.status||""}</p>
+<p>会計：${order.paid||""}</p>
+</div>
+
+`;
+
+}
+
+});
+
+
+body.innerHTML=html;
+
+
+}catch(e){
+
+console.error(e);
+
+body.innerHTML=
+`<div class="order-card">通信エラー</div>`;
+
+}
+
+}
+
 
 loadOrders();
 
