@@ -195,10 +195,11 @@ async function loadBbqOptions(){
 
         if(
           product.type !== "bbq-option" &&
-          product.type !== "drink"
+          product.type !== "drink" &&
+          product.type !== "onigiri-drink"
         ){
-          return;
-        }
+           return;
+         }
 
         const card = `
 
