@@ -42,179 +42,473 @@ th{
 
 </head>
 
+
 <body>
+
 
 <header>
 
 <div class="container header-inner">
-  <h1>BBQ未会計一覧</h1>
+
+  <h1>
+    BBQ未会計一覧
+  </h1>
+
 </div>
 
 </header>
 
+
+
 <div class="container">
 
+
 <a href="admin.html" class="back-btn">
-  ← 管理画面へ戻る
+
+← 管理画面へ戻る
+
 </a>
+
 
 <br><br>
 
+
+
 <table>
 
+
 <thead>
-  <tr>
-    <th>予約番号</th>
-    <th>氏名</th>
-    <th>人数</th>
-    <th>BBQ料金</th>
-    <th>追加注文</th>
-    <th>合計</th>
-    <th>会計状態</th>
-    <th>詳細</th>
-  </tr>
+
+<tr>
+
+<th>予約番号</th>
+
+<th>氏名</th>
+
+<th>人数</th>
+
+<th>BBQ料金</th>
+
+<th>追加注文</th>
+
+<th>合計</th>
+
+<th>会計状態</th>
+
+<th>詳細</th>
+
+</tr>
+
 </thead>
+
+
 
 <tbody id="result"></tbody>
 
+
 </table>
+
 
 </div>
 
+
+
+
 <script src="js/config.js"></script>
-
-<script>
-
-// =========================
-// BBQ未会計一覧（Worker版）
-// =========================
-async function loadData() {
-
-  const res =
-  await fetch(
-    API_URL + "/api/bbq/unpaid",
-    {
-      headers:{
-        Authorization:
-          "Bearer " +
-          localStorage.getItem("adminToken")
-      }
-    }
-  );
-
-  const data = await res.json();
-
-  let html = '';
-
-  data.forEach(row => {
-
-    const total =
-      Number(row.grandTotal || 0);
-
-    html += `
-      <tr>
-
-        <td>${row.reservationNo}</td>
-
-        <td>${row.customerName}</td>
-
-        <td>${row.people}</td>
-
-        <td>¥${Number(row.bbqPrice || 0).toLocaleString()}</td>
-
-        <td>¥${Number(row.optionTotal || 0).toLocaleString()}</td>
-
-        <td>¥${Number(row.grandTotal || 0).toLocaleString()}</td>
-
-        <td>
-
-        ${
-        row.paid === "済"
-
-        ? `<span class="status-ok">済</span>`
-
-        : `<button
-        onclick="setPaid('${row.reservationNo}')">
-
-        未会計
-
-        </button>`
-
-        }
-
-        </td>
-
-        <td>
-          <a href="admin-reservation-detail.html?no=${row.reservationNo}">
-            開く
-          </a>
-        </td>
-
-      </tr>
-    `;
-
-  });
-
-
-  document.getElementById('result').innerHTML = html;
-
-}
-
-loadData();
-
-// =========================
-// BBQ会計済
-// =========================
-async function setPaid(reservationNo){
-
-  if(!confirm("会計済にしますか？")){
-    return;
-  }
-
-  const res =
-    await fetch(
-
-      API_URL +
-      "/api/bbq/paid",
-
-      {
-
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-
-          reservationNo
-
-        })
-
-      }
-
-    );
-
-  const result =
-    await res.json();
-
-  if(result.success){
-
-    alert("会計済に更新しました");
-
-    loadData();
-
-  }else{
-
-    alert(result.message);
-
-  }
-
-}
-
-</script>
 
 <script src="js/admin-auth.js"></script>
 
+
+
+<script>
+
+
+// =========================
+// BBQ未会計一覧
+// =========================
+async function loadData(){
+
+
+  try{
+
+
+    const res =
+
+      await fetch(
+
+        API_URL +
+        "/api/bbq/unpaid",
+
+        {
+
+          headers:{
+
+            Authorization:
+
+              "Bearer " +
+
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          }
+
+        }
+
+      );
+
+
+
+    const data =
+
+      await res.json();
+
+
+
+
+    // =========================
+    // データ確認
+    // =========================
+    if(!Array.isArray(data)){
+
+
+      console.error(
+
+        "BBQ未会計取得エラー",
+
+        data
+
+      );
+
+
+      alert(
+
+        data.message ||
+
+        "データ取得エラー"
+
+      );
+
+
+      return;
+
+
+    }
+
+
+
+
+    let html = "";
+
+
+
+    data.forEach(row=>{
+
+
+      html += `
+
+
+<tr>
+
+
+<td>
+
+${row.reservationNo || ""}
+
+</td>
+
+
+
+<td>
+
+${row.customerName || ""}
+
+</td>
+
+
+
+<td>
+
+${row.people || 0}
+
+</td>
+
+
+
+<td>
+
+¥${Number(
+row.bbqPrice || 0
+).toLocaleString()}
+
+</td>
+
+
+
+<td>
+
+¥${Number(
+row.optionTotal || 0
+).toLocaleString()}
+
+</td>
+
+
+
+<td>
+
+¥${Number(
+row.grandTotal || 0
+).toLocaleString()}
+
+</td>
+
+
+
+<td>
+
+
+${
+row.paid === "済"
+
+?
+
+`<span class="status-ok">
+済
+</span>`
+
+:
+
+`
+
+<button
+
+onclick="setPaid('${row.reservationNo}')"
+
+>
+
+未会計
+
+</button>
+
+`
+
+}
+
+
+
+</td>
+
+
+
+<td>
+
+
+<a
+
+href="admin-reservation-detail.html?no=${row.reservationNo}"
+
+>
+
+開く
+
+</a>
+
+
+</td>
+
+
+
+</tr>
+
+
+`;
+
+
+
+    });
+
+
+
+    document.getElementById(
+      "result"
+    ).innerHTML = html;
+
+
+
+  }
+  catch(error){
+
+
+    console.error(
+
+      "取得エラー",
+
+      error
+
+    );
+
+
+    alert(
+      "通信エラー"
+    );
+
+
+  }
+
+
+}
+
+
+
+
+
+loadData();
+
+
+
+
+
+// =========================
+// BBQ会計済更新
+// =========================
+async function setPaid(reservationNo){
+
+
+
+  if(
+    !confirm(
+      "会計済にしますか？"
+    )
+  ){
+
+    return;
+
+  }
+
+
+
+
+  try{
+
+
+    const res =
+
+      await fetch(
+
+        API_URL +
+        "/api/bbq/paid",
+
+        {
+
+
+          method:"POST",
+
+
+          headers:{
+
+
+            "Content-Type":
+
+              "application/json",
+
+
+            Authorization:
+
+              "Bearer " +
+
+              localStorage.getItem(
+                "adminToken"
+              )
+
+
+          },
+
+
+          body:
+
+            JSON.stringify({
+
+              reservationNo
+
+            })
+
+
+        }
+
+
+      );
+
+
+
+
+    const result =
+
+      await res.json();
+
+
+
+
+    if(result.success){
+
+
+      alert(
+
+        "会計済に更新しました"
+
+      );
+
+
+      loadData();
+
+
+
+    }
+    else{
+
+
+      alert(
+
+        result.message ||
+
+        "更新失敗"
+
+      );
+
+
+    }
+
+
+
+  }
+  catch(error){
+
+
+    console.error(
+
+      "会計更新エラー",
+
+      error
+
+    );
+
+
+    alert(
+      "通信エラー"
+    );
+
+
+  }
+
+
+
+}
+
+
+
+</script>
+
+
 </body>
+
 </html>
