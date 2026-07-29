@@ -11,87 +11,210 @@
 >
 
 <title>
-
 店舗情報管理
-
 </title>
+
 
 <link
   rel="stylesheet"
   href="css/style.css"
 >
 
+
 <style>
+
+/* =================================
+   Ver.2.0 店舗情報管理
+================================= */
+
+
+.shop-container{
+
+  max-width:900px;
+
+  margin:auto;
+
+}
+
+
+/* カード */
 
 .shop-card{
 
   background:#fff;
 
-  border-radius:10px;
+  border-radius:12px;
 
-  padding:20px;
+  padding:25px;
 
-  margin-bottom:20px;
+  margin-bottom:25px;
 
   box-shadow:
-    0 2px 6px rgba(0,0,0,.1);
+  0 3px 10px rgba(0,0,0,.12);
 
 }
+
+
+/* 見出し */
 
 .shop-card h2{
 
+  margin:0 0 20px;
+
+  padding-bottom:10px;
+
+  border-bottom:2px solid #eee;
+
+  font-size:20px;
+
+}
+
+
+/* 入力行 */
+
+.shop-row{
+
   margin-bottom:20px;
 
 }
 
-.shop-row{
-
-  margin-bottom:18px;
-
-}
 
 .shop-row label{
 
   display:block;
 
-  margin-bottom:6px;
-
   font-weight:bold;
 
+  margin-bottom:8px;
+
 }
+
+
+/* 入力 */
 
 .shop-row input,
 .shop-row textarea{
 
+
   width:100%;
+
+  padding:10px;
 
   box-sizing:border-box;
 
+  border:
+
+  1px solid #ccc;
+
+  border-radius:6px;
+
+  font-size:15px;
+
+
 }
+
+
 
 .shop-row textarea{
 
-  min-height:70px;
+  min-height:90px;
 
   resize:vertical;
 
 }
 
-.preview-image{
 
-  max-width:250px;
+
+/* 画像 */
+
+.image-box{
+
+  margin-bottom:25px;
+
+}
+
+
+.image-box label{
+
+  display:block;
+
+  font-weight:bold;
+
+  margin-bottom:8px;
+
+}
+
+
+.image-url{
+
+  width:100%;
+
+  padding:10px;
+
+  box-sizing:border-box;
+
+  background:#f5f5f5;
+
+  border:1px solid #ddd;
+
+  border-radius:6px;
+
+}
+
+
+
+/* 画像変更 */
+
+.image-change-btn{
+
+  display:inline-block;
 
   margin-top:10px;
+
+  padding:8px 15px;
+
+  background:#555;
+
+  color:white;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+}
+
+
+.image-change-btn input{
 
   display:none;
 
 }
 
+
+
+/* プレビュー */
+
+.preview{
+
+  max-width:260px;
+
+  margin-top:15px;
+
+  border-radius:8px;
+
+  display:block;
+
+}
+
+
+
+/* 保存 */
+
 .save-btn{
 
   width:100%;
 
-  padding:14px;
+  padding:15px;
 
   border:none;
 
@@ -99,13 +222,14 @@
 
   background:#28a745;
 
-  color:#fff;
+  color:white;
+
+  font-size:17px;
 
   cursor:pointer;
 
-  font-size:16px;
-
 }
+
 
 .save-btn:hover{
 
@@ -113,15 +237,23 @@
 
 }
 
+
+
 </style>
+
 
 </head>
 
+
+
 <body>
+
 
 <header>
 
+
 <div class="container header-inner">
+
 
 <h1>
 
@@ -129,11 +261,17 @@
 
 </h1>
 
+
 </div>
+
 
 </header>
 
-<div class="container">
+
+
+<div class="container shop-container">
+
+
 
 <a
 href="admin.html"
@@ -144,9 +282,20 @@ class="back-btn"
 
 </a>
 
+
 <br><br>
 
+
+
+
+
+<!-- =========================
+基本情報
+========================= -->
+
+
 <div class="shop-card">
+
 
 <h2>
 
@@ -154,7 +303,10 @@ class="back-btn"
 
 </h2>
 
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -162,13 +314,20 @@ class="back-btn"
 
 </label>
 
+
 <input
 id="shopName"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -176,13 +335,20 @@ id="shopName"
 
 </label>
 
+
 <input
 id="phone"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -190,13 +356,20 @@ id="phone"
 
 </label>
 
+
 <input
 id="address"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -204,28 +377,61 @@ id="address"
 
 </label>
 
+
 <input
 id="businessHours"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
-臨時休業日（長期休業等）
+臨時休業日
 
 </label>
 
+
 <input
+
 id="holidayList"
+
 placeholder="例：7月25日〜7月28日 臨時休業"
+
 >
+
 
 </div>
 
+
+</div>
+
+<!-- =========================
+SNS
+========================= -->
+
+
+<div class="shop-card">
+
+
+<h2>
+
+SNS・地図情報
+
+</h2>
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -233,13 +439,20 @@ Instagram
 
 </label>
 
+
 <input
 id="instagram"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -247,13 +460,20 @@ LINE
 
 </label>
 
+
 <input
 id="line"
 >
 
+
 </div>
 
+
+
+
+
 <div class="shop-row">
+
 
 <label>
 
@@ -261,13 +481,132 @@ GoogleMap
 
 </label>
 
+
 <input
 id="googleMap"
 >
 
+
 </div>
 
-<div class="form-group">
+
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+お知らせ
+========================= -->
+
+
+<div class="shop-card">
+
+
+<h2>
+
+お知らせ
+
+</h2>
+
+
+
+
+<div class="shop-row">
+
+
+<label>
+
+お知らせ①
+
+</label>
+
+
+<textarea
+id="notice1"
+placeholder="トップページに表示するお知らせを入力"
+></textarea>
+
+
+</div>
+
+
+
+
+
+<div class="shop-row">
+
+
+<label>
+
+お知らせ②
+
+</label>
+
+
+<textarea
+id="notice2"
+placeholder="トップページに表示するお知らせを入力"
+></textarea>
+
+
+</div>
+
+
+
+
+
+<div class="shop-row">
+
+
+<label>
+
+お知らせ③
+
+</label>
+
+
+<textarea
+id="notice3"
+placeholder="トップページに表示するお知らせを入力"
+></textarea>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+画像
+========================= -->
+
+
+<div class="shop-card">
+
+
+<h2>
+
+画像管理
+
+</h2>
+
+
+
+
+
+
+<div class="image-box">
+
 
 <label>
 
@@ -275,145 +614,248 @@ id="googleMap"
 
 </label>
 
+
 <input
-  id="topImage"
-  type="text"
-  readonly
+id="topImage"
+class="image-url"
+type="text"
+readonly
 >
 
-<br><br>
+
+
 
 <label class="image-change-btn">
 
+
 📷 画像を変更
 
+
 <input
-  type="file"
-  id="topImageFile"
-  accept="image/*"
+
+type="file"
+
+id="topImageFile"
+
+accept="image/*"
+
 >
+
 
 </label>
 
+
+
 <img
-  id="topImagePreview"
-  class="preview"
+
+id="topImagePreview"
+
+class="preview"
+
 >
+
+
 
 </div>
 
-<hr>
 
-<h2>
 
-店舗画像
 
-</h2>
 
-<div class="form-group">
+
+<div class="image-box">
+
 
 <label>
 
-店舗画像１
+店舗画像①
 
 </label>
 
+
 <input
-  id="shopImage1"
-  type="text"
-  readonly
+
+id="shopImage1"
+
+class="image-url"
+
+type="text"
+
+readonly
+
 >
 
-<br><br>
+
+
 
 <label class="image-change-btn">
 
+
 📷 画像を変更
 
+
 <input
-  type="file"
-  id="shopImage1File"
-  accept="image/*"
+
+type="file"
+
+id="shopImage1File"
+
+accept="image/*"
+
 >
+
 
 </label>
 
+
+
 <img
-  id="shopImage1Preview"
-  class="preview"
+
+id="shopImage1Preview"
+
+class="preview"
+
 >
+
+
 
 </div>
 
-<div class="form-group">
+
+
+
+
+
+<div class="image-box">
+
 
 <label>
 
-店舗画像２
+店舗画像②
 
 </label>
 
+
 <input
-  id="shopImage2"
-  type="text"
-  readonly
+
+id="shopImage2"
+
+class="image-url"
+
+type="text"
+
+readonly
+
 >
 
-<br><br>
+
+
 
 <label class="image-change-btn">
 
+
 📷 画像を変更
 
+
 <input
-  type="file"
-  id="shopImage2File"
-  accept="image/*"
+
+type="file"
+
+id="shopImage2File"
+
+accept="image/*"
+
 >
+
 
 </label>
 
+
+
 <img
-  id="shopImage2Preview"
-  class="preview"
+
+id="shopImage2Preview"
+
+class="preview"
+
 >
+
+
 
 </div>
 
-<div class="form-group">
+<div class="image-box">
+
 
 <label>
 
-店舗画像３
+店舗画像③
 
 </label>
 
+
 <input
-  id="shopImage3"
-  type="text"
-  readonly
+
+id="shopImage3"
+
+class="image-url"
+
+type="text"
+
+readonly
+
 >
 
-<br><br>
+
+
 
 <label class="image-change-btn">
 
+
 📷 画像を変更
 
+
 <input
-  type="file"
-  id="shopImage3File"
-  accept="image/*"
+
+type="file"
+
+id="shopImage3File"
+
+accept="image/*"
+
 >
+
 
 </label>
 
+
+
 <img
-  id="shopImage3Preview"
-  class="preview"
+
+id="shopImage3Preview"
+
+class="preview"
+
 >
 
+
+
 </div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+保存
+========================= -->
+
 
 <button
 
@@ -423,22 +865,35 @@ onclick="saveShopSettings()"
 
 >
 
-保存
+保存する
 
 </button>
 
-</div>
+
+
 
 </div>
+
+
+
+
+
+
 
 <script src="js/config.js"></script>
 
+
 <script src="js/admin-auth.js"></script>
+
 
 <script src="js/cloudinary.js"></script>
 
+
 <script src="js/admin-shop.js"></script>
 
+
+
 </body>
+
 
 </html>
