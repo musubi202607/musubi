@@ -91,7 +91,16 @@ th{
 async function loadData() {
 
   const res =
-    await fetch(API_URL + "/api/bbq/unpaid");
+  await fetch(
+    API_URL + "/api/bbq/unpaid",
+    {
+      headers:{
+        Authorization:
+          "Bearer " +
+          localStorage.getItem("adminToken")
+      }
+    }
+  );
 
   const data = await res.json();
 
