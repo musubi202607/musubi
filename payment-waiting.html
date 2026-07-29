@@ -11,9 +11,7 @@
 >
 
 <title>
-
 会計
-
 </title>
 
 <link
@@ -116,23 +114,26 @@
 
 </head>
 
+
 <body>
+
 
 <header>
 
 <div class="container header-inner">
 
 <h1>
-
 会計
-
 </h1>
 
 </div>
 
 </header>
 
+
+
 <div class="container">
+
 
 <a
 href="staff.html"
@@ -143,46 +144,170 @@ class="back-btn"
 
 </a>
 
+
+
 <h2 style="margin:20px 0;">
 
 会計待ち一覧
 
 </h2>
 
-<div
-id="paymentList"
->
+
+
+<div id="paymentList">
 
 読み込み中...
 
 </div>
 
+
+
 </div>
 
+
+
 <script src="js/config.js"></script>
+
 <script src="js/admin-auth.js"></script>
 
+
+
 <script>
+
+
+// =========================
+// 認証ヘッダー
+// =========================
+
+function authHeader(){
+
+  return {
+
+    Authorization:
+
+      "Bearer " +
+
+      localStorage.getItem(
+        "adminToken"
+      )
+
+  };
+
+}
+
+
 
 // =========================
 // 会計待ち一覧
 // =========================
+
 async function loadPayments(){
 
-  const response =
-    await fetch(
-      API_URL +
-      "/api/payments/waiting"
-    );
 
-  const data =
-    await response.json();
+try{
 
-  let html = "";
 
-  if(data.length===0){
+const response =
 
-    html=`
+await fetch(
+
+API_URL +
+
+"/api/payments/waiting",
+
+{
+
+headers:
+
+authHeader()
+
+}
+
+);
+
+
+
+const data =
+
+await response.json();
+
+
+
+if(!response.ok){
+
+
+console.error(
+data
+);
+
+
+document.getElementById(
+"paymentList"
+).innerHTML =
+
+`
+
+<div class="payment-card">
+
+${data.message || "取得失敗"}
+
+</div>
+
+`;
+
+
+return;
+
+
+}
+
+
+
+if(!Array.isArray(data)){
+
+
+console.error(
+
+"会計待ちデータ形式エラー",
+
+data
+
+);
+
+
+
+document.getElementById(
+"paymentList"
+).innerHTML =
+
+`
+
+<div class="payment-card">
+
+データ取得エラー
+
+</div>
+
+`;
+
+
+return;
+
+
+}
+
+
+
+let html = "";
+
+
+
+if(data.length===0){
+
+
+html =
+
+`
 
 <div class="payment-card">
 
@@ -192,103 +317,149 @@ async function loadPayments(){
 
 `;
 
-  }
 
-  data.sort((a,b)=>{
 
-    if(a.type===b.type){
+}else{
 
-      return 0;
 
-    }
+data.sort((a,b)=>{
 
-    return a.type==="onigiri"
-      ? -1
-      : 1;
 
-  });
+if(a.type===b.type){
 
-  data.forEach(item=>{
+return 0;
 
-    const typeClass =
-      item.type==="onigiri"
-      ? "onigiri"
-      : "bbq";
+}
 
-    const typeName =
-      item.type==="onigiri"
-      ? "🍙 おにぎり"
-      : "🔥 BBQ";
 
-    const noLabel =
-      item.type==="onigiri"
-      ? "注文番号"
-      : "予約番号";
+return a.type==="onigiri"
 
-    let detailHtml = "";
+? -1
 
-    // =========================
-    // 表示内容
-    // =========================
+: 1;
 
-    if(item.type === "onigiri"){
 
-      item.items.forEach(product=>{
+});
 
-        detailHtml += `
+
+
+
+
+data.forEach(item=>{
+
+
+const typeClass =
+
+item.type==="onigiri"
+
+? "onigiri"
+
+: "bbq";
+
+
+
+const typeName =
+
+item.type==="onigiri"
+
+? "🍙 おにぎり"
+
+: "🔥 BBQ";
+
+
+
+const noLabel =
+
+item.type==="onigiri"
+
+? "注文番号"
+
+: "予約番号";
+
+
+
+let detailHtml = "";
+
+
+
+if(item.type==="onigiri"){
+
+
+(item.items || [])
+
+.forEach(product=>{
+
+
+detailHtml +=
+
+
+`
 
 <div class="price-row">
 
 <span>
 
 ${product.name}
-×${product.qty}
+
+×
+
+${product.qty}
 
 </span>
+
 
 <span>
 
-¥${Number(product.amount).toLocaleString()}
+¥${Number(
+product.amount || 0
+).toLocaleString()}
 
 </span>
+
 
 </div>
 
 `;
 
-      });
+});
 
-    }else{
 
-      detailHtml = `
+}else{
+
+
+detailHtml =
+
+
+`
 
 <div class="price-row">
 
 <span>
-
 BBQ料金
-
 </span>
 
 <span>
 
-¥${Number(item.bbqPrice).toLocaleString()}
+¥${Number(
+item.bbqPrice || 0
+).toLocaleString()}
 
 </span>
 
 </div>
 
+
 <div class="price-row">
 
 <span>
-
 追加注文
-
 </span>
 
 <span>
 
-¥${Number(item.optionTotal).toLocaleString()}
+¥${Number(
+item.optionTotal || 0
+).toLocaleString()}
 
 </span>
 
@@ -296,11 +467,19 @@ BBQ料金
 
 `;
 
-    }
+}
 
-    html += `
+
+
+
+
+html +=
+
+
+`
 
 <div class="payment-card">
+
 
 <div class="payment-type ${typeClass}">
 
@@ -308,75 +487,127 @@ ${typeName}
 
 </div>
 
+
+
 <h2>
 
-${item.customerName}
+${item.customerName || ""}
 
 </h2>
+
+
 
 <p>
 
 ${noLabel}：
-${item.no}
+
+${item.no || ""}
 
 </p>
+
+
 
 ${item.type==="bbq"
+
 ?
+
 `
+
 <p>
 プラン：
-${item.plan}
+${item.plan || ""}
 </p>
+
 
 <p>
 単価：
-¥${Number(item.unitPrice).toLocaleString()}
+
+¥${Number(
+item.unitPrice || 0
+).toLocaleString()}
+
 </p>
+
 
 <p>
 人数：
-${item.people}名
+
+${item.people || 0}名
+
 </p>
 
-<p>
-BBQ料金：
-¥${Number(item.bbqPrice).toLocaleString()}
-</p>
 
 <h3>
 追加注文
 </h3>
 
-${item.optionItems.map(o=>`
+
+${
+
+(item.optionItems || [])
+
+.map(o=>`
 
 <p>
+
 ${o.name}
+
 ${o.qty}個
+
 <br>
-¥${Number(o.amount).toLocaleString()}
+
+¥${Number(
+o.amount || 0
+).toLocaleString()}
+
 </p>
 
-`).join("")}
+`)
 
-<p>
-追加注文合計：
-¥${Number(item.optionTotal).toLocaleString()}
-</p>
+.join("")
+
+}
+
 
 `
-:""}
 
-${item.type==="bbq" ? "" : detailHtml}
+:""
+
+}
+
+
+
+${
+
+item.type==="onigiri"
+
+?
+
+detailHtml
+
+:
+
+""
+
+}
+
+
 
 <hr>
+
+
 
 <div class="total">
 
 合計：
-¥${Number(item.total).toLocaleString()}
+
+¥${Number(
+item.total || 0
+).toLocaleString()}
 
 </div>
+
+
 
 <button
 
@@ -396,121 +627,223 @@ onclick="paidUpdate(
 
 </button>
 
+
+
 </div>
 
 `;
 
-  });
+});
 
-  document.getElementById(
-
-    "paymentList"
-
-  ).innerHTML = html;
 
 }
 
+
+
+document.getElementById(
+
+"paymentList"
+
+).innerHTML = html;
+
+
+
+}
+
+catch(error){
+
+
+console.error(
+
+"会計取得エラー",
+
+error
+
+);
+
+
+
+document.getElementById(
+
+"paymentList"
+
+).innerHTML =
+
+
+`
+
+<div class="payment-card">
+
+通信エラー
+
+</div>
+
+`;
+
+}
+
+
+}
+
+
+
+
 // =========================
-// 会計済
+// 会計済更新
 // =========================
+
 async function paidUpdate(type,no){
 
-  if(
 
-    !confirm(
+if(
 
-      "会計済みにしますか？"
+!confirm(
 
-    )
+"会計済みにしますか？"
 
-  ){
+)
 
-    return;
+){
 
-  }
-
-  let url = "";
-
-  let body = {};
-
-  if(type==="onigiri"){
-
-    url =
-      API_URL +
-      "/api/onigiri/paid";
-
-    body = {
-
-      orderNo:no
-
-    };
-
-  }else{
-
-    url =
-      API_URL +
-      "/api/bbq/paid";
-
-    body = {
-
-      reservationNo:no
-
-    };
-
-  }
-
-  const response =
-    await fetch(
-
-      url,
-
-      {
-
-        method:"POST",
-
-        headers:{
-
-          "Content-Type":
-          "application/json"
-
-        },
-
-        body:
-          JSON.stringify(body)
-
-      }
-
-    );
-
-  const result =
-    await response.json();
-
-  if(result.success){
-
-    alert("会計済みにしました");
-
-    loadPayments();
-
-  }else{
-
-    alert(
-
-      result.message ||
-
-      "更新失敗"
-
-    );
-
-  }
+return;
 
 }
+
+
+
+let url="";
+
+let body={};
+
+
+
+if(type==="onigiri"){
+
+
+url =
+
+API_URL +
+
+"/api/onigiri/paid";
+
+
+body = {
+
+orderNo:no
+
+};
+
+
+
+}else{
+
+
+url =
+
+API_URL +
+
+"/api/bbq/paid";
+
+
+body = {
+
+reservationNo:no
+
+};
+
+
+}
+
+
+
+const response =
+
+await fetch(
+
+url,
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+
+"application/json",
+
+
+Authorization:
+
+"Bearer " +
+
+localStorage.getItem(
+"adminToken"
+)
+
+},
+
+
+body:
+
+JSON.stringify(body)
+
+}
+
+);
+
+
+
+const result =
+
+await response.json();
+
+
+
+if(result.success){
+
+
+alert(
+
+"会計済みにしました"
+
+);
+
+
+loadPayments();
+
+
+
+}else{
+
+
+alert(
+
+result.message ||
+
+"更新失敗"
+
+);
+
+
+}
+
+
+
+}
+
+
+
 
 // =========================
 // 初期表示
 // =========================
+
 loadPayments();
 
+
 </script>
+
 
 </body>
 
