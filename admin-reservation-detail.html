@@ -1,46 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>予約詳細</title>
-
 <link rel="stylesheet" href="css/style.css">
-
 <style>
-.card{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
-}
-
-th, td{
-  border:1px solid #ddd;
-  padding:10px;
-}
-
-th{
-  background:#f5f5f5;
-}
+.card{background:#fff;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border:1px solid #ddd;padding:10px}
+th{background:#f5f5f5}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="container header-inner">
-    <h1>予約詳細</h1>
-  </div>
+<div class="container header-inner">
+<h1>予約詳細</h1>
+</div>
 </header>
 
 <div class="container">
@@ -48,7 +26,6 @@ th{
 <a href="admin-reservations.html" class="back-btn">← 一覧へ戻る</a>
 
 <div id="reservationInfo" class="card"></div>
-
 <div id="orderHistory" class="card"></div>
 
 </div>
@@ -58,113 +35,125 @@ th{
 
 <script>
 
-const params = new URLSearchParams(location.search);
-const reservationNo = params.get('no');
+const reservationNo =
+new URLSearchParams(location.search).get("no");
 
-async function loadDetail() {
 
-  if (!reservationNo) {
-    alert("予約番号がありません");
-    return;
-  }
+const auth = {
+headers:{
+Authorization:
+"Bearer " + localStorage.getItem("adminToken")
+}
+};
 
-  try {
 
-    // =========================
-    // 予約詳細
-    // =========================
-    const res1 = await fetch(
-    API_URL + "/api/bbq/detail?no=" + reservationNo
-    );
+async function loadDetail(){
 
-    const data = await res1.json();
+if(!reservationNo){
+alert("予約番号がありません");
+return;
+}
 
-    // =========================
-    // 追加注文履歴
-    // =========================
-    const res2 = await fetch(
-    API_URL + "/api/bbq/history?no=" + reservationNo
-    );
+try{
 
-    const history = await res2.json();
+const res1 =
+await fetch(
+API_URL+"/api/bbq/detail?no="+reservationNo,
+auth
+);
 
-    // =========================
-    // 予約情報表示
-    // =========================
-    document.getElementById('reservationInfo').innerHTML = `
-      <h2>${data.customerName || ""}</h2>
+const data =
+await res1.json();
 
-      <p>予約番号：${data.reservationNo || ""}</p>
-      <p>利用日：${data.useDate || ""}</p>
-      <p>人数：${data.people || 0}名</p>
-      <p>プラン：${data.plan || ""}</p>
 
-      <p>人数：${data.people}名</p>
-      <p>単価：¥${Number(data.price || 0).toLocaleString()}</p>
-      <p>BBQ料金：¥${Number(data.total || 0).toLocaleString()}</p>
-      
-      <p>来店状況：${data.status || ""}</p>
-      <p>会計：${data.paid || ""}</p>
-    `;
+const res2 =
+await fetch(
+API_URL+"/api/bbq/history?no="+reservationNo,
+auth
+);
 
-    // =========================
-    // 追加注文一覧
-    // =========================
-    const items = history.items || [];
+const history =
+await res2.json();
 
-    let rows = "";
 
-    items.forEach(item => {
-      rows += `
-        <tr>
-          <td>${item.itemName}</td>
-          <td>${item.qty}</td>
-          <td>¥${Number(item.amount || 0).toLocaleString()}</td>
-        </tr>
-      `;
-    });
+document.getElementById("reservationInfo").innerHTML=`
 
-    const bbqTotal = Number(data.total || 0);
+<h2>${data.customerName||""}</h2>
 
-    const optionTotal = Number(history.total || 0);
+<p>予約番号：${data.reservationNo||""}</p>
+<p>利用日：${data.useDate||""}</p>
+<p>人数：${data.people||0}名</p>
+<p>プラン：${data.plan||""}</p>
+<p>単価：¥${Number(data.price||0).toLocaleString()}</p>
+<p>BBQ料金：¥${Number(data.total||0).toLocaleString()}</p>
+<p>状態：${data.status||""}</p>
+<p>会計：${data.paid||""}</p>
 
-    const grandTotal = bbqTotal + optionTotal;
-        
-    document.getElementById('orderHistory').innerHTML = `
-      <h2>追加注文履歴</h2>
+`;
 
-      <table>
-        <thead>
-          <tr>
-            <th>商品</th>
-            <th>数量</th>
-            <th>金額</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          ${rows || `<tr><td colspan="3">追加注文なし</td></tr>`}
-        </tbody>
-      </table>
+let rows="";
 
-      <br>
+(history.items||[]).forEach(item=>{
 
-      <p>BBQ：¥${bbqTotal.toLocaleString()}</p>
-      <p>追加：¥${optionTotal.toLocaleString()}</p>
+rows+=`
 
-      <h2>総合計：¥${grandTotal.toLocaleString()}</h2>
-    `;
+<tr>
+<td>${item.itemName}</td>
+<td>${item.qty}</td>
+<td>¥${Number(item.amount||0).toLocaleString()}</td>
+</tr>
 
-  } catch (e) {
+`;
 
-      console.error(e);
+});
 
-      alert(
-        "読み込みエラー\n\n" +
-        e.message
-      );
 
-    }
+const bbqTotal =
+Number(data.total||0);
+
+const optionTotal =
+Number(history.total||0);
+
+const grandTotal =
+bbqTotal+optionTotal;
+
+
+document.getElementById("orderHistory").innerHTML=`
+
+<h2>追加注文履歴</h2>
+
+<table>
+<tr>
+<th>商品</th>
+<th>数量</th>
+<th>金額</th>
+</tr>
+
+${rows || `
+<tr>
+<td colspan="3">追加注文なし</td>
+</tr>
+`}
+
+</table>
+
+<p>BBQ：¥${bbqTotal.toLocaleString()}</p>
+<p>追加注文：¥${optionTotal.toLocaleString()}</p>
+
+<h2>
+総合計：¥${grandTotal.toLocaleString()}
+</h2>
+
+`;
+
+}catch(e){
+
+console.error(e);
+alert("読み込みエラー\n"+e.message);
+
+}
+
 }
 
 loadDetail();
