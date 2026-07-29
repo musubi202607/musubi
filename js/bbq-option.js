@@ -284,17 +284,23 @@ ${product.price}
 
 `;
 
-        if(product.type==="bbq-option"){
+        if(
+          product.type==="bbq-option"
+
+          ){
 
           optionGrid.innerHTML += card;
 
-        }
+          }
 
-        if(product.type==="drink"){
+        if(
+          product.type==="drink" ||
+          product.type==="onigiri-drink"
+        ){
 
           drinkGrid.innerHTML += card;
 
-        }
+          }
 
       });
 
