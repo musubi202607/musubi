@@ -329,8 +329,18 @@ async function loadNextHoliday(){
       );
 
 
-    const holidays =
+    const result =
       await res.json();
+
+
+    // =========================
+    // 返却形式対応
+    // 配列形式 / data形式 両対応
+    // =========================
+    const holidays =
+      Array.isArray(result)
+        ? result
+        : result.data || [];
 
 
 
