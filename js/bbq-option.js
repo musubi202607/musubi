@@ -6,7 +6,12 @@ let bbqCart = [];
 // =========================
 window.addEventListener("DOMContentLoaded", async () => {
 
-  document.getElementById("productArea").style.display = "none";
+  const productArea =
+    document.getElementById("productArea");
+
+  if(productArea){
+    productArea.style.display = "none";
+  }
 
   await loadReservations();
   await loadBbqOptions();
@@ -14,32 +19,36 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 });
 
+
 // =========================
 // 本日の予約一覧取得
 // =========================
-async function loadReservations() {
+async function loadReservations(){
 
-  try {
+  try{
 
     const res =
-      await fetch(API_URL + "/api/reservations/today");
-
-//console.log("status", res.status);
+      await fetch(
+        API_URL + "/api/reservations/today"
+      );
 
     const data =
       await res.json();
-      
-//console.log("Array?", Array.isArray(data));
-//console.log("Length=", data.length);
-//console.log(JSON.stringify(data));
-//console.log(data);
+
 
     const target =
-      document.getElementById("reservationList");
+      document.getElementById(
+        "reservationList"
+      );
+
+
+    if(!target) return;
+
 
     target.innerHTML = "";
 
-    if (!data.length) {
+
+    if(!Array.isArray(data) || data.length === 0){
 
       target.innerHTML =
         "<p>本日の予約はありません</p>";
@@ -48,41 +57,47 @@ async function loadReservations() {
 
     }
 
-    data.forEach(r => {
 
-//console.log("予約", r);
+    data.forEach(r=>{
 
       target.innerHTML += `
 
-      <div class="product-card">
+<div class="product-card">
 
-        <div class="product-content">
+<div class="product-content">
 
-          <h3>${r.customerName}</h3>
+<h3>
+${r.customerName}
+</h3>
 
-          <p>${r.useDate}</p>
+<p>
+${r.useDate}
+</p>
 
-          <p>${r.plan}</p>
+<p>
+${r.plan}
+</p>
 
-          <button
-            onclick="selectReservation(
-              '${r.reservationNo}',
-              '${r.customerName}',
-              '${r.useDate}'
-            )"
-          >
-            この予約を選択
-          </button>
+<button
+onclick="selectReservation(
+'${r.reservationNo}',
+'${r.customerName}',
+'${r.useDate}'
+)"
+>
+この予約を選択
+</button>
 
-        </div>
+</div>
 
-      </div>
+</div>
 
-      `;
+`;
 
     });
 
-  } catch (e) {
+
+  }catch(e){
 
     console.error(e);
 
@@ -92,15 +107,14 @@ async function loadReservations() {
 
 }
 
+
 // =========================
 // 予約選択
 // =========================
-function selectReservation(
-
+async function selectReservation(
   reservationNo,
   customerName,
   useDate
-
 ){
 
   currentReservation = {
@@ -111,52 +125,115 @@ function selectReservation(
 
   };
 
+
   document.getElementById(
     "currentReservation"
   ).innerHTML = `
 
-  <div class="product-card">
+<div class="product-card">
 
-    <div class="product-content">
+<div class="product-content">
 
-      <h2>
+<h2>
+選択中予約
+</h2>
 
-        選択中予約
+<p>
+予約番号：
+${reservationNo}
+</p>
 
-      </h2>
+<p>
+氏名：
+${customerName}
+</p>
 
-      <p>
+<p>
+利用日：
+${useDate}
+</p>
 
-        予約番号：
-        ${reservationNo}
+</div>
 
-      </p>
+</div>
 
-      <p>
+`;
 
-        氏名：
-        ${customerName}
-
-      </p>
-
-      <p>
-
-        利用日：
-        ${useDate}
-
-      </p>
-
-    </div>
-
-  </div>
-
-  `;
 
   document.getElementById(
     "productArea"
   ).style.display = "block";
 
+
+  // =========================
+  // 来店受付
+  // =========================
+  await checkinReservation(
+    reservationNo
+  );
+
 }
+
+
+// =========================
+// 来店受付
+// =========================
+async function checkinReservation(
+  reservationNo
+){
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/bbq/checkin",
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+
+            reservationNo
+
+          })
+
+        }
+
+      );
+
+
+    const result =
+      await res.json();
+
+
+    if(!result.success){
+
+      console.log(
+        "来店受付:",
+        result.message
+      );
+
+    }
+
+
+  }catch(e){
+
+    console.error(
+      "来店受付エラー",
+      e
+    );
+
+  }
+
+}
+
 
 // =========================
 // BBQ商品取得
@@ -170,21 +247,31 @@ async function loadBbqOptions(){
         API_URL + "/api/products"
       );
 
+
     const products =
       await response.json();
+
 
     const optionGrid =
       document.getElementById(
         "optionGrid"
       );
 
+
     const drinkGrid =
       document.getElementById(
         "drinkGrid"
       );
 
+
+    if(!optionGrid || !drinkGrid){
+      return;
+    }
+
+
     optionGrid.innerHTML = "";
     drinkGrid.innerHTML = "";
+
 
     products
       .sort(
@@ -193,40 +280,36 @@ async function loadBbqOptions(){
       )
       .forEach(product=>{
 
+
         if(
           product.type !== "bbq-option" &&
           product.type !== "drink" &&
           product.type !== "onigiri-drink"
         ){
-           return;
-         }
+
+          return;
+
+        }
+
 
         const card = `
 
 <div class="product-card">
 
-<img
-src="${product.image}"
->
+<img src="${product.image}">
 
 <div class="product-content">
 
 <h3>
-
 ${product.name}
-
 </h3>
 
 <p>
-
-${product.description}
-
+${product.description || ""}
 </p>
 
 <div class="price">
-
 ¥${Number(product.price).toLocaleString()}
-
 </div>
 
 <div class="qty-area">
@@ -235,47 +318,33 @@ ${product.description}
 class="qty-btn"
 onclick="changeQty(${product.id},-1)"
 >
-
 －
-
 </button>
 
 <span
 id="qty-${product.id}"
 class="qty-value"
 >
-
 1
-
 </span>
 
 <button
 class="qty-btn"
 onclick="changeQty(${product.id},1)"
 >
-
 ＋
-
 </button>
 
 </div>
 
 <button
-
 onclick="addToCart(
-
 ${product.id},
-
 '${product.name}',
-
 ${product.price}
-
 )"
-
 >
-
 カートへ追加
-
 </button>
 
 </div>
@@ -284,14 +353,13 @@ ${product.price}
 
 `;
 
-        if(
-          product.type==="bbq-option"
 
-          ){
+        if(product.type==="bbq-option"){
 
           optionGrid.innerHTML += card;
 
-          }
+        }
+
 
         if(
           product.type==="drink" ||
@@ -300,9 +368,11 @@ ${product.price}
 
           drinkGrid.innerHTML += card;
 
-          }
+        }
+
 
       });
+
 
   }catch(e){
 
@@ -313,6 +383,7 @@ ${product.price}
   }
 
 }
+
 
 // =========================
 // 数量変更
@@ -326,28 +397,33 @@ function changeQty(id, diff){
 
   if(!target) return;
 
+
   let qty =
     Number(target.innerText);
 
+
   qty += diff;
 
+
   if(qty < 1){
+
     qty = 1;
+
   }
+
 
   target.innerText = qty;
 
 }
 
+
 // =========================
 // カート追加
 // =========================
 function addToCart(
-
   id,
   name,
   price
-
 ){
 
   const qty =
@@ -357,10 +433,12 @@ function addToCart(
       ).innerText
     );
 
+
   const existing =
     bbqCart.find(
-      p=>String(p.id)===String(id)
+      p => String(p.id) === String(id)
     );
+
 
   if(existing){
 
@@ -379,9 +457,11 @@ function addToCart(
 
   }
 
+
   renderCart();
 
 }
+
 
 // =========================
 // カート表示
@@ -393,11 +473,17 @@ function renderCart(){
       "cartArea"
     );
 
+
+  if(!target) return;
+
+
   target.innerHTML = "";
+
 
   let total = 0;
 
-  if(bbqCart.length===0){
+
+  if(bbqCart.length === 0){
 
     target.innerHTML =
       "<p>商品がありません</p>";
@@ -408,13 +494,17 @@ function renderCart(){
 
   }
 
+
   bbqCart.forEach(item=>{
+
 
     const subtotal =
       Number(item.price) *
       Number(item.qty);
 
+
     total += subtotal;
+
 
     target.innerHTML += `
 
@@ -423,56 +513,29 @@ function renderCart(){
 <div class="product-content">
 
 <h3>
-
 ${item.name}
-
 </h3>
 
 <p>
-
-数量：
-${item.qty}
-
+数量：${item.qty}
 </p>
 
 <div class="price">
-
 ¥${subtotal.toLocaleString()}
-
 </div>
 
-<div style="margin-top:10px;">
+<div>
 
 <button
-
-onclick="changeOrderQty(
-
-'${item.id}',
-
--1
-
-)"
-
+onclick="changeOrderQty('${item.id}',-1)"
 >
-
 －
-
 </button>
 
 <button
-
-onclick="changeOrderQty(
-
-'${item.id}',
-
-1
-
-)"
-
+onclick="changeOrderQty('${item.id}',1)"
 >
-
 ＋
-
 </button>
 
 </div>
@@ -485,53 +548,56 @@ onclick="changeOrderQty(
 
   });
 
+
   target.innerHTML += `
 
-<h2 style="margin-top:20px;">
-
+<h2>
 合計
-
 ¥${total.toLocaleString()}
-
 </h2>
 
 `;
+
 
   updateCartSummary();
 
 }
 
+
 // =========================
 // カート内数量変更
 // =========================
 function changeOrderQty(
-
   id,
   diff
-
 ){
 
   const item =
     bbqCart.find(
-      p=>String(p.id)===String(id)
+      p => String(p.id) === String(id)
     );
+
 
   if(!item) return;
 
+
   item.qty += diff;
 
-  if(item.qty<=0){
+
+  if(item.qty <= 0){
 
     bbqCart =
       bbqCart.filter(
-        p=>String(p.id)!==String(id)
+        p => String(p.id) !== String(id)
       );
 
   }
 
+
   renderCart();
 
 }
+
 
 // =========================
 // カートサマリー
@@ -540,6 +606,7 @@ function updateCartSummary(){
 
   let qty = 0;
   let total = 0;
+
 
   bbqCart.forEach(item=>{
 
@@ -551,12 +618,15 @@ function updateCartSummary(){
 
   });
 
+
   const target =
     document.getElementById(
       "cartSummary"
     );
 
+
   if(!target) return;
+
 
   target.innerHTML = `
 
@@ -572,6 +642,7 @@ ${qty}点
 
 }
 
+
 // =========================
 // カートクリア
 // =========================
@@ -583,31 +654,38 @@ function clearCart(){
 
 }
 
+
 // =========================
-// 注文送信
+// 追加注文送信
 // =========================
 async function sendBbqOptionOrder(){
 
+
   if(!currentReservation){
 
-    alert("予約を選択してください");
+    alert(
+      "予約を選択してください"
+    );
 
     return;
 
   }
 
-  if(bbqCart.length===0){
 
-    alert("商品を追加してください");
+  if(bbqCart.length === 0){
+
+    alert(
+      "商品を追加してください"
+    );
 
     return;
 
   }
+
 
   try{
-    
-console.log("① fetch開始");
-    
+
+
     const res =
       await fetch(
 
@@ -619,7 +697,10 @@ console.log("① fetch開始");
           method:"POST",
 
           headers:{
-            "Content-Type":"application/json"
+
+            "Content-Type":
+              "application/json"
+
           },
 
           body:JSON.stringify({
@@ -627,62 +708,85 @@ console.log("① fetch開始");
             reservationNo:
               currentReservation.reservationNo,
 
+
             useDate:
               currentReservation.useDate,
+
 
             customerName:
               currentReservation.customerName,
 
+
             customerTel:
-              currentReservation.customerTel,
+              currentReservation.customerTel || "",
+
 
             memo:"",
 
-            items:bbqCart
+
+            items:
+              bbqCart
 
           })
 
         }
 
       );
-    
-console.log("② fetch終了", res.status);
-    
-    const result = await res.json();
 
-console.log("result =", result);
 
-    if (result.success) {
+    const result =
+      await res.json();
 
-       alert("追加注文を受け付けました");
 
-       bbqCart = [];
 
-       renderCart();
+    if(result.success){
 
-     } else {
 
-       alert(result.message || "送信エラー");
+      alert(
+        "追加注文を受け付けました"
+      );
 
-     }
+
+      bbqCart = [];
+
+      renderCart();
+
+
+    }else{
+
+
+      alert(
+        result.message ||
+        "送信エラー"
+      );
+
+
+    }
+
 
   }catch(e){
 
-    console.error("通信エラー", e);
 
-    alert(e.message);
+    console.error(
+      e
+    );
+
+
+    alert(
+      "通信エラー"
+    );
+
 
   }
+
 
 }
 
 // =========================
-// 初期表示
+// 初期化確認
 // =========================
 window.addEventListener(
-
   "DOMContentLoaded",
-
   ()=>{
 
     loadReservations();
@@ -692,5 +796,4 @@ window.addEventListener(
     renderCart();
 
   }
-
 );
