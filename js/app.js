@@ -320,6 +320,7 @@ async function loadNextHoliday(){
 
   try{
 
+
     const res =
       await fetch(
 
@@ -329,18 +330,32 @@ async function loadNextHoliday(){
       );
 
 
-    const result =
+
+    const holidays =
       await res.json();
 
 
+
     // =========================
-    // 返却形式対応
-    // 配列形式 / data形式 両対応
+    // データ確認
     // =========================
-    const holidays =
-      Array.isArray(result)
-        ? result
-        : result.data || [];
+    if(!Array.isArray(holidays)){
+
+
+      console.error(
+
+        "店休日データ形式エラー",
+
+        holidays
+
+      );
+
+
+      return;
+
+
+    }
+
 
 
 
@@ -348,9 +363,11 @@ async function loadNextHoliday(){
       new Date();
 
 
+
     const todayText =
 
       today.getFullYear() +
+
       "-" +
 
       String(
@@ -365,11 +382,14 @@ async function loadNextHoliday(){
 
 
 
+
+
     const nextHolidays =
 
       holidays
 
         .filter(item=>{
+
 
           return (
 
@@ -379,9 +399,11 @@ async function loadNextHoliday(){
 
           );
 
+
         })
 
         .sort((a,b)=>{
+
 
           return (
 
@@ -391,9 +413,12 @@ async function loadNextHoliday(){
 
           );
 
+
         })
 
         .slice(0,2);
+
+
 
 
 
@@ -403,14 +428,19 @@ async function loadNextHoliday(){
 
 
         const parts =
+
           item.date.split("-");
+
 
 
         return (
 
           Number(parts[1]) +
+
           "月" +
+
           Number(parts[2]) +
+
           "日"
 
         );
@@ -420,64 +450,97 @@ async function loadNextHoliday(){
 
 
 
+
+
     let holidayText = "";
+
+
 
 
 
     if(texts.length >= 1){
 
+
       holidayText +=
 
         "次回店休日：" +
+
         texts[0];
 
+
     }
+
+
 
 
 
     if(texts.length >= 2){
 
+
       holidayText +=
 
         "<br>" +
+
         "次々回店休日：" +
+
         texts[1];
 
+
     }
+
+
 
 
 
     const holiday =
+
       document.getElementById(
+
         "holidayText"
+
       );
+
 
 
     if(holiday){
 
+
       holiday.innerHTML =
+
         holidayText;
 
+
     }
+
+
 
 
 
     const footerHoliday =
+
       document.getElementById(
+
         "footerHolidayText"
+
       );
+
 
 
     if(footerHoliday){
 
+
       footerHoliday.innerHTML =
+
         holidayText;
+
 
     }
 
 
 
-  }catch(error){
+  }
+  catch(error){
+
 
     console.error(
 
@@ -487,7 +550,9 @@ async function loadNextHoliday(){
 
     );
 
+
   }
+
 
 }
 
