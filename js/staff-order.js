@@ -46,8 +46,9 @@ async function loadProducts(){
         item.status==="販売中" &&
         (
           item.type==="onigiri" ||
-          item.type==="drink"
-        )
+          item.type==="drink" ||
+          item.type==="onigiri-drink"
+         )
 
       );
 
@@ -82,9 +83,10 @@ function renderProducts(){
   // -------------------------
 
   const onigiri =
-    products.filter(p =>
-      p.type === "onigiri"
-    );
+     products.filter(p =>
+       p.type === "onigiri" ||
+       p.type === "onigiri-drink"
+     );
 
   if(onigiri.length){
 
