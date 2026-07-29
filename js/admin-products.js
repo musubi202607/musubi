@@ -404,6 +404,13 @@ async function loadProducts(){
           drink
         </option>
 
+        <option
+          value="onigiri-drink"
+          ${item.type==="onigiri-drink"?"selected":""}
+        >
+          onigiri-drink
+        </option>
+
       </select>
 
     </div>
