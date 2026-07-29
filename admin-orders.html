@@ -99,10 +99,17 @@ async function loadOrders(type = "onigiri") {
   `;
 
   const res = await fetch(
-    API_URL +
-    "/api/orders?type=" +
-    type
-  );
+  API_URL +
+  "/api/orders?type=" +
+  type,
+  {
+    headers:{
+      Authorization:
+        "Bearer " +
+        localStorage.getItem("adminToken")
+    }
+  }
+);
 
   const result =
   await res.json();
