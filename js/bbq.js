@@ -439,22 +439,37 @@ function updateGoButton() {
 // =========================
 // 次へ
 // =========================
+// =========================
+// 次へ
+// =========================
 function goOrder() {
 
   if(!reservation.productId){
 
-  alert("商品情報を取得できませんでした。");
+    alert("商品情報を取得できませんでした。");
 
-  return;
-
-  }
-
-  if (!reservation.date) {
-    alert('予約日を選択してください');
     return;
+
   }
 
-  location.href = 'bbq-order.html';
+  if(!reservation.date){
+
+    alert("予約日を選択してください");
+
+    return;
+
+  }
+
+  if(location.pathname.includes("staff-bbq.html")){
+
+    location.href = "staff-bbq-order.html";
+
+  }else{
+
+    location.href = "bbq-order.html";
+
+  }
+
 }
 
 // =========================
