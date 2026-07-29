@@ -1,113 +1,155 @@
-async function sendBbqOptionOrder() {
+// =========================
+// BBQ追加注文送信
+// =========================
+async function sendBbqOptionOrder(){
 
-  console.log("① sendBbqOptionOrder START");
+  console.log(
+    "sendBbqOptionOrder START"
+  );
 
-  const cart =
-    JSON.parse(localStorage.getItem("bbqOptionCart")) || [];
-
-  console.log("② cart", cart);
-
-  const reservationNo =
-    localStorage.getItem("reservationNo") || "";
-
-  console.log("③ reservationNo", reservationNo);
-
-  const bbqDate =
-    document.getElementById("bbqDate").value.trim();
-
-  console.log("④ bbqDate", bbqDate);
-
-  const customerName =
-    document.getElementById("customerName").value.trim();
-
-  console.log("⑤ customerName", customerName);
-
-  const customerTel =
-    document.getElementById("customerTel").value.trim();
-
-  console.log("⑥ customerTel", customerTel);
-
-  console.log("⑦ fetch直前");
-  
-  // =========================
-  // バリデーション
-  // =========================
-  if (!reservationNo) {
-    alert("予約番号がありません");
-    return;
-  }
-
-  if (!bbqDate) {
-    alert("利用日を入力してください");
-    return;
-  }
-
-  if (!customerName) {
-    alert("お名前を入力してください");
-    return;
-  }
-
-  if (!customerTel) {
-    alert("電話番号を入力してください");
-    return;
-  }
-
-  const telPattern =
-    /^[0-9\-]+$/;
-
-  if (!telPattern.test(customerTel)) {
-    alert("電話番号を正しく入力してください");
-    return;
-  }
 
   // =========================
-  // Worker送信
+  // 予約確認
   // =========================
-  const response = await fetch(
-  API_URL + "/api/bbq/addOrder",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      reservationNo,
-      orderDate: bbqDate,
-      customerName,
-      customerTel,
-      items: cart,
-      memo
-    })
-  }
-);
-
-console.log("status =", response.status);
-
-const text = await response.text();
-
-console.log("response =", text);
-
-  const result =
-    await response.json();
-
-  if (result.success) {
-
-    alert("追加注文を受け付けました");
-
-    localStorage.removeItem(
-      "bbqOptionCart"
-    );
-
-    location.href =
-      "index.html";
-
-  } else {
+  if(!currentReservation){
 
     alert(
-      result.message ||
-      "送信エラー"
+      "予約を選択してください"
     );
 
+    return;
+
   }
+
+
+  // =========================
+  // 商品確認
+  // =========================
+  if(bbqCart.length === 0){
+
+    alert(
+      "商品を追加してください"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+
+    const body = {
+
+      reservationNo:
+        currentReservation.reservationNo,
+
+      useDate:
+        currentReservation.useDate,
+
+      customerName:
+        currentReservation.customerName,
+
+      memo:
+        "",
+
+      items:
+        bbqCart
+
+    };
+
+
+    console.log(
+      "送信データ",
+      body
+    );
+
+
+    const response =
+      await fetch(
+
+        API_URL +
+        "/api/bbq/addOrder",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(body)
+
+        }
+
+      );
+
+
+    console.log(
+      "status=",
+      response.status
+    );
+
+
+    const result =
+      await response.json();
+
+
+    console.log(
+      "result=",
+      result
+    );
+
+
+    if(result.success){
+
+
+      alert(
+        "追加注文を受け付けました"
+      );
+
+
+      bbqCart = [];
+
+
+      renderCart();
+
+
+    }else{
+
+
+      alert(
+
+        result.message ||
+        "送信エラー"
+
+      );
+
+
+    }
+
+
+  }
+  catch(error){
+
+
+    console.error(
+      "追加注文エラー",
+      error
+    );
+
+
+    alert(
+      "通信エラー"
+    );
+
+
+  }
+
 
 }
