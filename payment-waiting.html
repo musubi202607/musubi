@@ -392,7 +392,6 @@ if(item.type==="onigiri"){
 
 detailHtml +=
 
-
 `
 
 <div class="price-row">
@@ -407,15 +406,35 @@ ${product.qty}
 
 </span>
 
+</div>
+
+
+<div class="price-row">
 
 <span>
+単価
+</span>
 
+<span>
+¥${Number(
+product.price || 0
+).toLocaleString()}
+</span>
+
+</div>
+
+
+<div class="price-row">
+
+<span>
+金額
+</span>
+
+<span>
 ¥${Number(
 product.amount || 0
 ).toLocaleString()}
-
 </span>
-
 
 </div>
 
