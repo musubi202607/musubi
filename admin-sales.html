@@ -78,28 +78,62 @@
 
 async function loadSales(){
 
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
+  const startDate =
+    document.getElementById("startDate").value;
 
-  const res = await fetch(API_URL + "/api/sales", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ startDate, endDate })
-  });
+  const endDate =
+    document.getElementById("endDate").value;
 
-  const data = await res.json();
+  const token =
+    localStorage.getItem("adminToken");
+
+  const res =
+    await fetch(
+      API_URL + "/api/sales",
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"Bearer " + token
+        },
+
+        body:JSON.stringify({
+          startDate,
+          endDate
+        })
+      }
+    );
+
+  if(!res.ok){
+
+    alert("認証エラーです。再度ログインしてください。");
+
+    location.href = "login.html";
+
+    return;
+
+  }
+
+  const data =
+    await res.json();
 
   document.getElementById("onigiriSales").innerText =
-    "¥" + (data.onigiriSales || 0).toLocaleString();
+    "¥" +
+    Number(data.onigiriSales || 0).toLocaleString();
 
   document.getElementById("bbqSales").innerText =
-    "¥" + (data.bbqSales || 0).toLocaleString();
+    "¥" +
+    Number(data.bbqSales || 0).toLocaleString();
 
   document.getElementById("optionSales").innerText =
-    "¥" + (data.optionSales || 0).toLocaleString();
+    "¥" +
+    Number(data.optionSales || 0).toLocaleString();
 
   document.getElementById("totalSales").innerText =
-    "¥" + (data.totalSales || 0).toLocaleString();
+    "¥" +
+    Number(data.totalSales || 0).toLocaleString();
+
 }
 
 </script>
