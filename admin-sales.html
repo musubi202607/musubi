@@ -46,6 +46,7 @@
 <input type="date" id="endDate">
 
 <button onclick="loadSales()">集計</button>
+<button onclick="downloadSalesCSV()">売上CSV出力</button>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;">
 
@@ -133,6 +134,119 @@ async function loadSales(){
   document.getElementById("totalSales").innerText =
     "¥" +
     Number(data.totalSales || 0).toLocaleString();
+
+}
+
+// =========================
+// 売上CSV出力
+// =========================
+async function downloadSalesCSV(){
+
+  const startDate =
+    document.getElementById("startDate").value;
+
+  const endDate =
+    document.getElementById("endDate").value;
+
+
+  const token =
+    localStorage.getItem("adminToken");
+
+
+  const res =
+    await fetch(
+      API_URL + "/api/sales/csv",
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json",
+
+          "Authorization":
+            "Bearer " + token
+        },
+
+        body:
+          JSON.stringify({
+
+            startDate,
+
+            endDate
+
+          })
+
+      }
+    );
+
+
+  const data =
+    await res.json();
+
+
+
+  if(!data.success){
+
+    alert(
+      "CSV作成失敗"
+    );
+
+    return;
+
+  }
+
+
+
+  const csv =
+    data.csv
+      .map(row =>
+        row.map(value =>
+          `"${String(value).replace(/"/g,'""')}"`
+        ).join(",")
+      )
+      .join("\n");
+
+
+
+  const blob =
+    new Blob(
+      [
+        "\uFEFF" + csv
+      ],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+
+
+  const url =
+    URL.createObjectURL(blob);
+
+
+
+  const a =
+    document.createElement("a");
+
+
+  a.href =
+    url;
+
+
+  a.download =
+    "売上履歴_" +
+    startDate +
+    "_" +
+    endDate +
+    ".csv";
+
+
+  a.click();
+
+
+
+  URL.revokeObjectURL(url);
 
 }
 
