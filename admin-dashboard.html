@@ -137,8 +137,29 @@ class="back-btn">
 
 async function loadDashboard(){
 
+  const token =
+    localStorage.getItem("adminToken");
+
   const response =
-    await fetch(API_URL + "/api/dashboard");
+    await fetch(
+      API_URL + "/api/dashboard",
+      {
+        headers:{
+          Authorization:
+            "Bearer " + token
+        }
+      }
+    );
+
+  if(!response.ok){
+
+    alert("認証エラーです。再度ログインしてください。");
+
+    location.href = "login.html";
+
+    return;
+
+  }
 
   const data =
     await response.json();
