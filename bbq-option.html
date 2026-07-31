@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 >
 
 <title>
@@ -15,10 +16,9 @@ BBQ追加注文
 
 
 <link
-  rel="stylesheet"
-  href="css/style.css"
+rel="stylesheet"
+href="css/style.css"
 >
-
 
 </head>
 
@@ -28,12 +28,10 @@ BBQ追加注文
 
 <header>
 
-
 <div class="container header-inner">
 
 
 <div>
-
 
 <h1>
 BBQ追加注文
@@ -48,23 +46,7 @@ BBQ予約済みのお客様向け
 </div>
 
 
-<div>
-
-
-<a
-  href="#"
-  id="backTop"
-  class="cart-button"
->
-戻る
-</a>
-
-
 </div>
-
-
-</div>
-
 
 </header>
 
@@ -74,9 +56,9 @@ BBQ予約済みのお客様向け
 
 
 <a
-  href="#"
-  id="backButton"
-  class="back-btn"
+href="#"
+id="backButton"
+class="back-btn"
 >
 
 ← 戻る
@@ -89,24 +71,23 @@ BBQ予約済みのお客様向け
 
 
 
-<section class="products container">
+
+<!-- 予約一覧 -->
+
+<section class="container">
 
 
 <div class="section-title">
 
-
 <h2>
-BBQ追加メニュー
+本日の予約
 </h2>
-
 
 </div>
 
 
-
 <div
-  class="product-grid"
-  id="productGrid"
+id="reservationList"
 >
 
 </div>
@@ -117,22 +98,217 @@ BBQ追加メニュー
 
 
 
-<div class="container">
+
+<!-- 選択中予約 -->
 
 
-<a
-  href="bbq-option-order.html"
-  class="order-btn"
+<section class="container">
+
+
+<div
+id="currentReservation"
 >
 
+</div>
 
-注文内容確認へ
+
+</section>
 
 
-</a>
+
+
+
+<!-- 商品エリア -->
+
+
+<div id="productArea">
+
+
+
+
+
+<!-- 追加商品 -->
+
+
+<section class="products container">
+
+
+<div class="section-title">
+
+
+<h2>
+追加商品
+</h2>
 
 
 </div>
+
+
+
+<div
+class="product-grid"
+id="optionGrid"
+>
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- ドリンク -->
+
+
+<section class="products container">
+
+
+<div class="section-title">
+
+
+<h2>
+ドリンク
+</h2>
+
+
+</div>
+
+
+
+<div
+class="product-grid"
+id="drinkGrid"
+>
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<!-- カート -->
+
+
+<section class="container">
+
+
+<div class="section-title">
+
+
+<h2>
+カート
+</h2>
+
+
+</div>
+
+
+
+<div
+id="cartArea"
+>
+
+</div>
+
+
+
+<div
+id="cartSummary"
+class="cart-summary"
+>
+
+</div>
+
+
+
+
+
+<div
+style="
+display:flex;
+gap:10px;
+margin-top:20px;
+"
+>
+
+
+
+<button
+class="order-btn"
+onclick="clearCart()"
+>
+
+カートクリア
+
+</button>
+
+
+
+
+<button
+class="order-btn"
+onclick="sendBbqOptionOrder()"
+>
+
+注文送信
+
+</button>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+document.addEventListener(
+'DOMContentLoaded',
+function(){
+
+
+const productArea =
+document.getElementById(
+'productArea'
+);
+
+
+
+if(productArea){
+
+productArea.style.display =
+'none';
+
+}
+
+
+
+}
+
+);
+
+
+
+</script>
 
 
 
@@ -146,6 +322,8 @@ BBQ追加メニュー
 
 
 
+
+
 <script>
 
 
@@ -156,20 +334,14 @@ BBQ追加メニュー
 
 const mode =
 localStorage.getItem(
-  "bbqOptionBack"
+"bbqOptionBack"
 );
 
 
 
 const backButton =
 document.getElementById(
-  "backButton"
-);
-
-
-const backTop =
-document.getElementById(
-  "backTop"
+"backButton"
 );
 
 
@@ -185,14 +357,6 @@ backButton.innerHTML =
 "← タブレットへ戻る";
 
 
-backTop.href =
-"tablet.html";
-
-
-backTop.innerHTML =
-"タブレット";
-
-
 }else{
 
 
@@ -202,14 +366,6 @@ backButton.href =
 
 backButton.innerHTML =
 "← 店舗メニューへ戻る";
-
-
-backTop.href =
-"staff.html";
-
-
-backTop.innerHTML =
-"店舗メニュー";
 
 
 }
