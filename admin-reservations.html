@@ -174,29 +174,37 @@ async function setVisited(reservationNo){
     return;
   }
 
-  const res =
-    await fetch(
+ const res =
+  await fetch(
 
-      API_URL +
-      "/api/bbq/visited",
+    API_URL +
+    "/api/bbq/visited",
 
-      {
+    {
 
-        method:"POST",
+      method:"POST",
 
-        headers:{
-          "Content-Type":"application/json"
-        },
+      headers:{
 
-        body:JSON.stringify({
+        "Content-Type":"application/json",
 
-          reservationNo
+        Authorization:
+          "Bearer " +
+          localStorage.getItem(
+            "adminToken"
+          )
 
-        })
+      },
 
-      }
+      body:JSON.stringify({
 
-    );
+        reservationNo
+
+      })
+
+    }
+
+  );
 
   const result =
     await res.json();
@@ -236,9 +244,17 @@ async function cancelReservation(reservationNo){
 
           method:"POST",
 
-          headers:{
-            "Content-Type":"application/json"
-          },
+         headers:{
+
+  "Content-Type":"application/json",
+
+  Authorization:
+    "Bearer " +
+    localStorage.getItem(
+      "adminToken"
+    )
+
+},
 
           body:JSON.stringify({
 
