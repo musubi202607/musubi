@@ -58,7 +58,7 @@ try{
 
 const res1 =
 await fetch(
-API_URL+"/api/bbq/detail?no="+reservationNo,
+API_URL+"/api/bbq/detail?reservationno="+reservationNo,
 auth
 );
 
@@ -68,7 +68,7 @@ await res1.json();
 
 const res2 =
 await fetch(
-API_URL+"/api/bbq/history?no="+reservationNo,
+API_URL+"/api/bbq/history?reservationno="+reservationNo,
 auth
 );
 
