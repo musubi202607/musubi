@@ -1,41 +1,34 @@
-const CACHE_NAME =
-  "musubi-staff-v1";
+const CACHE_NAME = "musubi-staff-v1";
 
-
-const CACHE_FILES = [
+const FILES = [
 
   "staff.html",
 
   "staff-order.html",
-
   "staff-bbq.html",
-
   "bbq-option.html",
 
   "payment-waiting.html",
 
   "staff-reservations.html",
-
   "staff-reservation-detail.html",
 
   "css/style.css",
 
   "js/config.js",
-
   "js/staff-auth.js",
 
   "js/staff-order.js",
-
+  "js/bbq.js",
   "js/bbq-tablet.js",
+  "js/payment-waiting.js",
+  "js/staff-reservations.js",
+  "js/staff-reservation-detail.js",
 
   "icon.png"
 
 ];
 
-
-// =========================
-// install
-// =========================
 
 self.addEventListener(
   "install",
@@ -43,14 +36,10 @@ self.addEventListener(
 
     event.waitUntil(
 
-      caches.open(
-        CACHE_NAME
-      )
+      caches.open(CACHE_NAME)
       .then(
         cache =>
-          cache.addAll(
-            CACHE_FILES
-          )
+          cache.addAll(FILES)
       )
 
     );
@@ -59,9 +48,27 @@ self.addEventListener(
 );
 
 
-// =========================
-// activate
-// =========================
+self.addEventListener(
+  "fetch",
+  event => {
+
+    event.respondWith(
+
+      caches.match(event.request)
+      .then(
+
+        cached =>
+
+          cached ||
+          fetch(event.request)
+
+      )
+
+    );
+
+  }
+);
+
 
 self.addEventListener(
   "activate",
@@ -71,79 +78,32 @@ self.addEventListener(
 
       caches.keys()
       .then(
+
         keys =>
 
-          Promise.all(
+        Promise.all(
 
-            keys.map(
+          keys.map(
 
-              key => {
+            key => {
 
-                if(
-                  key !== CACHE_NAME
-                ){
+              if(
+                key !== CACHE_NAME
+              ){
 
-                  return caches.delete(
-                    key
-                  );
-
-                }
+                return caches.delete(key);
 
               }
 
-            )
+            }
 
           )
 
-      )
-
-    );
-
-  }
-);
-
-
-// =========================
-// fetch
-// =========================
-
-self.addEventListener(
-  "fetch",
-  event => {
-
-
-    const request =
-      event.request;
-
-
-    // APIはキャッシュしない
-    if(
-      request.url.includes(
-        "/api/"
-      )
-    ){
-
-      return;
-
-    }
-
-
-    event.respondWith(
-
-      fetch(request)
-
-      .catch(
-
-        () =>
-
-        caches.match(
-          request
         )
 
       )
 
     );
-
 
   }
 );
