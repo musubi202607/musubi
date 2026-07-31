@@ -31,7 +31,7 @@ th{background:#f5f5f5}
 </div>
 
 <script src="js/config.js"></script>
-<script src="js/staff-auth.js"></script>
+<script src="js/admin-auth.js"></script>
 
 <script>
 
@@ -58,7 +58,7 @@ try{
 
 const res1 =
 await fetch(
-API_URL+"/api/bbq/detail?no="+reservationNo,
+API_URL+"/api/bbq/detail?reservationNo="+encodeURIComponent(reservationNo),
 auth
 );
 
@@ -68,7 +68,7 @@ await res1.json();
 
 const res2 =
 await fetch(
-API_URL+"/api/bbq/history?no="+reservationNo,
+API_URL+"/api/bbq/history?reservationNo="+encodeURIComponent(reservationNo),
 auth
 );
 
