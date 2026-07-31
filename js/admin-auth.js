@@ -4,8 +4,11 @@
 
 (async function(){
 
+
   const token =
-    localStorage.getItem("adminToken");
+    localStorage.getItem(
+      "adminToken"
+    );
 
 
   // =========================
@@ -13,12 +16,25 @@
   // =========================
   if(!token){
 
+
+    localStorage.setItem(
+
+      "loginRedirect",
+
+      location.pathname
+
+    );
+
+
     location.href =
       "admin-login.html";
 
+
     return;
 
+
   }
+
 
 
   try{
@@ -44,6 +60,7 @@
       );
 
 
+
     // =========================
     // 認証失敗
     // =========================
@@ -54,18 +71,33 @@
         "adminToken"
       );
 
+
       localStorage.removeItem(
         "adminUser"
       );
+
+
+
+      localStorage.setItem(
+
+        "loginRedirect",
+
+        location.pathname
+
+      );
+
 
 
       location.href =
         "admin-login.html";
 
 
+
       return;
 
+
     }
+
 
 
 
@@ -74,11 +106,13 @@
 
 
 
+
     // =========================
     // ユーザー情報保存
     // =========================
     window.adminUser =
       result.user;
+
 
 
 
@@ -91,6 +125,7 @@
       )
 
     );
+
 
 
   }
@@ -107,14 +142,26 @@
       "adminToken"
     );
 
+
     localStorage.removeItem(
       "adminUser"
     );
 
 
 
+    localStorage.setItem(
+
+      "loginRedirect",
+
+      location.pathname
+
+    );
+
+
+
     location.href =
       "admin-login.html";
+
 
 
   }
