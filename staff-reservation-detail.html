@@ -58,7 +58,7 @@ try{
 
 const res1 =
 await fetch(
-API_URL+"/api/bbq/detail?reservationno="+reservationNo,
+API_URL+"/api/bbq/detail?no="+reservationNo,
 auth
 );
 
@@ -68,7 +68,7 @@ await res1.json();
 
 const res2 =
 await fetch(
-API_URL+"/api/bbq/history?reservationno="+reservationNo,
+API_URL+"/api/bbq/history?reservationNo="+reservationNo,
 auth
 );
 
@@ -83,9 +83,7 @@ document.getElementById("reservationInfo").innerHTML=`
 <p>予約番号：${data.reservationNo||""}</p>
 <p>利用日：${data.useDate||""}</p>
 <p>人数：${data.people||0}名</p>
-<p>プラン：${data.plan||""}</p>
-<p>単価：¥${Number(data.price||0).toLocaleString()}</p>
-<p>BBQ料金：¥${Number(data.total||0).toLocaleString()}</p>
+<p>料金：¥${Number(data.plan||0).toLocaleString()}</p>
 <p>状態：${data.status||""}</p>
 <p>会計：${data.paid||""}</p>
 
@@ -110,7 +108,7 @@ rows+=`
 
 
 const bbqTotal =
-Number(data.total||0);
+Number(data.plan||0);
 
 const optionTotal =
 Number(history.total||0);
