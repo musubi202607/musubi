@@ -1,252 +1,224 @@
-</html>
-
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
 <meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
 >
 
-  <title>
-    BBQ追加注文
-  </title>
+<title>
+BBQ追加注文
+</title>
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
+
 
 </head>
 
+
 <body>
+
 
 <header>
 
-  <div class="container header-inner">
 
-```
-<div>
+<div class="container header-inner">
 
-  <h1>
-    BBQ追加注文
-  </h1>
-
-  <p>
-    BBQ予約済みのお客様向け
-  </p>
-
-</div>
 
 <div>
 
-  <a
-    href="index.html"
-    class="cart-button"
-  >
-    おにぎり
-  </a>
 
-  <a
-    href="bbq.html"
-    class="cart-button"
-  >
-    BBQ予約
-  </a>
+<h1>
+BBQ追加注文
+</h1>
+
+
+<p>
+BBQ予約済みのお客様向け
+</p>
+
 
 </div>
-```
 
-  </div>
+
+<div>
+
+
+<a
+  href="#"
+  id="backTop"
+  class="cart-button"
+>
+戻る
+</a>
+
+
+</div>
+
+
+</div>
+
 
 </header>
 
+
+
 <div class="container">
 
+
 <a
-href="index.html"
-class="back-btn"
-
+  href="#"
+  id="backButton"
+  class="back-btn"
 >
 
-```
-← トップページへ戻る
-```
+← 戻る
 
-  </a>
+</a>
+
 
 </div>
 
-<!-- 予約一覧 -->
 
-<section class="container">
 
-  <div class="section-title">
 
-```
+<section class="products container">
+
+
+<div class="section-title">
+
+
 <h2>
-  本日の予約
+BBQ追加メニュー
 </h2>
-```
 
-  </div>
-
-  <div
-    id="reservationList"
-  >
-  </div>
-
-</section>
-
-<!-- 選択中予約 -->
-
-<section class="container">
-
-  <div
-    id="currentReservation"
-  >
-  </div>
-
-</section>
-
-<!-- 商品エリア -->
-
-<div id="productArea">
-
-  <!-- 追加商品 -->
-
-  <section class="products container">
-
-```
-<div class="section-title">
-
-  <h2>
-    追加商品
-  </h2>
 
 </div>
+
+
 
 <div
   class="product-grid"
-  id="optionGrid"
->
-</div>
-```
-
-  </section>
-
-  <!-- ドリンク -->
-
-  <section class="products container">
-
-```
-<div class="section-title">
-
-  <h2>
-    ドリンク
-  </h2>
-
-</div>
-
-<div
-  class="product-grid"
-  id="drinkGrid"
->
-</div>
-```
-
-  </section>
-
-  <!-- カート -->
-
-  <section class="container">
-
-```
-<div class="section-title">
-
-  <h2>
-    カート
-  </h2>
-
-</div>
-
-<div
-  id="cartArea"
->
-</div>
-
-<div
-  id="cartSummary"
-  class="cart-summary"
->
-</div>
-
-<div
-  style="
-    display:flex;
-    gap:10px;
-    margin-top:20px;
-  "
+  id="productGrid"
 >
 
-  <button
-    class="order-btn"
-    onclick="clearCart()"
-  >
-
-    カートクリア
-
-  </button>
-
-  <button
-    class="order-btn"
-    onclick="sendBbqOptionOrder()"
-  >
-
-    注文送信
-
-  </button>
-
-</div>
-```
-
-  </section>
-
 </div>
 
-<script>
 
-document.addEventListener(
-  'DOMContentLoaded',
-  function(){
+</section>
 
-    const productArea =
-      document.getElementById(
-        'productArea'
-      );
 
-    if(productArea){
 
-      productArea.style.display =
-        'none';
 
-    }
+<div class="container">
 
-  }
-);
 
-</script>
+<a
+  href="bbq-option-order.html"
+  class="order-btn"
+>
+
+
+注文内容確認へ
+
+
+</a>
+
+
+</div>
+
+
+
+
 
 <script src="js/config.js"></script>
 
 <script src="js/cart.js"></script>
 
 <script src="js/bbq-option.js"></script>
+
+
+
+<script>
+
+
+// =========================
+// 戻り先設定
+// =========================
+
+
+const mode =
+localStorage.getItem(
+  "bbqOptionBack"
+);
+
+
+
+const backButton =
+document.getElementById(
+  "backButton"
+);
+
+
+const backTop =
+document.getElementById(
+  "backTop"
+);
+
+
+
+if(mode === "tablet"){
+
+
+backButton.href =
+"tablet.html";
+
+
+backButton.innerHTML =
+"← タブレットへ戻る";
+
+
+backTop.href =
+"tablet.html";
+
+
+backTop.innerHTML =
+"タブレット";
+
+
+}else{
+
+
+backButton.href =
+"staff.html";
+
+
+backButton.innerHTML =
+"← 店舗メニューへ戻る";
+
+
+backTop.href =
+"staff.html";
+
+
+backTop.innerHTML =
+"店舗メニュー";
+
+
+}
+
+
+
+</script>
+
+
 
 </body>
 </html>
