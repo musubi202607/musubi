@@ -244,7 +244,7 @@ ${item.itemName}
 <td>
 ${item.qty}
 </td>
-
+<td>¥${Number(item.unitPrice||0).toLocaleString()}</td>
 <td>
 ¥${Number(item.amount || 0)
 .toLocaleString()}
@@ -293,6 +293,10 @@ document.getElementById(
 
 <th>
 数量
+</th>
+
+<th>
+単価
 </th>
 
 <th>
