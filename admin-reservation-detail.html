@@ -101,6 +101,7 @@ rows+=`
 <tr>
 <td>${item.itemName}</td>
 <td>${item.qty}</td>
+<td>¥${Number(item.unitPrice||0).toLocaleString()}</td>
 <td>¥${Number(item.amount||0).toLocaleString()}</td>
 </tr>
 
@@ -127,6 +128,7 @@ document.getElementById("orderHistory").innerHTML=`
 <tr>
 <th>商品</th>
 <th>数量</th>
+<th>単価</th>
 <th>金額</th>
 </tr>
 
