@@ -9,7 +9,9 @@ const CACHE_FILES = [
 
   "./js/config.js",
 
-  "./manifest.json"
+  "./manifest.json",
+
+  "./offline.html"
 
 ];
 
@@ -146,11 +148,20 @@ self.addEventListener(
 
       event.respondWith(
 
-        fetch(
-          event.request
-        )
+  fetch(
+    event.request
+  )
+  .catch(()=>{
 
-      );
+
+    return caches.match(
+      "./offline.html"
+    );
+
+
+  })
+
+);
 
       return;
 
