@@ -178,22 +178,39 @@ async function login(){
 
 
 
-    if(result.success){
+if(result.success){
 
-      localStorage.setItem(
-        "adminToken",
-        result.token
-      );
+  localStorage.setItem(
+    "adminToken",
+    result.token
+  );
 
-      localStorage.setItem(
-        "adminUser",
-        JSON.stringify(result.user)
-      );
+  localStorage.setItem(
+    "adminUser",
+    JSON.stringify(result.user)
+  );
 
-      location.href =
-        "admin.html";
 
-    }else{
+  // =========================
+  // 権限別画面移動
+  // =========================
+
+  if(result.user.role === "owner"){
+
+    location.href =
+      "admin.html";
+
+  }else{
+
+    location.href =
+      "staff.html";
+
+  }
+
+
+}
+
+ else{
 
 
       document
