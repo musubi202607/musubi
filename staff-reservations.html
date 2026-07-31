@@ -1,32 +1,77 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>予約詳細</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>本日の予約一覧</title>
+
 <link rel="stylesheet" href="css/style.css">
+
 <style>
-.card{background:#fff;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{border:1px solid #ddd;padding:10px}
-th{background:#f5f5f5}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+}
+
+th, td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
+}
+
+th{
+  background:#f5f5f5;
+}
+
+.status-ok{
+  color:green;
+  font-weight:bold;
+}
+
+.status-ng{
+  color:red;
+  font-weight:bold;
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
-<div class="container header-inner">
-<h1>予約詳細</h1>
-</div>
+  <div class="container header-inner">
+    <h1>本日の予約一覧</h1>
+  </div>
 </header>
 
 <div class="container">
 
-<a href="admin-reservations.html" class="back-btn">← 一覧へ戻る</a>
+<a href="staff.html" class="back-btn">
+  ← 店舗メニューへ戻る
+</a>
 
-<div id="reservationInfo" class="card"></div>
-<div id="orderHistory" class="card"></div>
+<br><br>
+
+<table>
+
+<thead>
+  <tr>
+    <th>予約番号</th>
+    <th>氏名</th>
+    <th>人数</th>
+    <th>プラン</th>
+    <th>来店</th>
+    <th>会計</th>
+  </tr>
+</thead>
+
+<tbody id="reservationBody"></tbody>
+
+</table>
 
 </div>
 
@@ -35,129 +80,218 @@ th{background:#f5f5f5}
 
 <script>
 
-const reservationNo =
-new URLSearchParams(location.search).get("no");
-
-
-const auth = {
-headers:{
-Authorization:
-"Bearer " + localStorage.getItem("adminToken")
-}
-};
-
-
-async function loadDetail(){
-
-if(!reservationNo){
-alert("予約番号がありません");
-return;
-}
-
-try{
-
-const res1 =
-await fetch(
-API_URL+"/api/bbq/detail?no="+reservationNo,
-auth
+async function loadReservations() {
+  try {
+    const response = await fetch(
+  API_URL + "/api/reservations/today",
+  {
+    headers:{
+      Authorization:
+        "Bearer " + localStorage.getItem("adminToken")
+    }
+  }
 );
 
-const data =
-await res1.json();
+    const data = await response.json();
+    //console.log('data:', data);
 
+    if (!Array.isArray(data)) {
+      console.error('配列ではないレスポンス:', data);
+      alert('予約一覧の取得に失敗しました: ' + (data.error || '不明なエラー'));
+      return;
+    }
 
-const res2 =
-await fetch(
-API_URL+"/api/bbq/history?no="+reservationNo,
-auth
-);
+    const tbody = document.getElementById('reservationBody');
+    tbody.innerHTML = '';
 
-const history =
-await res2.json();
+    data.forEach(item => {
+      tbody.innerHTML += `
+    <tr>
 
+    <td>${item.reservationNo}</td>
 
-document.getElementById("reservationInfo").innerHTML=`
+    <td>
+    <a href="staff-reservation-detail.html?no=${item.reservationNo}">
+    ${item.customerName}
+    </a>
+    </td>
 
-<h2>${data.customerName||""}</h2>
+    <td>${item.people}</td>
 
-<p>予約番号：${data.reservationNo||""}</p>
-<p>利用日：${data.useDate||""}</p>
-<p>人数：${data.people||0}名</p>
-<p>プラン：${data.plan||""}</p>
-<p>単価：¥${Number(data.price||0).toLocaleString()}</p>
-<p>BBQ料金：¥${Number(data.total||0).toLocaleString()}</p>
-<p>状態：${data.status||""}</p>
-<p>会計：${data.paid||""}</p>
+    <td>${item.plan}</td>
 
-`;
+    <td>
 
+      <button
+       onclick="setVisited('${item.reservationNo}')"
+       ${item.status === "来店済" ? "disabled" : ""}
+      >
 
-let rows="";
+      ${item.status === "来店済"
+        ? "来店済"
+        : "来店"}
 
-(history.items||[]).forEach(item=>{
+      </button>
 
-rows+=`
+    </td>
 
-<tr>
-<td>${item.itemName}</td>
-<td>${item.qty}</td>
-<td>¥${Number(item.amount||0).toLocaleString()}</td>
-</tr>
+    <td class="${item.paid === '済' ? 'status-ok' : 'status-ng'}">
+    ${item.paid || '未'}
+    </td>
 
-`;
+    <td>
 
-});
+    ${
+    item.status==="キャンセル"
 
+    ? "キャンセル済"
 
-const bbqTotal =
-Number(data.total||0);
+    : `<button
+    onclick="cancelReservation('${item.reservationNo}')">
 
-const optionTotal =
-Number(history.total||0);
+    キャンセル
 
-const grandTotal =
-bbqTotal+optionTotal;
+    </button>`
+    }
 
+ </td>
 
-document.getElementById("orderHistory").innerHTML=`
+ </tr>
+     `;
+    });
+  } catch (error) {
+    console.error(error);
+    alert('予約取得エラー');
+  }
+}
 
-<h2>追加注文履歴</h2>
+// =========================
+// 来店受付
+// =========================
+async function setVisited(reservationNo){
 
-<table>
-<tr>
-<th>商品</th>
-<th>数量</th>
-<th>金額</th>
-</tr>
+  if(!confirm("来店済にしますか？")){
+    return;
+  }
 
-${rows || `
-<tr>
-<td colspan="3">追加注文なし</td>
-</tr>
-`}
+ const res =
+  await fetch(
 
-</table>
+    API_URL +
+    "/api/bbq/visited",
 
-<p>BBQ：¥${bbqTotal.toLocaleString()}</p>
-<p>追加注文：¥${optionTotal.toLocaleString()}</p>
+    {
 
-<h2>
-総合計：¥${grandTotal.toLocaleString()}
-</h2>
+      method:"POST",
 
-`;
+      headers:{
 
-}catch(e){
+        "Content-Type":"application/json",
 
-console.error(e);
-alert("読み込みエラー\n"+e.message);
+        Authorization:
+          "Bearer " +
+          localStorage.getItem(
+            "adminToken"
+          )
+
+      },
+
+      body:JSON.stringify({
+
+        reservationNo
+
+      })
+
+    }
+
+  );
+
+  const result =
+    await res.json();
+
+  if(result.success){
+
+    loadReservations();
+
+  }else{
+
+    alert(result.message);
+
+  }
 
 }
 
+// =========================
+// BBQ予約キャンセル
+// =========================
+async function cancelReservation(reservationNo){
+
+  if(
+    !confirm("この予約をキャンセルしますか？")
+  ){
+    return;
+  }
+
+  try{
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/bbq/cancel",
+
+        {
+
+          method:"POST",
+
+         headers:{
+
+  "Content-Type":"application/json",
+
+  Authorization:
+    "Bearer " +
+    localStorage.getItem(
+      "adminToken"
+    )
+
+},
+
+          body:JSON.stringify({
+
+            reservationNo
+
+          })
+
+        }
+
+      );
+
+    const result =
+      await res.json();
+
+    if(result.success){
+
+      alert("キャンセルしました");
+
+      loadReservations();
+
+    }else{
+
+      alert(result.message);
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("通信エラー");
+
+  }
+
 }
 
-loadDetail();
-
+loadReservations();
 </script>
 
 </body>
