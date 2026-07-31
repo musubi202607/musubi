@@ -1,89 +1,193 @@
-const CACHE_NAME = "musubi-pwa-v1";
+const CACHE_NAME = "musubi-pwa-v1.1";
+
 
 const CACHE_FILES = [
-  "./",
-  "./index.html",
+
   "./css/style.css",
+
   "./js/app.js",
+
   "./js/config.js",
+
   "./manifest.json"
+
 ];
 
 
-// インストール
-self.addEventListener("install", event => {
 
-  event.waitUntil(
-    caches.open(CACHE_NAME)
+// =========================
+// Install
+// =========================
+self.addEventListener(
+  "install",
+  event => {
+
+
+    event.waitUntil(
+
+      caches.open(
+        CACHE_NAME
+      )
       .then(cache => {
 
-        return cache.addAll(CACHE_FILES);
+        return cache.addAll(
+          CACHE_FILES
+        );
 
       })
-  );
 
-});
+    );
 
 
-// 有効化
-self.addEventListener("activate", event => {
+    self.skipWaiting();
 
-  event.waitUntil(
 
-    caches.keys()
+  }
+);
+
+
+
+// =========================
+// Activate
+// =========================
+self.addEventListener(
+  "activate",
+  event => {
+
+
+    event.waitUntil(
+
+      caches.keys()
       .then(keys => {
+
 
         return Promise.all(
 
-          keys.map(key => {
+          keys.map(key=>{
 
-            if(key !== CACHE_NAME){
 
-              return caches.delete(key);
+            if(
+              key !== CACHE_NAME
+            ){
+
+              return caches.delete(
+                key
+              );
 
             }
+
 
           })
 
         );
 
+
       })
 
-  );
-
-});
+    );
 
 
-// 通信処理
-self.addEventListener("fetch", event => {
+    self.clients.claim();
 
-
-  const url = new URL(event.request.url);
-
-
-  // APIはキャッシュしない
-  if(
-    url.hostname.includes("workers.dev") ||
-    url.hostname.includes("script.google.com")
-  ){
-
-    return;
 
   }
+);
 
 
-  event.respondWith(
 
-    caches.match(event.request)
-      .then(response => {
+// =========================
+// Fetch
+// =========================
+self.addEventListener(
+  "fetch",
+  event => {
 
 
-        return response || fetch(event.request);
+    const url =
+      new URL(
+        event.request.url
+      );
+
+
+
+    // =====================
+    // APIは常に最新取得
+    // =====================
+    if(
+
+      url.hostname.includes(
+        "workers.dev"
+      )
+
+      ||
+
+      url.hostname.includes(
+        "script.google.com"
+      )
+
+    ){
+
+      return;
+
+    }
+
+
+
+    // =====================
+    // HTMLはキャッシュしない
+    // =====================
+    if(
+      event.request.headers.get(
+        "accept"
+      )?.includes(
+        "text/html"
+      )
+    ){
+
+      event.respondWith(
+
+        fetch(
+          event.request
+        )
+
+      );
+
+      return;
+
+    }
+
+
+
+
+    // =====================
+    // CSS / JSなど
+    // Cache First
+    // =====================
+    event.respondWith(
+
+      caches.match(
+        event.request
+      )
+      .then(response=>{
+
+
+        return (
+
+          response
+
+          ||
+
+          fetch(
+            event.request
+          )
+
+        );
 
 
       })
 
-  );
+    );
 
 
-});
+  }
+);
