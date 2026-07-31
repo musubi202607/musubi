@@ -22,8 +22,7 @@ const FILES = [
   "js/bbq.js",
   "js/bbq-tablet.js",
   "js/payment-waiting.js",
-  "js/staff-reservations.js",
-  "js/staff-reservation-detail.js",
+  
 
   "icon.png"
 
