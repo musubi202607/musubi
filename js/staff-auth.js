@@ -1,5 +1,6 @@
 // =========================
-// 管理画面認証チェック
+// スタッフ画面認証チェック
+// owner / staff 共通
 // =========================
 
 (async function(){
@@ -16,22 +17,10 @@
   // =========================
   if(!token){
 
-
-    localStorage.setItem(
-
-      "loginRedirect",
-
-      location.pathname
-
-    );
-
-
     location.href =
       "admin-login.html";
 
-
     return;
-
 
   }
 
@@ -77,27 +66,13 @@
       );
 
 
-
-      localStorage.setItem(
-
-        "loginRedirect",
-
-        location.pathname
-
-      );
-
-
-
       location.href =
         "admin-login.html";
 
 
-
       return;
 
-
     }
-
 
 
 
@@ -106,13 +81,11 @@
 
 
 
-
     // =========================
     // ユーザー情報保存
     // =========================
     window.adminUser =
       result.user;
-
 
 
 
@@ -128,14 +101,13 @@
 
 
 
-  }
+  }catch(e){
 
 
-  catch(e){
-
-
-    console.error(e);
-
+    console.error(
+      "staff auth error",
+      e
+    );
 
 
     localStorage.removeItem(
@@ -149,19 +121,8 @@
 
 
 
-    localStorage.setItem(
-
-      "loginRedirect",
-
-      location.pathname
-
-    );
-
-
-
     location.href =
       "admin-login.html";
-
 
 
   }
