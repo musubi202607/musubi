@@ -2,6 +2,7 @@
   "name": "結び〜musubi〜",
   "short_name": "結び",
   "description": "手作りおにぎり注文・BBQ予約サイト",
+  "id": "/musubi/index.html",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
