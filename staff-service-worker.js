@@ -8,15 +8,15 @@ const CACHE_FILES = [
 
   "staff-order.html",
 
-  "admin-reservations.html",
-
-  "staff-reservation-detail.html",
-
-  "payment-waiting.html",
-
   "staff-bbq.html",
 
   "bbq-option.html",
+
+  "payment-waiting.html",
+
+  "staff-reservations.html",
+
+  "staff-reservation-detail.html",
 
   "css/style.css",
 
@@ -26,26 +26,32 @@ const CACHE_FILES = [
 
   "js/staff-order.js",
 
-  "js/bbq-tablet.js"
+  "js/bbq-tablet.js",
+
+  "icon.png"
 
 ];
 
 
-// インストール
+// =========================
+// install
+// =========================
+
 self.addEventListener(
   "install",
   event => {
 
     event.waitUntil(
 
-      caches.open(CACHE_NAME)
-      .then(cache => {
-
-        return cache.addAll(
-          CACHE_FILES
-        );
-
-      })
+      caches.open(
+        CACHE_NAME
+      )
+      .then(
+        cache =>
+          cache.addAll(
+            CACHE_FILES
+          )
+      )
 
     );
 
@@ -53,19 +59,68 @@ self.addEventListener(
 );
 
 
-// 通常取得
+// =========================
+// activate
+// =========================
+
+self.addEventListener(
+  "activate",
+  event => {
+
+    event.waitUntil(
+
+      caches.keys()
+      .then(
+        keys =>
+
+          Promise.all(
+
+            keys.map(
+
+              key => {
+
+                if(
+                  key !== CACHE_NAME
+                ){
+
+                  return caches.delete(
+                    key
+                  );
+
+                }
+
+              }
+
+            )
+
+          )
+
+      )
+
+    );
+
+  }
+);
+
+
+// =========================
+// fetch
+// =========================
+
 self.addEventListener(
   "fetch",
   event => {
 
 
-    const url =
-      new URL(event.request.url);
+    const request =
+      event.request;
 
 
     // APIはキャッシュしない
     if(
-      url.origin !== location.origin
+      request.url.includes(
+        "/api/"
+      )
     ){
 
       return;
@@ -75,56 +130,17 @@ self.addEventListener(
 
     event.respondWith(
 
-      caches.match(
-        event.request
+      fetch(request)
+
+      .catch(
+
+        () =>
+
+        caches.match(
+          request
+        )
+
       )
-      .then(
-        cached => {
-
-          return cached ||
-          fetch(event.request);
-
-        }
-
-      )
-
-    );
-
-
-  }
-);
-
-
-// 更新時
-self.addEventListener(
-  "activate",
-  event => {
-
-
-    event.waitUntil(
-
-      caches.keys()
-      .then(keys=>{
-
-        return Promise.all(
-
-          keys.map(key=>{
-
-            if(
-              key !== CACHE_NAME
-            ){
-
-              return caches.delete(
-                key
-              );
-
-            }
-
-          })
-
-        );
-
-      })
 
     );
 

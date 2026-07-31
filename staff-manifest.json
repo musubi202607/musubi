@@ -1,11 +1,10 @@
 {
-  "name": "むすび 店舗管理",
+  "name": "むすび 店舗スタッフ",
   "short_name": "店舗",
   "start_url": "staff.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.png",
