@@ -120,16 +120,63 @@ onclick="openAddProduct()">
 
   <select id="newType">
     <option value="onigiri">onigiri</option>
+    <option value="drink">drink</option>
     <option value="bbq">bbq</option>
     <option value="bbq-option">bbq-option</option>
-    <option value="drink">drink</option>
-    <option value="onigiri-drink">onigiri-drink</option>
   </select>
 
   <br><br>
 
   <input id="newSort" type="number" placeholder="表示順"><br><br>
+  <label>
+店舗表示
+</label>
 
+<select id="newStore">
+  <option value="○">○</option>
+  <option value="×">×</option>
+</select>
+
+<br><br>
+
+
+<label>
+スタッフ表示
+</label>
+
+<select id="newStaff">
+  <option value="○">○</option>
+  <option value="×">×</option>
+</select>
+
+<br><br>
+
+
+<label>
+タブレット表示
+</label>
+
+<select id="newTablet">
+  <option value="○">○</option>
+  <option value="×">×</option>
+</select>
+
+<br><br>
+
+
+<label>
+キッチンカー表示
+</label>
+
+<select id="newTruck">
+
+  <option value="×">×</option>
+  <option value="○">○</option>
+
+</select>
+
+<br><br>
+  
   <button id="addButton" onclick="addProduct()">
   商品追加
   </button>
