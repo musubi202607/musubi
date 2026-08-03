@@ -10,9 +10,6 @@ const FILES = [
 
   "payment-waiting.html",
 
-  "staff-reservations.html",
-  "staff-reservation-detail.html",
-
   "css/style.css",
 
   "js/config.js",
@@ -21,11 +18,7 @@ const FILES = [
   "js/staff-order.js",
   "js/bbq.js",
   "js/bbq-tablet.js",
-  "js/payment-waiting.js",
-  
-
-  "icon.png"
-
+ 
 ];
 
 
