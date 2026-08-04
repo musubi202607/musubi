@@ -8,13 +8,13 @@
 
   "icons":[
     {
-      "src":"icons/kitchen-192.png",
+      "src":"icons/kitchen-192.jpeg",
       "sizes":"192x192",
       "type":"image/png",
       "purpose":"any"
     },
     {
-      "src":"icons/kitchen-512.png",
+      "src":"icons/kitchen-512.jpeg",
       "sizes":"512x512",
       "type":"image/png",
       "purpose":"any"
