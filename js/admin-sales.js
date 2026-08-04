@@ -339,7 +339,10 @@ document
 
 
 
-if(!startDate || !endDate){
+if(
+!startDate ||
+!endDate
+){
 
 alert(
 "期間を指定してください"
@@ -350,6 +353,11 @@ return;
 }
 
 
+
+const [
+storeData,
+kitchenData
+] =
 
 await Promise.all([
 
@@ -364,6 +372,32 @@ endDate
 )
 
 ]);
+
+
+
+// =========================
+// 総合商品集計
+// =========================
+
+const totalProducts =
+
+mergeProducts(
+
+storeData.products,
+
+kitchenData.products
+
+);
+
+
+
+displayProductSales(
+
+"totalProductSales",
+
+totalProducts
+
+);
 
 
 
