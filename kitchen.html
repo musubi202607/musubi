@@ -1,34 +1,91 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>キッチンカー注文</title>
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
 
-<link rel="stylesheet" href="css/style.css">
+<title>
+キッチンカー注文受付
+</title>
 
-<link rel="manifest" href="kitchen-manifest.json">
 
-<meta name="theme-color" content="#4CAF50">
+<link
+rel="stylesheet"
+href="css/style.css"
+>
+
+
+<link
+rel="manifest"
+href="kitchen-manifest.json"
+>
+
+
+<meta
+name="theme-color"
+content="#4CAF50"
+>
+
+
+<meta
+name="mobile-web-app-capable"
+content="yes"
+>
+
+
+<meta
+name="apple-mobile-web-app-capable"
+content="yes"
+>
+
 
 </head>
 
+
 <body>
 
+
 <header>
+
 <div class="container header-inner">
-<h1>キッチンカー注文</h1>
+
+<h1>
+注文受付
+</h1>
+
 </div>
+
 </header>
+
+
 
 <main class="container">
 
+
+<a
+href="kitchen-index.html"
+class="back-btn"
+>
+
+← 戻る
+
+</a>
+
+
+
 <div class="shop-info-card">
+
 
 <label>
 車両番号
 </label>
+
 
 <select id="carNumber">
 
@@ -42,53 +99,86 @@
 
 </select>
 
+
 </div>
 
 
+
+
+
 <section class="products">
+
 
 <h2>
 商品一覧
 </h2>
 
+
 <div
-class="product-grid"
-id="kitchenProductGrid">
+
+id="kitchenProductGrid"
+
+>
+
 </div>
+
 
 </section>
 
 
+
+
+
 <div class="shop-info-card">
+
 
 <h2>
 注文内容
 </h2>
+
+
 
 <div id="kitchenCart">
 
 </div>
 
 
-<div class="sales-value">
+
+<h2>
 
 合計：
+
 <span id="totalPrice">
 ¥0
 </span>
 
-</div>
+
+</h2>
+
 
 
 <button
-onclick="sendKitchenOrder()">
+
+onclick="sendKitchenOrder()"
+
+style="
+width:100%;
+padding:20px;
+font-size:22px;
+"
+
+>
 
 注文確定
 
 </button>
 
 
+
 </div>
+
+
+
 
 
 <div id="resultArea">
@@ -96,24 +186,40 @@ onclick="sendKitchenOrder()">
 </div>
 
 
+
 </main>
 
 
+
+
+
 <script src="js/config.js"></script>
+
 <script src="js/kitchen.js"></script>
+
 
 
 <script>
 
-if("serviceWorker" in navigator){
+if(
+"serviceWorker" in navigator
+){
 
-window.addEventListener("load",()=>{
+window.addEventListener(
+
+"load",
+
+()=>{
 
 navigator.serviceWorker.register(
+
 "kitchen-service-worker.js"
+
 );
 
-});
+}
+
+);
 
 }
 
@@ -121,4 +227,5 @@ navigator.serviceWorker.register(
 
 
 </body>
+
 </html>
