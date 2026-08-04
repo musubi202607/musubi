@@ -191,21 +191,45 @@ if(result.success){
   );
 
 
-  // =========================
-  // 権限別画面移動
-  // =========================
+// =========================
+// 戻り先確認
+// =========================
 
-  if(result.user.role === "owner"){
+const redirect =
+  localStorage.getItem(
+    "loginRedirect"
+  );
 
-    location.href =
-      "admin.html";
 
-  }else{
+// 一度使ったら削除
 
-    location.href =
-      "staff.html";
+localStorage.removeItem(
+  "loginRedirect"
+);
 
-  }
+
+// =========================
+// 権限別画面移動
+// =========================
+
+if(redirect){
+
+  location.href =
+    redirect;
+
+
+}else if(result.user.role === "owner"){
+
+  location.href =
+    "admin.html";
+
+
+}else{
+
+  location.href =
+    "staff.html";
+
+}
 
 
 }
