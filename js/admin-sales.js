@@ -541,7 +541,11 @@ total.toLocaleString();
 
 return {
 
-total
+total,
+
+products:
+
+data.products || []
 
 };
 
@@ -673,7 +677,11 @@ total
 
 return {
 
-total
+total,
+
+products:
+
+data.products || []
 
 };
 
