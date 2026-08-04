@@ -240,7 +240,7 @@ async function loadProducts(){
     <br>
 
     キッチンカー：
-    ${item.truck || "×"}
+    ${item.kitchenCar || "×"}
 
   </div>
 
@@ -505,15 +505,15 @@ ${item.tablet==="×"?"selected":""}>
 キッチンカー
 </label>
 
-<select id="truck_${item.id}">
+<select id="kitchenCar_${item.id}">
 
 <option value="○"
-${item.truck==="○"?"selected":""}>
+${item.kitchenCar==="○"?"selected":""}>
 ○
 </option>
 
 <option value="×"
-${item.truck==="×"?"selected":""}>
+${item.kitchenCar==="×"?"selected":""}>
 ×
 </option>
 
@@ -630,7 +630,7 @@ function openAddProduct(){
     ).value = "○";
 
     document.getElementById(
-      "newTruck"
+      "newKitchenCar"
     ).value = "○";
 
 
@@ -778,9 +778,9 @@ async function saveProduct(id){
       "tablet_" + id
     ).value,
 
-    truck:
+    kitchenCar:
     document.getElementById(
-      "truck_" + id
+      "kitchenCar_" + id
     ).value
 
   };
@@ -982,9 +982,9 @@ async function addProduct(){
       "newTablet"
     ).value || "○",
 
-  truck:
+  kitchenCar:
     document.getElementById(
-      "newTruck"
+      "newKitchenCar"
     ).value || "×"
 
 };
