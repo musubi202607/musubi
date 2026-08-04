@@ -168,3 +168,29 @@
 
 
 })();
+
+// =========================
+// ログアウト
+// =========================
+
+function logout(){
+
+  localStorage.removeItem(
+    "adminToken"
+  );
+
+
+  localStorage.removeItem(
+    "adminUser"
+  );
+
+
+  localStorage.removeItem(
+    "loginRedirect"
+  );
+
+
+  location.href =
+    "admin-login.html";
+
+}
