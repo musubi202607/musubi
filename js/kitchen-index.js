@@ -30,7 +30,23 @@ const res =
 await fetch(
 
 API_URL +
-"/api/kitchen/unpaid"
+"/api/kitchen/unpaid",
+
+{
+
+headers:{
+
+Authorization:
+
+"Bearer " +
+
+localStorage.getItem(
+"adminToken"
+)
+
+}
+
+}
 
 );
 
