@@ -566,13 +566,14 @@ async function loadProducts(){
 
 
   const onigiri =
-    products.filter(
+  products.filter(
 
-      p =>
-        p.type === "onigiri" &&
-        p.status === "販売中"
+    p =>
+      p.type === "onigiri" &&
+      p.status === "販売中" &&
+      p.store === "○"
 
-    );
+  );
 
 
   const grid =
