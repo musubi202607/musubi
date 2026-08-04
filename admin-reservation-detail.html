@@ -56,24 +56,38 @@ return;
 
 try{
 
-const res1 =
-await fetch(
-API_URL+"/api/bbq/detail?reservationNo="+encodeURIComponent(reservationNo),
-auth
-);
+const [
+  res1,
+  res2
+] = await Promise.all([
 
-const data =
-await res1.json();
+  fetch(
+    API_URL+
+    "/api/bbq/detail?reservationNo="+
+    encodeURIComponent(reservationNo),
+    auth
+  ),
+
+  fetch(
+    API_URL+
+    "/api/bbq/history?reservationNo="+
+    encodeURIComponent(reservationNo),
+    auth
+  )
+
+]);
 
 
-const res2 =
-await fetch(
-API_URL+"/api/bbq/history?reservationNo="+encodeURIComponent(reservationNo),
-auth
-);
+const [
+  data,
+  history
+] = await Promise.all([
 
-const history =
-await res2.json();
+  res1.json(),
+
+  res2.json()
+
+]);
 
 
 document.getElementById("reservationInfo").innerHTML=`
