@@ -813,9 +813,7 @@ async function saveProduct(id){
 
     if(result.success){
 
-      if(result.success){
-
-  alert(
+      alert(
     "保存しました"
   );
 
