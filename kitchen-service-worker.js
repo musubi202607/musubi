@@ -1,5 +1,5 @@
 const CACHE_NAME =
-  "musubi-kitchen-v1";
+  "musubi-kitchen-v2";
 
 
 const CACHE_FILES = [
@@ -10,11 +10,19 @@ const CACHE_FILES = [
 
   "kitchen.html",
 
+  "kitchen-unpaid.html",
+
+  "kitchen-sales.html",
+
   "css/style.css",
 
   "js/config.js",
 
   "js/kitchen.js",
+
+  "js/kitchen-unpaid.js",
+
+  "js/kitchen-sales.js",
 
   "kitchen-manifest.json"
 
@@ -36,10 +44,13 @@ self.addEventListener(
         CACHE_NAME
       )
       .then(
+
         cache=>
+
           cache.addAll(
             CACHE_FILES
           )
+
       )
 
     );
@@ -49,9 +60,8 @@ self.addEventListener(
 );
 
 
-
 // =========================
-// 起動
+// 古いキャッシュ削除
 // =========================
 self.addEventListener(
 
@@ -62,6 +72,7 @@ self.addEventListener(
     event.waitUntil(
 
       caches.keys()
+
       .then(
 
         keys=>{
@@ -99,7 +110,6 @@ self.addEventListener(
 );
 
 
-
 // =========================
 // 通信
 // =========================
@@ -115,6 +125,17 @@ self.addEventListener(
       fetch(
         event.request
       )
+
+      .then(
+
+        response=>{
+
+          return response;
+
+        }
+
+      )
+
       .catch(
 
         ()=>{
