@@ -138,8 +138,21 @@ function showSalesTab(
   }
 
 
-}
+  // =========================
+  // タブ変更時 売上再取得
+  // =========================
 
+  if(
+    tab === "kitchen" ||
+    tab === "total"
+  ){
+
+    loadSales();
+
+  }
+
+
+}
 
 
 // =========================
@@ -352,24 +365,45 @@ return;
 
 
 
-const [
-storeData,
-kitchenData
-] =
+const storeData =
+await loadStoreSales(
+  startDate,
+  endDate
+);
 
-await Promise.all([
 
-loadStoreSales(
-startDate,
-endDate
-),
+const kitchenData =
+{
+  total:0,
+  products:[]
+};
 
-loadKitchenSales(
-startDate,
-endDate
-)
 
-]);
+if(currentTab==="kitchen"){
+
+  await loadKitchenSales(
+    startDate,
+    endDate
+  );
+
+}
+
+
+if(currentTab==="total"){
+
+  const kitchen =
+    await loadKitchenSales(
+      startDate,
+      endDate
+    );
+
+  kitchenData.total =
+    kitchen.total;
+
+  kitchenData.products =
+    kitchen.products;
+
+}
 
 
 
