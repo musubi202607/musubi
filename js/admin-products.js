@@ -214,6 +214,11 @@ async function loadProducts(){
 
     </b>
 
+    <br>
+
+キッチンカー：
+${item.kitchenPrice || "-"}円
+
   </div>
 
   <div class="product-card-row">
@@ -319,6 +324,19 @@ async function loadProducts(){
         value="${item.price || 0}"
 
       >
+      <div class="product-card-row">
+
+<label>
+キッチンカー価格
+</label>
+
+<input
+  type="number"
+  id="kitchenPrice_${item.id}"
+  value="${item.kitchenPrice || ""}"
+>
+
+</div>
 
     </div>
 
@@ -733,6 +751,11 @@ async function saveProduct(id){
         "price_" + id
       ).value,
 
+    kitchenPrice:
+      document.getElementById(
+        "kitchenPrice_" + id
+      ).value,
+    
     description:
       document.getElementById(
         "desc_" + id
@@ -944,6 +967,11 @@ async function addProduct(){
       "newPrice"
     ).value,
 
+  kitchenPrice:
+    document.getElementById(
+      "newKitchenPrice"
+    ).value,
+    
   description:
     document.getElementById(
       "newDescription"
