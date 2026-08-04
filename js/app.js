@@ -570,7 +570,6 @@ async function loadProducts(){
 
       p =>
         p.type === "onigiri" ||
-        p.type === "onigiri-drink"
 
     );
 
