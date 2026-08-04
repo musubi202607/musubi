@@ -459,13 +459,15 @@ const orders =
 
           body:
 
-            JSON.stringify({
+JSON.stringify({
 
-              carNumber,
+  carNumber,
 
-              orders
+  paymentStatus,
 
-            })
+  orders
+
+})
 
         }
 
