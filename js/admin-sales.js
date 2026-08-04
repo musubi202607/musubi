@@ -615,6 +615,18 @@ document
 total.toLocaleString();
 
 
+// =========================
+// 商品別表示
+// =========================
+
+displayProductSales(
+
+"kitchenProductSales",
+
+data.products
+
+);
+
 
 
 updateTotalSales(
