@@ -333,10 +333,30 @@ loadSales();
 async function loadSales(){
 
 
+const loading =
+document.getElementById(
+  "salesLoading"
+);
+
+
+// ローディング表示
+if(loading){
+
+  loading.classList.add(
+    "show"
+  );
+
+}
+
+
+
+try{
+
+
 const startDate =
 document
 .getElementById(
-"startDate"
+  "startDate"
 )
 .value;
 
@@ -344,7 +364,7 @@ document
 const endDate =
 document
 .getElementById(
-"endDate"
+  "endDate"
 )
 .value;
 
@@ -365,45 +385,24 @@ return;
 
 
 
-const storeData =
-await loadStoreSales(
+const [
+storeData,
+kitchenData
+] =
+
+await Promise.all([
+
+loadStoreSales(
   startDate,
   endDate
-);
+),
 
+loadKitchenSales(
+  startDate,
+  endDate
+)
 
-const kitchenData =
-{
-  total:0,
-  products:[]
-};
-
-
-if(currentTab==="kitchen"){
-
-  await loadKitchenSales(
-    startDate,
-    endDate
-  );
-
-}
-
-
-if(currentTab==="total"){
-
-  const kitchen =
-    await loadKitchenSales(
-      startDate,
-      endDate
-    );
-
-  kitchenData.total =
-    kitchen.total;
-
-  kitchenData.products =
-    kitchen.products;
-
-}
+]);
 
 
 
@@ -430,6 +429,41 @@ displayProductSales(
 totalProducts
 
 );
+
+
+
+}
+catch(e){
+
+
+console.error(
+"売上集計エラー",
+e
+);
+
+
+alert(
+"売上取得中にエラーが発生しました"
+);
+
+
+
+}
+finally{
+
+
+// ローディング解除
+
+if(loading){
+
+  loading.classList.remove(
+    "show"
+  );
+
+}
+
+
+}
 
 
 
