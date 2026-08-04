@@ -245,9 +245,7 @@ document
 "startDate"
 )
 .value =
-formatDate(
-start
-);
+formatDate(start);
 
 
 document
@@ -255,10 +253,10 @@ document
 "endDate"
 )
 .value =
-formatDate(
-today
-);
+formatDate(today);
 
+
+loadSales();
 
 }
 
@@ -434,7 +432,13 @@ method:"POST",
 headers:{
 
 "Content-Type":
-"application/json"
+"application/json",
+
+"Authorization":
+"Bearer "+
+localStorage.getItem(
+"adminToken"
+)
 
 },
 
@@ -607,7 +611,13 @@ method:"POST",
 headers:{
 
 "Content-Type":
-"application/json"
+"application/json",
+
+"Authorization":
+"Bearer "+
+localStorage.getItem(
+"adminToken"
+)
 
 },
 
