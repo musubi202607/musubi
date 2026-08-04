@@ -379,13 +379,18 @@ async function sendKitchenOrder(){
 
 
   const carNumber =
-    document.getElementById(
-      "carNumber"
-    ).value;
+document.getElementById(
+"carNumber"
+).value;
 
 
+const paymentStatus =
+document.getElementById(
+"paymentStatus"
+).value;
 
-  const orders =
+
+const orders =
 
     kitchenCart.map(item=>{
 
