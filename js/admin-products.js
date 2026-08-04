@@ -811,11 +811,15 @@ async function saveProduct(id){
 
     if(result.success){
 
-      alert(
-        "保存しました"
-      );
+      if(result.success){
 
-    }else{
+  alert(
+    "保存しました"
+  );
+
+  await loadProducts();
+
+}else{
 
       alert(
 
