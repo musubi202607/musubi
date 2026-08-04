@@ -1,14 +1,22 @@
 const CACHE_NAME =
-"kitchen-v1";
+  "musubi-kitchen-v1";
 
 
 const CACHE_FILES = [
 
-"kitchen.html",
-"kitchen-manifest.json",
-"css/style.css",
-"js/config.js",
-"js/kitchen.js"
+  "./",
+
+  "kitchen-index.html",
+
+  "kitchen.html",
+
+  "css/style.css",
+
+  "js/config.js",
+
+  "js/kitchen.js",
+
+  "kitchen-manifest.json"
 
 ];
 
@@ -17,90 +25,111 @@ const CACHE_FILES = [
 // インストール
 // =========================
 self.addEventListener(
-"install",
-event=>{
 
-event.waitUntil(
+  "install",
 
-caches.open(
-CACHE_NAME
-)
-.then(cache=>{
+  event=>{
 
-return cache.addAll(
-CACHE_FILES
+    event.waitUntil(
+
+      caches.open(
+        CACHE_NAME
+      )
+      .then(
+        cache=>
+          cache.addAll(
+            CACHE_FILES
+          )
+      )
+
+    );
+
+  }
+
 );
 
-})
-
-);
-
-});
 
 
 // =========================
-// 有効化
-// =========================
-self.addEventListener(
-"activate",
-event=>{
-
-event.waitUntil(
-
-caches.keys()
-.then(keys=>{
-
-return Promise.all(
-
-keys.map(key=>{
-
-if(
-key!==CACHE_NAME
-){
-
-return caches.delete(
-key
-);
-
-}
-
-})
-
-);
-
-})
-
-);
-
-});
-
-
-// =========================
-// リクエスト
+// 起動
 // =========================
 self.addEventListener(
-"fetch",
-event=>{
 
+  "activate",
 
-event.respondWith(
+  event=>{
 
-caches.match(
-event.request
-)
-.then(response=>{
+    event.waitUntil(
 
+      caches.keys()
+      .then(
 
-return response ||
+        keys=>{
 
-fetch(
-event.request
+          return Promise.all(
+
+            keys.map(
+
+              key=>{
+
+                if(
+                  key !== CACHE_NAME
+                ){
+
+                  return caches.delete(
+                    key
+                  );
+
+                }
+
+              }
+
+            )
+
+          );
+
+        }
+
+      )
+
+    );
+
+  }
+
 );
 
 
-})
+
+// =========================
+// 通信
+// =========================
+self.addEventListener(
+
+  "fetch",
+
+  event=>{
+
+
+    event.respondWith(
+
+      fetch(
+        event.request
+      )
+      .catch(
+
+        ()=>{
+
+          return caches.match(
+            event.request
+          );
+
+        }
+
+      )
+
+    );
+
+
+  }
 
 );
-
-
-});
