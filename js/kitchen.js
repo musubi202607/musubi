@@ -321,10 +321,17 @@ ${result.orderNo}
 
 `;
 
+setTimeout(()=>{
+
+document.getElementById(
+"resultArea"
+).innerHTML="";
+
+},3000);
+  
 kitchenCart=[];
 
 displayKitchenCart();
-
 
 document
 .querySelectorAll(
