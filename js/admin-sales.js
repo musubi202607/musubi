@@ -566,10 +566,11 @@ e
 
 return {
 
-total:0
+total:0,
+
+products:[]
 
 };
-
 
 }
 
@@ -708,10 +709,11 @@ e
 
 return {
 
-total:0
+total:0,
+
+products:[]
 
 };
-
 
 
 }
