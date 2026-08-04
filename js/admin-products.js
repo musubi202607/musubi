@@ -165,10 +165,12 @@ async function loadProducts(){
   let html = "";
 
   data
-
-    .filter(item => item.id)
-
-    .forEach(item=>{
+.filter(item => item.id)
+.sort((a,b)=>
+  Number(a.sort || 9999) -
+  Number(b.sort || 9999)
+)
+.forEach(item=>{
 
       html += `
 
