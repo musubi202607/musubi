@@ -14,20 +14,52 @@ content="width=device-width,initial-scale=1.0"
 キッチンカー管理
 </title>
 
+
 <link
 rel="stylesheet"
 href="css/style.css"
 >
+
+
+<!-- =========================
+PWA
+========================= -->
 
 <link
 rel="manifest"
 href="kitchen-manifest.json"
 >
 
+
 <meta
 name="theme-color"
 content="#4CAF50"
 >
+
+
+<meta
+name="mobile-web-app-capable"
+content="yes"
+>
+
+
+<meta
+name="apple-mobile-web-app-capable"
+content="yes"
+>
+
+
+<meta
+name="apple-mobile-web-app-title"
+content="キッチンカー"
+>
+
+
+<link
+rel="apple-touch-icon"
+href="icons/kitchen-192.png"
+>
+
 
 </head>
 
@@ -56,20 +88,22 @@ content="#4CAF50"
 
 
 <h2>
-注文
+業務メニュー
 </h2>
 
 
 <a
 href="kitchen.html"
+
 class="header-btn"
 
 style="
 display:block;
+padding:30px;
+margin:20px 0;
 text-align:center;
-padding:25px;
-font-size:22px;
-margin-top:20px;
+font-size:24px;
+border-radius:10px;
 "
 >
 
@@ -78,29 +112,19 @@ margin-top:20px;
 </a>
 
 
-</div>
-
-
-
-
-<div class="shop-info-card">
-
-
-<h2>
-会計
-</h2>
-
 
 <a
 href="kitchen-sales.html"
+
 class="header-btn"
 
 style="
 display:block;
+padding:30px;
+margin:20px 0;
 text-align:center;
-padding:25px;
-font-size:22px;
-margin-top:20px;
+font-size:24px;
+border-radius:10px;
 "
 >
 
@@ -113,9 +137,43 @@ margin-top:20px;
 
 
 
+<div class="shop-info-card">
+
+
+<h2>
+車両情報
+</h2>
+
+
+<p>
+車両：
+<select id="carNumber">
+
+<option>
+1号車
+</option>
+
+<option>
+2号車
+</option>
+
+</select>
+</p>
+
+
+</div>
+
+
+
 </main>
 
 
+
+
+
+<!-- =========================
+Service Worker
+========================= -->
 
 <script>
 
@@ -128,14 +186,34 @@ window.addEventListener(
 ()=>{
 
 navigator.serviceWorker.register(
+
 "kitchen-service-worker.js"
+
+)
+
+.then(()=>{
+
+console.log(
+"Kitchen PWA 登録完了"
 );
+
+})
+
+.catch(error=>{
+
+console.error(
+"PWA登録失敗",
+error
+);
+
+});
 
 });
 
 }
 
 </script>
+
 
 
 </body>
