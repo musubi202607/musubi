@@ -40,17 +40,17 @@ async function loadProducts(){
       await response.json();
 
     products =
-      data.filter(item=>
+  data.filter(item=>
 
-        item.id &&
-        item.status==="販売中" &&
-        (
-          item.type==="onigiri" ||
-          item.type==="drink" ||
-          item.type==="onigiri-drink"
-         )
+    item.id &&
+    item.status==="販売中" &&
+    item.staff==="○" &&
+    (
+      item.type==="onigiri" ||
+      item.type==="drink"
+    )
 
-      );
+  );
 
     renderProducts();
 
@@ -82,11 +82,10 @@ function renderProducts(){
   // おにぎり
   // -------------------------
 
-  const onigiri =
-     products.filter(p =>
-       p.type === "onigiri" ||
-       p.type === "onigiri-drink"
-     );
+ const onigiri =
+   products.filter(p =>
+     p.type === "onigiri"
+   );
 
   if(onigiri.length){
 
