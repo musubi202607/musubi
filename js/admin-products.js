@@ -631,7 +631,7 @@ function openAddProduct(){
 
     document.getElementById(
       "newTruck"
-    ).value = "×";
+    ).value = "○";
 
 
     window.scrollTo({
