@@ -546,18 +546,24 @@ async function loadBbqOptions(){
 
 
       if(
-        product.type!=="bbq-option" &&
-        product.type!=="drink"
-      ){
-        return;
-      }
+  product.status !== "販売中" ||
+  product.tablet !== "○" ||
+  (
+    product.type !== "bbq-option" &&
+    product.type !== "drink"
+  )
+){
+  return;
+}
 
 
       const card=`
 
 <div class="product-card">
 
-<img src="${product.image}">
+<img 
+src="${product.image || ''}"
+>
 
 <div class="product-content">
 
@@ -580,8 +586,8 @@ onclick="changeQty(${product.id},-1)">
 
 <span
 id="qty-${product.id}"
-class="qty-value">
-1
+class="qty-value qty-zero">
+0
 </span>
 
 
@@ -632,7 +638,7 @@ onclick="addToCart(${product.id},'${product.name}',${product.price})">
 
 function changeQty(id,diff){
 
-  const target=
+  const target =
     document.getElementById(
       "qty-"+id
     );
@@ -640,17 +646,35 @@ function changeQty(id,diff){
   if(!target)return;
 
 
-  let qty=
+  let qty =
     Number(target.innerText)+diff;
 
 
-  if(qty<1)qty=1;
+  if(qty < 0){
+
+    qty = 0;
+
+  }
 
 
-  target.innerText=qty;
+  target.innerText = qty;
+
+
+  if(qty === 0){
+
+    target.classList.add(
+      "qty-zero"
+    );
+
+  }else{
+
+    target.classList.remove(
+      "qty-zero"
+    );
+
+  }
 
 }
-
 
 
 function addToCart(id,name,price){
@@ -678,7 +702,12 @@ function addToCart(id,name,price){
       ).innerText
     );
 
+if(qty <= 0){
 
+  alert("数量を入力してください");
+  return;
+
+}  
   const item=
     bbqCart.find(
       p=>String(p.id)===String(id)
@@ -704,7 +733,23 @@ function addToCart(id,name,price){
 
 
   saveCart();
-  renderCart();
+
+const qtyTarget =
+  document.getElementById(
+    "qty-"+id
+  );
+
+if(qtyTarget){
+
+  qtyTarget.innerText = 0;
+
+  qtyTarget.classList.add(
+    "qty-zero"
+  );
+
+}
+
+renderCart();
 
 }
 
