@@ -170,10 +170,49 @@
 })();
 
 // =========================
-// ログアウト
+// 共通ログアウト
 // =========================
 
-function logout(){
+async function logout(){
+
+  const token =
+    localStorage.getItem(
+      "adminToken"
+    );
+
+
+  try{
+
+    if(token){
+
+      await fetch(
+
+        API_URL +
+        "/api/admin/logout",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            Authorization:
+            "Bearer " + token
+
+          }
+
+        }
+
+      );
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
 
   localStorage.removeItem(
     "adminToken"
