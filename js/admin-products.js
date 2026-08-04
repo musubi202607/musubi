@@ -220,6 +220,26 @@ async function loadProducts(){
 
     ${item.status || "停止"}
 
+    <br>
+
+    店舗：
+    ${item.store || "×"}
+
+    <br>
+
+    スタッフ：
+    ${item.staff || "×"}
+
+    <br>
+
+    タブレット：
+    ${item.tablet || "×"}
+
+    <br>
+
+    キッチンカー：
+    ${item.truck || "×"}
+
   </div>
 
   <button
@@ -404,17 +424,101 @@ async function loadProducts(){
           drink
         </option>
 
-        <option
-          value="onigiri-drink"
-          ${item.type==="onigiri-drink"?"selected":""}
-        >
-          onigiri-drink
-        </option>
-
-      </select>
+        </select>
 
     </div>
 
+　　<div class="product-card-row">
+
+<label>
+店舗
+</label>
+
+<select id="store_${item.id}">
+
+<option value="○"
+${item.store==="○"?"selected":""}>
+○
+</option>
+
+<option value="×"
+${item.store==="×"?"selected":""}>
+×
+</option>
+
+</select>
+
+</div>
+
+
+<div class="product-card-row">
+
+<label>
+スタッフ
+</label>
+
+<select id="staff_${item.id}">
+
+<option value="○"
+${item.staff==="○"?"selected":""}>
+○
+</option>
+
+<option value="×"
+${item.staff==="×"?"selected":""}>
+×
+</option>
+
+</select>
+
+</div>
+
+
+<div class="product-card-row">
+
+<label>
+タブレット
+</label>
+
+<select id="tablet_${item.id}">
+
+<option value="○"
+${item.tablet==="○"?"selected":""}>
+○
+</option>
+
+<option value="×"
+${item.tablet==="×"?"selected":""}>
+×
+</option>
+
+</select>
+
+</div>
+
+
+<div class="product-card-row">
+
+<label>
+キッチンカー
+</label>
+
+<select id="truck_${item.id}">
+
+<option value="○"
+${item.truck==="○"?"selected":""}>
+○
+</option>
+
+<option value="×"
+${item.truck==="×"?"selected":""}>
+×
+</option>
+
+</select>
+
+</div>
+  
     <div class="product-card-row">
 
       <label>
@@ -502,11 +606,31 @@ function openAddProduct(){
     );
 
   if(
-    area.style.display === "none"
+    area.style.display === "none" ||
+    area.style.display === ""
   ){
 
     area.style.display =
       "block";
+
+
+    // 新規商品 初期値
+    document.getElementById(
+      "newStore"
+    ).value = "○";
+
+    document.getElementById(
+      "newStaff"
+    ).value = "○";
+
+    document.getElementById(
+      "newTablet"
+    ).value = "○";
+
+    document.getElementById(
+      "newTruck"
+    ).value = "×";
+
 
     window.scrollTo({
 
@@ -526,7 +650,6 @@ function openAddProduct(){
   }
 
 }
-
 
 // =========================
 // 商品編集画面表示
@@ -634,9 +757,29 @@ async function saveProduct(id){
       : "停止",
 
     sort:
-      document.getElementById(
-        "sort_" + id
-      ).value
+     document.getElementById(
+      "sort_" + id
+      ).value,
+
+    store:
+     document.getElementById(
+      "store_" + id
+     ).value,
+
+    staff:
+     document.getElementById(
+      "staff_" + id
+    ).value,
+
+    tablet:
+    document.getElementById(
+      "tablet_" + id
+    ).value,
+
+    truck:
+    document.getElementById(
+      "truck_" + id
+    ).value
 
   };
 
@@ -787,40 +930,60 @@ async function addProduct(){
 
   const body = {
 
-    name:
-      document.getElementById(
-        "newName"
-      ).value,
+  name:
+    document.getElementById(
+      "newName"
+    ).value,
 
-    price:
-      document.getElementById(
-        "newPrice"
-      ).value,
+  price:
+    document.getElementById(
+      "newPrice"
+    ).value,
 
-    description:
-      document.getElementById(
-        "newDescription"
-      ).value,
+  description:
+    document.getElementById(
+      "newDescription"
+    ).value,
 
-    image:
-      document.getElementById(
-        "newImage"
-      ).value,
+  image:
+    document.getElementById(
+      "newImage"
+    ).value,
 
-    type:
-      document.getElementById(
-        "newType"
-      ).value,
+  type:
+    document.getElementById(
+      "newType"
+    ).value,
 
-    sort:
-      document.getElementById(
-        "newSort"
-      ).value,
+  sort:
+    document.getElementById(
+      "newSort"
+    ).value,
 
-    status:
-      "販売中"
+  status:
+    "販売中",
 
-  };
+  store:
+    document.getElementById(
+      "newStore"
+    ).value || "○",
+
+  staff:
+    document.getElementById(
+      "newStaff"
+    ).value || "○",
+
+  tablet:
+    document.getElementById(
+      "newTablet"
+    ).value || "○",
+
+  truck:
+    document.getElementById(
+      "newTruck"
+    ).value || "×"
+
+};
 
   try{
 
