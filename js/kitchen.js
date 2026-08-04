@@ -1,14 +1,18 @@
-let kitchenProducts=[];
-let kitchenCart=[];
+let kitchenProducts = [];
+let kitchenCart = [];
+
 
 // =========================
 // 初期化
 // =========================
-window.addEventListener("DOMContentLoaded",async()=>{
+window.addEventListener(
+  "DOMContentLoaded",
+  async ()=>{
 
-await loadKitchenProducts();
+    await loadKitchenProducts();
 
-});
+  }
+);
 
 
 // =========================
@@ -16,34 +20,43 @@ await loadKitchenProducts();
 // =========================
 async function loadKitchenProducts(){
 
-try{
+  try{
 
-const res=
-await fetch(
-API_URL+"/api/products"
-);
-
-const data=
-await res.json();
+    const res =
+      await fetch(
+        API_URL +
+        "/api/products"
+      );
 
 
-kitchenProducts=
-data.filter(item=>
-item.status==="販売中" &&
-item.kitchenCar==="○"
-);
+    const data =
+      await res.json();
 
 
-displayKitchenProducts();
+    kitchenProducts =
+      data.filter(item=>
+
+        item.status === "販売中" &&
+
+        item.kitchenCar === "○"
+
+      );
 
 
-}catch(e){
+    displayKitchenProducts();
 
-console.error(e);
+
+  }catch(error){
+
+    console.error(
+      "商品取得エラー",
+      error
+    );
+
+  }
 
 }
 
-}
 
 
 // =========================
@@ -51,107 +64,206 @@ console.error(e);
 // =========================
 function displayKitchenProducts(){
 
-const area=
-document.getElementById(
-"kitchenProductGrid"
-);
+  const area =
+    document.getElementById(
+      "kitchenProductGrid"
+    );
 
 
-area.innerHTML="";
+  if(!area){
+
+    return;
+
+  }
 
 
-kitchenProducts.forEach(p=>{
+  area.innerHTML = "";
 
-area.innerHTML+=`
 
-<div class="product-card">
+  kitchenProducts.forEach(product=>{
 
-<img src="${p.image||""}">
 
-<h3>${p.name}</h3>
+    area.innerHTML += `
+
+<div class="shop-info-card">
+
+<h2>
+
+${product.name}
+
+</h2>
+
 
 <p>
-¥${Number(p.price).toLocaleString()}
+
+¥${Number(product.price).toLocaleString()}
+
 </p>
+
 
 
 <div class="qty-area">
 
-<button onclick="changeKitchenQty(${p.id},-1)">
+
+<button
+
+style="
+font-size:24px;
+padding:10px 20px;
+"
+
+onclick="
+changeKitchenQty(
+${product.id},
+-1
+)
+"
+
+>
+
 －
+
 </button>
 
-<span id="kqty_${p.id}">
+
+
+<span
+
+id="kqty_${product.id}"
+
+style="
+font-size:24px;
+margin:0 20px;
+"
+
+>
+
 0
+
 </span>
 
-<button onclick="changeKitchenQty(${p.id},1)">
+
+
+<button
+
+style="
+font-size:24px;
+padding:10px 20px;
+"
+
+onclick="
+changeKitchenQty(
+${product.id},
+1
+)
+"
+
+>
+
 ＋
+
 </button>
 
+
 </div>
+
 
 </div>
 
 `;
 
-});
+  });
+
 
 }
+
 
 
 // =========================
 // 数量変更
 // =========================
-function changeKitchenQty(id,diff){
+function changeKitchenQty(
 
-let target=
-document.getElementById(
-"kqty_"+id
-);
+  id,
 
+  diff
 
-let qty=
-Number(target.innerText)+diff;
+){
 
 
-if(qty<0) qty=0;
+  const target =
+    document.getElementById(
+      "kqty_" + id
+    );
 
 
-target.innerText=qty;
+  if(!target){
+
+    return;
+
+  }
 
 
-const item=
-kitchenCart.find(
-x=>x.id===id
-);
+  let qty =
+    Number(target.innerText)
+    +
+    diff;
 
 
-if(item){
 
-item.qty=qty;
+  if(qty < 0){
 
-}else{
+    qty = 0;
 
-kitchenCart.push({
+  }
 
-id:id,
-qty:qty
 
-});
+
+  target.innerText =
+    qty;
+
+
+
+  const item =
+    kitchenCart.find(
+      x =>
+      x.id === id
+    );
+
+
+
+  if(item){
+
+    item.qty =
+      qty;
+
+  }else{
+
+    kitchenCart.push({
+
+      id:id,
+
+      qty:qty
+
+    });
+
+  }
+
+
+
+  kitchenCart =
+    kitchenCart.filter(
+      x =>
+      x.qty > 0
+    );
+
+
+
+  displayKitchenCart();
+
 
 }
 
-
-kitchenCart=
-kitchenCart.filter(
-x=>x.qty>0
-);
-
-
-displayKitchenCart();
-
-}
 
 
 // =========================
@@ -159,59 +271,91 @@ displayKitchenCart();
 // =========================
 function displayKitchenCart(){
 
-const area=
-document.getElementById(
-"kitchenCart"
-);
+  const area =
+    document.getElementById(
+      "kitchenCart"
+    );
 
 
-area.innerHTML="";
+  if(!area){
+
+    return;
+
+  }
 
 
-let total=0;
+  area.innerHTML = "";
 
 
-kitchenCart.forEach(item=>{
+  let total = 0;
 
 
-const product=
-kitchenProducts.find(
-p=>p.id==item.id
-);
+
+  kitchenCart.forEach(item=>{
 
 
-if(!product)return;
+    const product =
+      kitchenProducts.find(
+        p =>
+        p.id == item.id
+      );
 
 
-const price=
-Number(product.price)*
-Number(item.qty);
+
+    if(!product){
+
+      return;
+
+    }
 
 
-total+=price;
+
+    const amount =
+
+      Number(product.price)
+
+      *
+
+      Number(item.qty);
 
 
-area.innerHTML+=`
+
+    total += amount;
+
+
+
+    area.innerHTML += `
 
 <div>
 
 ${product.name}
-${item.qty}個
-¥${price.toLocaleString()}
+
+×
+
+${item.qty}
+
+個
+
+¥${amount.toLocaleString()}
 
 </div>
 
 `;
 
-});
+  });
 
 
-document.getElementById(
-"totalPrice"
-).innerText=
-"¥"+total.toLocaleString();
+
+  document.getElementById(
+    "totalPrice"
+  ).innerText =
+
+    "¥" +
+    total.toLocaleString();
+
 
 }
+
 
 
 // =========================
@@ -220,138 +364,202 @@ document.getElementById(
 async function sendKitchenOrder(){
 
 
-if(kitchenCart.length===0){
+  if(
+    kitchenCart.length === 0
+  ){
 
-alert(
-"商品を選択してください"
-);
+    alert(
+      "商品を選択してください"
+    );
 
-return;
+    return;
 
-}
-
-
-const carNumber=
-document.getElementById(
-"carNumber"
-).value;
+  }
 
 
 
-const orders=
-kitchenCart.map(item=>{
-
-
-const product=
-kitchenProducts.find(
-p=>p.id==item.id
-);
-
-
-return {
-
-productName:
-product.name,
-
-qty:
-item.qty,
-
-price:
-product.price,
-
-amount:
-Number(product.price)*
-Number(item.qty)
-
-};
-
-
-});
+  const carNumber =
+    document.getElementById(
+      "carNumber"
+    ).value;
 
 
 
-const res=
-await fetch(
+  const orders =
 
-API_URL+"/api/kitchen/order",
+    kitchenCart.map(item=>{
 
-{
 
-method:"POST",
+      const product =
 
-headers:{
-"Content-Type":"application/json"
-},
+        kitchenProducts.find(
 
-body:
-JSON.stringify({
+          p =>
+          p.id == item.id
 
-carNumber,
-
-orders
-
-})
-
-}
-
-);
+        );
 
 
 
-const result=
-await res.json();
+      return {
+
+        productName:
+          product.name,
 
 
-if(result.success){
+        qty:
+          item.qty,
 
-document.getElementById(
-"resultArea"
-).innerHTML=
 
-`
+        price:
+          product.price,
+
+
+        amount:
+
+          Number(product.price)
+
+          *
+
+          Number(item.qty)
+
+      };
+
+
+    });
+
+
+
+  try{
+
+
+    const res =
+
+      await fetch(
+
+        API_URL +
+        "/api/kitchen/order",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+            "application/json"
+
+          },
+
+
+          body:
+
+            JSON.stringify({
+
+              carNumber,
+
+              orders
+
+            })
+
+        }
+
+      );
+
+
+
+    const result =
+
+      await res.json();
+
+
+
+    if(result.success){
+
+
+      document.getElementById(
+        "resultArea"
+      ).innerHTML =
+
+      `
+
+<div class="shop-info-card">
 
 <h2>
-注文番号：
-${result.orderNo}
+
+受付完了
+
 </h2>
 
+
 <p>
-受付しました
+
+注文番号：
+
+<br>
+
+${result.orderNo}
+
 </p>
+
+
+</div>
 
 `;
 
-setTimeout(()=>{
-
-document.getElementById(
-"resultArea"
-).innerHTML="";
-
-},3000);
-  
-kitchenCart=[];
-
-displayKitchenCart();
-
-document
-.querySelectorAll(
-"[id^='kqty_']"
-)
-.forEach(e=>{
-
-e.innerText=0;
-
-});
 
 
-}else{
+      kitchenCart = [];
 
-alert(
-result.message||
-"注文失敗"
-);
 
-}
+      displayKitchenCart();
+
+
+
+      document
+
+      .querySelectorAll(
+        "[id^='kqty_']"
+      )
+
+      .forEach(el=>{
+
+        el.innerText = 0;
+
+      });
+
+
+
+    }else{
+
+
+      alert(
+
+        result.message ||
+
+        "注文失敗"
+
+      );
+
+
+    }
+
+
+
+  }catch(error){
+
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      "通信エラー"
+    );
+
+
+  }
 
 
 }
