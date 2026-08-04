@@ -11,7 +11,7 @@ content="width=device-width,initial-scale=1.0"
 >
 
 <title>
-キッチンカー管理
+むすび キッチンカー管理
 </title>
 
 
@@ -20,10 +20,6 @@ rel="stylesheet"
 href="css/style.css"
 >
 
-
-<!-- =========================
-PWA
-========================= -->
 
 <link
 rel="manifest"
@@ -34,30 +30,6 @@ href="kitchen-manifest.json"
 <meta
 name="theme-color"
 content="#4CAF50"
->
-
-
-<meta
-name="mobile-web-app-capable"
-content="yes"
->
-
-
-<meta
-name="apple-mobile-web-app-capable"
-content="yes"
->
-
-
-<meta
-name="apple-mobile-web-app-title"
-content="キッチンカー"
->
-
-
-<link
-rel="apple-touch-icon"
-href="icons/kitchen-192.png"
 >
 
 
@@ -72,7 +44,7 @@ href="icons/kitchen-192.png"
 <div class="container header-inner">
 
 <h1>
-キッチンカー
+キッチンカー管理
 </h1>
 
 </div>
@@ -88,77 +60,83 @@ href="icons/kitchen-192.png"
 
 
 <h2>
-業務メニュー
+メニュー
 </h2>
 
 
+
 <a
+
 href="kitchen.html"
 
-class="header-btn"
-
 style="
 display:block;
-padding:30px;
-margin:20px 0;
+margin:15px 0;
+padding:20px;
+background:#4CAF50;
+color:white;
 text-align:center;
-font-size:24px;
 border-radius:10px;
+font-size:22px;
+text-decoration:none;
 "
+
 >
 
-🛒 注文受付
+注文受付
 
 </a>
+
 
 
 
 <a
-href="kitchen-sales.html"
 
-class="header-btn"
+href="kitchen-unpaid.html"
 
 style="
 display:block;
-padding:30px;
-margin:20px 0;
+margin:15px 0;
+padding:20px;
+background:#ff9800;
+color:white;
 text-align:center;
-font-size:24px;
 border-radius:10px;
+font-size:22px;
+text-decoration:none;
 "
+
 >
 
-💰 会計確認
+未会計一覧
 
 </a>
 
 
-</div>
 
 
+<a
 
-<div class="shop-info-card">
+href="kitchen-sales.html"
 
+style="
+display:block;
+margin:15px 0;
+padding:20px;
+background:#2196F3;
+color:white;
+text-align:center;
+border-radius:10px;
+font-size:22px;
+text-decoration:none;
+"
 
-<h2>
-車両情報
-</h2>
+>
 
+売上確認
 
-<p>
-車両：
-<select id="carNumber">
+</a>
 
-<option>
-1号車
-</option>
-
-<option>
-2号車
-</option>
-
-</select>
-</p>
 
 
 </div>
@@ -169,12 +147,6 @@ border-radius:10px;
 
 
 
-
-
-<!-- =========================
-Service Worker
-========================= -->
-
 <script>
 
 if(
@@ -182,33 +154,20 @@ if(
 ){
 
 window.addEventListener(
+
 "load",
+
 ()=>{
 
 navigator.serviceWorker.register(
 
 "kitchen-service-worker.js"
 
-)
-
-.then(()=>{
-
-console.log(
-"Kitchen PWA 登録完了"
 );
 
-})
+}
 
-.catch(error=>{
-
-console.error(
-"PWA登録失敗",
-error
 );
-
-});
-
-});
 
 }
 
