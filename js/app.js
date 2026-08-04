@@ -569,7 +569,8 @@ async function loadProducts(){
     products.filter(
 
       p =>
-        p.type === "onigiri" ||
+        p.type === "onigiri" &&
+        p.status === "販売中"
 
     );
 
