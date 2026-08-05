@@ -1,11 +1,14 @@
 const CACHE_NAME =
-  "musubi-kitchen-v2";
+  "musubi-kitchen-v3";
 
 
 const CACHE_FILES = [
 
   "./",
-
+  "admin-product.html",
+  
+  "js/admin-products.js",
+  
   "kitchen-index.html",
 
   "kitchen.html",
