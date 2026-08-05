@@ -71,7 +71,11 @@ method:"POST",
 headers:{
 
 "Content-Type":
-"application/json"
+"application/json",
+
+Authorization:
+"Bearer " +
+localStorage.getItem("adminToken")
 
 },
 
