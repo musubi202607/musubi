@@ -5,7 +5,7 @@ const CACHE_NAME =
 const CACHE_FILES = [
 
   "./",
-  "admin-product.html",
+  "admin-products.html",
   
   "js/admin-products.js",
   
