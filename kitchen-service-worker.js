@@ -34,28 +34,35 @@ const CACHE_FILES = [
 // =========================
 self.addEventListener(
 
-  "install",
+"install",
 
-  event=>{
+event=>{
 
-    event.waitUntil(
+event.waitUntil(
 
-      caches.open(
-        CACHE_NAME
-      )
-      .then(
+caches.open(
+CACHE_NAME
+)
 
-        cache=>
+.then(
 
-          cache.addAll(
-            CACHE_FILES
-          )
+cache=>
 
-      )
+cache.addAll(
+CACHE_FILES
+)
 
-    );
+)
 
-  }
+.then(()=>{
+
+return self.skipWaiting();
+
+})
+
+);
+
+}
 
 );
 
@@ -65,47 +72,53 @@ self.addEventListener(
 // =========================
 self.addEventListener(
 
-  "activate",
+"activate",
 
-  event=>{
+event=>{
 
-    event.waitUntil(
+event.waitUntil(
 
-      caches.keys()
+caches.keys()
 
-      .then(
+.then(
 
-        keys=>{
+keys=>{
 
-          return Promise.all(
+return Promise.all(
 
-            keys.map(
+keys.map(
 
-              key=>{
+key=>{
 
-                if(
-                  key !== CACHE_NAME
-                ){
+if(
+key !== CACHE_NAME
+){
 
-                  return caches.delete(
-                    key
-                  );
+return caches.delete(
+key
+);
 
-                }
+}
 
-              }
+}
 
-            )
+)
 
-          );
+);
 
-        }
+}
 
-      )
+)
 
-    );
+.then(()=>{
 
-  }
+return self.clients.claim();
+
+})
+
+);
+
+}
 
 );
 
@@ -114,38 +127,43 @@ self.addEventListener(
 // 通信
 // =========================
 self.addEventListener(
+
 "fetch",
+
 event=>{
+
 
 event.respondWith(
 
-fetch(event.request)
+fetch(
+event.request
+)
 
-.then(response=>{
+.then(
 
-const clone =
-response.clone();
-
-caches.open(CACHE_NAME)
-.then(cache=>{
-
-cache.put(
-event.request,
-clone
-);
-
-});
+response=>{
 
 return response;
 
-})
+}
 
-.catch(()=>{
+)
+
+.catch(
+
+()=>{
 
 return caches.match(
 event.request
 );
 
-})
+}
+
+)
+
+);
+
+
+}
 
 );
