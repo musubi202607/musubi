@@ -117,43 +117,23 @@ self.addEventListener(
 // 通信
 // =========================
 self.addEventListener(
+"fetch",
+event=>{
 
-  "fetch",
+event.respondWith(
 
-  event=>{
+fetch(event.request)
+.then(response=>{
 
+return response;
 
-    event.respondWith(
+})
+.catch(()=>{
 
-      fetch(
-        event.request
-      )
+return caches.match(event.request);
 
-      .then(
-
-        response=>{
-
-          return response;
-
-        }
-
-      )
-
-      .catch(
-
-        ()=>{
-
-          return caches.match(
-            event.request
-          );
-
-        }
-
-      )
-
-    );
-
-
-  }
+})
 
 );
+
+});
