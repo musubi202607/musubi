@@ -1,33 +1,30 @@
 const CACHE_NAME =
-  "musubi-kitchen-v3";
+"musubi-kitchen-v3";
 
 
 const CACHE_FILES = [
 
-  "./",
-  "admin-products.html",
-  
-  "js/admin-products.js",
-  
-  "kitchen-index.html",
+"kitchen-index.html",
 
-  "kitchen.html",
+"kitchen.html",
 
-  "kitchen-unpaid.html",
+"kitchen-unpaid.html",
 
-  "kitchen-sales.html",
+"kitchen-sales.html",
 
-  "css/style.css",
+"css/style.css",
 
-  "js/config.js",
+"js/config.js",
 
-  "js/kitchen.js",
+"js/kitchen-index.js",
 
-  "js/kitchen-unpaid.js",
+"js/kitchen.js",
 
-  "js/kitchen-sales.js",
+"js/kitchen-unpaid.js",
 
-  "kitchen-manifest.json"
+"js/kitchen-sales.js",
+
+"kitchen-manifest.json"
 
 ];
 
