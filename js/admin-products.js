@@ -1064,6 +1064,10 @@ async function addProduct(){
       ).value = "";
 
       document.getElementById(
+        "newKitchenPrice"
+      ).value = "";
+      
+      document.getElementById(
         "newDescription"
       ).value = "";
 
