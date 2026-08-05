@@ -65,7 +65,10 @@ input, select {
 
 <div class="admin-top-buttons">
 
-<a href="admin.html" class="back-btn">
+<a
+id="backLink"
+class="back-btn"
+>
 ← 管理画面へ戻る
 </a>
 
@@ -195,6 +198,47 @@ onclick="openAddProduct()">
 <script src="js/admin-auth.js"></script>
 <script src="js/cloudinary.js"></script>
 <script src="js/admin-products.js"></script>
+
+<script>
+
+const params =
+new URLSearchParams(
+  location.search
+);
+
+const from =
+params.get("from");
+
+
+const backLink =
+document.getElementById(
+  "backLink"
+);
+
+
+if(backLink){
+
+  if(from === "kitchen"){
+
+    backLink.href =
+      "kitchen-index.html";
+
+    backLink.textContent =
+      "← キッチンカー管理へ戻る";
+
+  }else{
+
+    backLink.href =
+      "admin.html";
+
+    backLink.textContent =
+      "← 管理画面へ戻る";
+
+  }
+
+}
+
+</script>
 
 </body>
 </html>
