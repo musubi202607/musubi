@@ -309,22 +309,20 @@ ${item.kitchenPrice || "-"}円
 
     <div class="product-card-row">
 
-      <label>
+<label>
+価格
+</label>
 
-        価格
+<input
+  type="number"
+  id="price_${item.id}"
+  value="${item.price || 0}"
+>
 
-      </label>
+</div>
 
-      <input
 
-        type="number"
-
-        id="price_${item.id}"
-
-        value="${item.price || 0}"
-
-      >
-      <div class="product-card-row">
+<div class="product-card-row">
 
 <label>
 キッチンカー価格
@@ -337,8 +335,6 @@ ${item.kitchenPrice || "-"}円
 >
 
 </div>
-
-    </div>
 
     <div class="product-card-row">
 
