@@ -96,7 +96,7 @@ ${product.name}
 
 <p>
 
-¥${Number(product.price).toLocaleString()}
+¥${Number(product.kitchenPrice || product.price).toLocaleString()}
 
 </p>
 
@@ -312,7 +312,7 @@ function displayKitchenCart(){
 
     const amount =
 
-      Number(product.price)
+      Number(product.kitchenPrice || product.price)
 
       *
 
@@ -404,25 +404,20 @@ const orders =
 
         );
 
-
-
       return {
 
         productName:
           product.name,
 
-
         qty:
           item.qty,
 
-
         price:
-          product.price,
-
+          product.kitchenPrice || product.price,
 
         amount:
 
-          Number(product.price)
+          Number(product.kitchenPrice || product.price)
 
           *
 
@@ -430,13 +425,9 @@ const orders =
 
       };
 
-
     });
 
-
-
   try{
-
 
     const res =
 
