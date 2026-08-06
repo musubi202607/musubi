@@ -164,12 +164,35 @@ async function loadProducts(){
 
   let html = "";
 
-  data
+const fromKitchen =
+  new URLSearchParams(location.search)
+    .get("from") === "kitchen";
+
+data
 .filter(item => item.id)
-.sort((a,b)=>
-  Number(a.sort || 9999) -
-  Number(b.sort || 9999)
-)
+.sort((a,b)=>{
+
+  // キッチンカーから開いた場合だけ
+  if(fromKitchen){
+
+    const aKitchen =
+      a.kitchenCar === "○" ? 0 : 1;
+
+    const bKitchen =
+      b.kitchenCar === "○" ? 0 : 1;
+
+    // キッチンカー○を先頭
+    if(aKitchen !== bKitchen){
+      return aKitchen - bKitchen;
+    }
+
+  }
+
+  // その後は表示順
+  return Number(a.sort || 9999) -
+         Number(b.sort || 9999);
+
+})
 .forEach(item=>{
 
       html += `
