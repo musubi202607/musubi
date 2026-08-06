@@ -365,28 +365,53 @@ GoogleMap
     </h2>
 
     <p>
-
       結びサイトへ
       お越しいただきありがとうございます。
-
     </p>
 
     <p>
-
-      ８／２４ＯＰＥＮ決定
-
+      ８／２４ ＯＰＥＮ決定
     </p>
 
     <p>
-
       もうしばらくお待ちください。
-
     </p>
 
   </div>
 
 </div>
-  
-</body>
+
+<script>
+
+// =========================
+// 開店準備中オーバーレイ
+// =========================
+
+// オープン日時
+const OPEN_DATE =
+  new Date("2026-08-24T08:00:00");
+
+const overlay =
+  document.getElementById(
+    "openingOverlay"
+  );
+
+if(overlay){
+
+  if(new Date() >= OPEN_DATE){
+
+    // オープン後は非表示
+    overlay.style.display = "none";
+
+  }else{
+
+    // オープン前は表示
+    overlay.style.display = "flex";
+
+  }
+
+}
+
+</script>
 
 </html>
