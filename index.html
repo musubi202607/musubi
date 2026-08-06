@@ -387,21 +387,23 @@ GoogleMap
 // 開店準備中オーバーレイ
 // =========================
 
-// オープン日時
+// オープン日時（日本時間）
 const OPEN_DATE =
-  new Date("2026-08-24T08:00:00");
+  new Date("2026-08-24T08:00:00+09:00");
+
 
 const overlay =
   document.getElementById(
     "openingOverlay"
   );
 
+
 if(overlay){
 
   if(new Date() >= OPEN_DATE){
 
-    // オープン後は非表示
-    overlay.style.display = "none";
+    // オープン後は削除
+    overlay.remove();
 
   }else{
 
@@ -411,7 +413,6 @@ if(overlay){
   }
 
 }
-
 </script>
 
 </html>
