@@ -4,7 +4,9 @@
 // =========================
 
 let products = [];
+
 let storeProducts = [];
+
 let kitchenProducts = [];
 
 
@@ -37,13 +39,17 @@ async function loadProducts(){
         "/api/products",
 
         {
+
           headers:{
+
             Authorization:
               "Bearer " +
               localStorage.getItem(
                 "adminToken"
               )
+
           }
+
         }
 
       );
@@ -79,86 +85,65 @@ async function loadProducts(){
 
     // =========================
     // 店舗表示順
-    // 店舗○を上位
-    // その中で種類 → ID順
+    // =========================
+    // 店舗○の商品だけ対象
+    //
+    // 初期表示：
+    // 種類 → ID順
+    //
+    // G列の既存値は、
+    // この画面では初期並びには使用しない
     // =========================
 
     storeProducts =
       products
-      .filter(
-        item =>
-          item.store === "○"
-      )
-      .sort(
-        compareStoreProducts
-      );
-
-
-    // =========================
-    // 店舗×の商品
-    // =========================
-
-    const storeDisabled =
-      products
-      .filter(
-        item =>
-          item.store !== "○"
-      )
-      .sort(
-        compareStoreProducts
-      );
-
-
-    storeProducts =
-      storeProducts.concat(
-        storeDisabled
-      );
+        .filter(
+          item =>
+            item.store === "○"
+        )
+        .sort(
+          compareStoreProducts
+        );
 
 
     // =========================
     // キッチンカー表示順
-    // カー○を上位
+    // =========================
+    // カー○の商品だけ対象
+    //
+    // N列「カー表示順」がある場合
+    //     → N列順
+    //
+    // N列が空の場合
+    //     → ID順
     // =========================
 
     kitchenProducts =
       products
-      .filter(
-        item =>
-          item.kitchenCar === "○"
-      )
-      .sort(
-        compareKitchenProducts
-      );
+        .filter(
+          item =>
+            item.kitchenCar === "○"
+        )
+        .sort(
+          compareKitchenProducts
+        );
 
 
     // =========================
-    // カー×の商品
+    // 表示
     // =========================
-
-    const kitchenDisabled =
-      products
-      .filter(
-        item =>
-          item.kitchenCar !== "○"
-      )
-      .sort(
-        compareKitchenProducts
-      );
-
-
-    kitchenProducts =
-      kitchenProducts.concat(
-        kitchenDisabled
-      );
-
 
     renderStoreProducts();
+
     renderKitchenProducts();
 
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "商品取得エラー",
+      error
+    );
 
 
     const storeList =
@@ -207,16 +192,22 @@ async function loadProducts(){
 
 
 // =========================
-// 店舗商品の比較
+// 店舗商品の初期並び
+// =========================
+// 種類 → ID順
 // =========================
 
 function compareStoreProducts(a,b){
 
   const aType =
-    String(a.type || "");
+    String(
+      a.type || ""
+    );
 
   const bType =
-    String(b.type || "");
+    String(
+      b.type || ""
+    );
 
 
   if(aType !== bType){
@@ -229,20 +220,80 @@ function compareStoreProducts(a,b){
   }
 
 
-  return Number(a.id) -
-    Number(b.id);
+  return (
+    Number(a.id) -
+    Number(b.id)
+  );
 
 }
 
 
 // =========================
-// キッチンカー商品の比較
+// キッチンカー商品の初期並び
+// =========================
+// N列「カー表示順」を優先
+// N列が空ならID順
 // =========================
 
 function compareKitchenProducts(a,b){
 
-  return Number(a.id) -
-    Number(b.id);
+  const aSort =
+    getKitchenSort(a);
+
+  const bSort =
+    getKitchenSort(b);
+
+
+  if(aSort !== bSort){
+
+    return aSort - bSort;
+
+  }
+
+
+  return (
+    Number(a.id) -
+    Number(b.id)
+  );
+
+}
+
+
+// =========================
+// キッチンカー表示順取得
+// =========================
+
+function getKitchenSort(item){
+
+  const value =
+    item.kitchenSort;
+
+
+  if(
+    value !== undefined &&
+    value !== null &&
+    value !== ""
+  ){
+
+    const number =
+      Number(value);
+
+
+    if(!isNaN(number)){
+
+      return number;
+
+    }
+
+  }
+
+
+  // N列が空の場合
+  // IDを仮の表示順として使用
+
+  return Number(
+    item.id
+  );
 
 }
 
@@ -272,10 +323,6 @@ function renderStoreProducts(){
   storeProducts.forEach(
     (item,index)=>{
 
-      const enabled =
-        item.store === "○";
-
-
       html += `
 
         <div class="sort-item">
@@ -286,6 +333,7 @@ function renderStoreProducts(){
 
           </div>
 
+
           <div class="sort-info">
 
             <div class="sort-name">
@@ -295,6 +343,7 @@ function renderStoreProducts(){
               )}
 
             </div>
+
 
             <div class="sort-detail">
 
@@ -316,26 +365,51 @@ function renderStoreProducts(){
 
           </div>
 
+
           <div class="sort-buttons">
 
             <button
-              onclick="moveStoreProduct(
-                ${index},
-                -1
-              )"
-              ${index === 0 ? "disabled" : ""}
+
+              onclick="
+                moveStoreProduct(
+                  ${index},
+                  -1
+                )
+              "
+
+              ${
+                index === 0
+                  ? "disabled"
+                  : ""
+              }
+
             >
+
               ▲
+
             </button>
 
+
             <button
-              onclick="moveStoreProduct(
-                ${index},
-                1
-              )"
-              ${index === storeProducts.length - 1 ? "disabled" : ""}
+
+              onclick="
+                moveStoreProduct(
+                  ${index},
+                  1
+                )
+              "
+
+              ${
+                index ===
+                storeProducts.length - 1
+                  ? "disabled"
+                  : ""
+              }
+
             >
+
               ▼
+
             </button>
 
           </div>
@@ -354,7 +428,7 @@ function renderStoreProducts(){
 
       <div class="sort-info">
 
-        商品がありません。
+        店舗表示対象の商品がありません。
 
       </div>
 
@@ -404,6 +478,7 @@ function renderKitchenProducts(){
 
           </div>
 
+
           <div class="sort-info">
 
             <div class="sort-name">
@@ -413,6 +488,7 @@ function renderKitchenProducts(){
               )}
 
             </div>
+
 
             <div class="sort-detail">
 
@@ -430,30 +506,60 @@ function renderKitchenProducts(){
               カー：
               ${item.kitchenCar || "×"}
 
+              ／
+
+              現在の順：
+              ${getKitchenSort(item)}
+
             </div>
 
           </div>
 
+
           <div class="sort-buttons">
 
             <button
-              onclick="moveKitchenProduct(
-                ${index},
-                -1
-              )"
-              ${index === 0 ? "disabled" : ""}
+
+              onclick="
+                moveKitchenProduct(
+                  ${index},
+                  -1
+                )
+              "
+
+              ${
+                index === 0
+                  ? "disabled"
+                  : ""
+              }
+
             >
+
               ▲
+
             </button>
 
+
             <button
-              onclick="moveKitchenProduct(
-                ${index},
-                1
-              )"
-              ${index === kitchenProducts.length - 1 ? "disabled" : ""}
+
+              onclick="
+                moveKitchenProduct(
+                  ${index},
+                  1
+                )
+              "
+
+              ${
+                index ===
+                kitchenProducts.length - 1
+                  ? "disabled"
+                  : ""
+              }
+
             >
+
               ▼
+
             </button>
 
           </div>
@@ -472,7 +578,7 @@ function renderKitchenProducts(){
 
       <div class="sort-info">
 
-        商品がありません。
+        キッチンカー表示対象の商品がありません。
 
       </div>
 
@@ -582,7 +688,7 @@ async function saveStoreSortOrder(){
 
   if(
     !confirm(
-      "店舗表示順を保存しますか？"
+      "現在の店舗表示順を保存しますか？"
     )
   ){
 
@@ -609,6 +715,11 @@ async function saveStoreSortOrder(){
 
 
   try{
+
+    // =========================
+    // 上から1,2,3...
+    // G列「表示順」に保存
+    // =========================
 
     for(
       let i = 0;
@@ -654,7 +765,7 @@ async function saveStoreSortOrder(){
 
               })
 
-          }
+            }
 
         );
 
@@ -678,6 +789,18 @@ async function saveStoreSortOrder(){
     }
 
 
+    // ローカルデータ更新
+
+    storeProducts.forEach(
+      (item,index)=>{
+
+        item.sort =
+          index + 1;
+
+      }
+    );
+
+
     alert(
       "店舗表示順を保存しました"
     );
@@ -685,7 +808,10 @@ async function saveStoreSortOrder(){
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "店舗表示順保存エラー",
+      error
+    );
 
 
     alert(
@@ -725,7 +851,7 @@ async function saveKitchenSortOrder(){
 
   if(
     !confirm(
-      "キッチンカー表示順を保存しますか？"
+      "現在のキッチンカー表示順を保存しますか？"
     )
   ){
 
@@ -752,6 +878,11 @@ async function saveKitchenSortOrder(){
 
 
   try{
+
+    // =========================
+    // 上から1,2,3...
+    // N列「カー表示順」に保存
+    // =========================
 
     for(
       let i = 0;
@@ -797,7 +928,7 @@ async function saveKitchenSortOrder(){
 
               })
 
-          }
+            }
 
         );
 
@@ -821,6 +952,18 @@ async function saveKitchenSortOrder(){
     }
 
 
+    // ローカルデータ更新
+
+    kitchenProducts.forEach(
+      (item,index)=>{
+
+        item.kitchenSort =
+          index + 1;
+
+      }
+    );
+
+
     alert(
       "キッチンカー表示順を保存しました"
     );
@@ -828,7 +971,10 @@ async function saveKitchenSortOrder(){
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "キッチンカー表示順保存エラー",
+      error
+    );
 
 
     alert(
