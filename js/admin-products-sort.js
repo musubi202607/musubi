@@ -247,7 +247,6 @@ function compareStoreProducts(a,b){
   const aSort =
     Number(a.sort);
 
-
   const bSort =
     Number(b.sort);
 
@@ -256,21 +255,19 @@ function compareStoreProducts(a,b){
     a.sort !== "" &&
     a.sort !== null &&
     a.sort !== undefined &&
-    !isNaN(aSort);
+    !isNaN(aSort) &&
+    aSort > 0;
 
 
   const bHasSort =
     b.sort !== "" &&
     b.sort !== null &&
     b.sort !== undefined &&
-    !isNaN(bSort);
+    !isNaN(bSort) &&
+    bSort > 0;
 
 
-  // 両方に表示順あり
-  if(
-    aHasSort &&
-    bHasSort
-  ){
+  if(aHasSort && bHasSort){
 
     if(aSort !== bSort){
 
@@ -281,7 +278,6 @@ function compareStoreProducts(a,b){
   }
 
 
-  // 表示順ありを先
   if(aHasSort && !bHasSort){
 
     return -1;
@@ -296,8 +292,6 @@ function compareStoreProducts(a,b){
   }
 
 
-  // 表示順が同じ・未設定
-  // ID順
   return Number(a.id) -
     Number(b.id);
 
@@ -313,7 +307,6 @@ function compareKitchenProducts(a,b){
   const aSort =
     Number(a.kitchenSort);
 
-
   const bSort =
     Number(b.kitchenSort);
 
@@ -322,21 +315,19 @@ function compareKitchenProducts(a,b){
     a.kitchenSort !== "" &&
     a.kitchenSort !== null &&
     a.kitchenSort !== undefined &&
-    !isNaN(aSort);
+    !isNaN(aSort) &&
+    aSort > 0;
 
 
   const bHasSort =
     b.kitchenSort !== "" &&
     b.kitchenSort !== null &&
     b.kitchenSort !== undefined &&
-    !isNaN(bSort);
+    !isNaN(bSort) &&
+    bSort > 0;
 
 
-  // 両方に表示順あり
-  if(
-    aHasSort &&
-    bHasSort
-  ){
+  if(aHasSort && bHasSort){
 
     if(aSort !== bSort){
 
@@ -347,7 +338,6 @@ function compareKitchenProducts(a,b){
   }
 
 
-  // 表示順ありを先
   if(aHasSort && !bHasSort){
 
     return -1;
@@ -362,8 +352,6 @@ function compareKitchenProducts(a,b){
   }
 
 
-  // 表示順が同じ・未設定
-  // ID順
   return Number(a.id) -
     Number(b.id);
 
@@ -679,74 +667,8 @@ function moveKitchenProduct(
 
 
 // =========================
-// 商品表示順更新
-// =========================
-
-async function updateProductSort(
-  id,
-  sortData
-){
-
-  const res =
-    await fetch(
-
-      API_URL +
-      "/api/products/update",
-
-      {
-
-        method:"POST",
-
-        headers:{
-
-          "Content-Type":
-            "application/json",
-
-          Authorization:
-            "Bearer " +
-            localStorage.getItem(
-              "adminToken"
-            )
-
-        },
-
-        body:
-          JSON.stringify({
-
-            id:
-
-              id,
-
-            ...sortData
-
-          })
-
-      }
-
-    );
-
-
-  const result =
-    await res.json();
-
-
-  if(
-    !res.ok ||
-    !result.success
-  ){
-
-    throw new Error(
-      result.message ||
-      "保存失敗"
-    );
-
-  }
-
-}
-
-
-// =========================
 // 店舗表示順保存
+// 一括保存
 // =========================
 
 async function saveStoreSortOrder(){
@@ -788,32 +710,75 @@ async function saveStoreSortOrder(){
 
   try{
 
-    // =========================
-    // 上から1,2,3...
-    // G列へ保存
-    // =========================
+    const items =
+      storeProducts.map(
+        (item,index)=>({
 
-    for(
-      let i = 0;
-      i < storeProducts.length;
-      i++
-    ){
+          id:
+            item.id,
 
-      await updateProductSort(
+          sort:
+            index + 1
 
-        storeProducts[i].id,
+        })
+      );
+
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/products/sort",
 
         {
-          sort:
-            i + 1
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              "Bearer " +
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          },
+
+          body:
+            JSON.stringify({
+
+              type:
+                "store",
+
+              items:
+                items
+
+            })
+
         }
 
       );
 
+
+    const result =
+      await res.json();
+
+
+    if(
+      !res.ok ||
+      !result.success
+    ){
+
+      throw new Error(
+        result.message ||
+        "保存失敗"
+      );
+
     }
 
-
-    // ローカルデータ更新
 
     storeProducts.forEach(
       (item,index)=>{
@@ -859,6 +824,7 @@ async function saveStoreSortOrder(){
 
 // =========================
 // キッチンカー表示順保存
+// 一括保存
 // =========================
 
 async function saveKitchenSortOrder(){
@@ -900,32 +866,75 @@ async function saveKitchenSortOrder(){
 
   try{
 
-    // =========================
-    // 上から1,2,3...
-    // N列へ保存
-    // =========================
+    const items =
+      kitchenProducts.map(
+        (item,index)=>({
 
-    for(
-      let i = 0;
-      i < kitchenProducts.length;
-      i++
-    ){
+          id:
+            item.id,
 
-      await updateProductSort(
+          kitchenSort:
+            index + 1
 
-        kitchenProducts[i].id,
+        })
+      );
+
+
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/products/sort",
 
         {
-          kitchenSort:
-            i + 1
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              "Bearer " +
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          },
+
+          body:
+            JSON.stringify({
+
+              type:
+                "kitchen",
+
+              items:
+                items
+
+            })
+
         }
 
       );
 
+
+    const result =
+      await res.json();
+
+
+    if(
+      !res.ok ||
+      !result.success
+    ){
+
+      throw new Error(
+        result.message ||
+        "保存失敗"
+      );
+
     }
 
-
-    // ローカルデータ更新
 
     kitchenProducts.forEach(
       (item,index)=>{
