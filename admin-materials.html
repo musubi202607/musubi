@@ -517,29 +517,45 @@ body{
 
 <div class="form-group">
 
-<label>
-
-仕入単位
-
-</label>
+<label>仕入単位</label>
 
 <select
   id="purchaseUnit"
   onchange="calculateUnitCost()"
 >
-
-<option>g</option>
-<option>kg</option>
-<option>ml</option>
-<option>L</option>
-<option>個</option>
-<option>枚</option>
-<option>本</option>
-<option>袋</option>
-<option>箱</option>
-
+  <option value="袋">袋</option>
+  <option value="箱">箱</option>
+  <option value="本">本</option>
+  <option value="個">個</option>
+  <option value="枚">枚</option>
 </select>
 
+
+<label>仕入数量</label>
+
+<input
+  type="number"
+  id="purchaseQty"
+  step="0.001"
+  oninput="calculateUnitCost()"
+>
+
+
+<label>仕入数量単位</label>
+
+<select
+  id="purchaseQtyUnit"
+  onchange="calculateUnitCost()"
+>
+  <option value="g">g</option>
+  <option value="kg">kg</option>
+  <option value="ml">ml</option>
+  <option value="L">L</option>
+  <option value="個">個</option>
+  <option value="枚">枚</option>
+  <option value="本">本</option>
+</select>
+  
 </div>
 
 </div>
