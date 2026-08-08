@@ -25,6 +25,74 @@ window.addEventListener(
 
 
 // =========================
+// タブ切替
+// =========================
+
+function switchTab(type){
+
+  const storeTab =
+    document.getElementById(
+      "storeTab"
+    );
+
+  const kitchenTab =
+    document.getElementById(
+      "kitchenTab"
+    );
+
+  const storeSection =
+    document.getElementById(
+      "storeSection"
+    );
+
+  const kitchenSection =
+    document.getElementById(
+      "kitchenSection"
+    );
+
+
+  if(type === "store"){
+
+    storeTab.classList.add(
+      "active"
+    );
+
+    kitchenTab.classList.remove(
+      "active"
+    );
+
+    storeSection.classList.add(
+      "active"
+    );
+
+    kitchenSection.classList.remove(
+      "active"
+    );
+
+  }else{
+
+    storeTab.classList.remove(
+      "active"
+    );
+
+    kitchenTab.classList.add(
+      "active"
+    );
+
+    storeSection.classList.remove(
+      "active"
+    );
+
+    kitchenSection.classList.add(
+      "active"
+    );
+
+  }
+
+}
+
+
+// =========================
 // 商品取得
 // =========================
 
@@ -39,17 +107,13 @@ async function loadProducts(){
         "/api/products",
 
         {
-
           headers:{
-
             Authorization:
               "Bearer " +
               localStorage.getItem(
                 "adminToken"
               )
-
           }
-
         }
 
       );
@@ -84,54 +148,40 @@ async function loadProducts(){
 
 
     // =========================
-    // 店舗表示順
-    // =========================
-    // 店舗○の商品だけ対象
-    //
-    // 初期表示：
-    // 種類 → ID順
-    //
-    // G列の既存値は、
-    // この画面では初期並びには使用しない
+    // 店舗商品
+    // 店舗○のみ
+    // G列「表示順」昇順
+    // 未設定はID順
     // =========================
 
     storeProducts =
       products
-        .filter(
-          item =>
-            item.store === "○"
-        )
-        .sort(
-          compareStoreProducts
-        );
+      .filter(
+        item =>
+          item.store === "○"
+      )
+      .sort(
+        compareStoreProducts
+      );
 
 
     // =========================
-    // キッチンカー表示順
-    // =========================
-    // カー○の商品だけ対象
-    //
-    // N列「カー表示順」がある場合
-    //     → N列順
-    //
-    // N列が空の場合
-    //     → ID順
+    // キッチンカー商品
+    // カー○のみ
+    // N列「カー表示順」昇順
+    // 未設定はID順
     // =========================
 
     kitchenProducts =
       products
-        .filter(
-          item =>
-            item.kitchenCar === "○"
-        )
-        .sort(
-          compareKitchenProducts
-        );
+      .filter(
+        item =>
+          item.kitchenCar === "○"
+      )
+      .sort(
+        compareKitchenProducts
+      );
 
-
-    // =========================
-    // 表示
-    // =========================
 
     renderStoreProducts();
 
@@ -140,10 +190,7 @@ async function loadProducts(){
 
   }catch(error){
 
-    console.error(
-      "商品取得エラー",
-      error
-    );
+    console.error(error);
 
 
     const storeList =
@@ -161,7 +208,7 @@ async function loadProducts(){
 
       storeList.innerHTML = `
 
-        <div class="sort-info">
+        <div class="sort-message">
 
           商品一覧の取得に失敗しました。
 
@@ -176,7 +223,7 @@ async function loadProducts(){
 
       kitchenList.innerHTML = `
 
-        <div class="sort-info">
+        <div class="sort-message">
 
           商品一覧の取得に失敗しました。
 
@@ -192,108 +239,133 @@ async function loadProducts(){
 
 
 // =========================
-// 店舗商品の初期並び
-// =========================
-// 種類 → ID順
+// 店舗商品の比較
 // =========================
 
 function compareStoreProducts(a,b){
 
-  const aType =
-    String(
-      a.type || ""
-    );
-
-  const bType =
-    String(
-      b.type || ""
-    );
-
-
-  if(aType !== bType){
-
-    return aType.localeCompare(
-      bType,
-      "ja"
-    );
-
-  }
-
-
-  return (
-    Number(a.id) -
-    Number(b.id)
-  );
-
-}
-
-
-// =========================
-// キッチンカー商品の初期並び
-// =========================
-// N列「カー表示順」を優先
-// N列が空ならID順
-// =========================
-
-function compareKitchenProducts(a,b){
-
   const aSort =
-    getKitchenSort(a);
+    Number(a.sort);
+
 
   const bSort =
-    getKitchenSort(b);
+    Number(b.sort);
 
 
-  if(aSort !== bSort){
-
-    return aSort - bSort;
-
-  }
-
-
-  return (
-    Number(a.id) -
-    Number(b.id)
-  );
-
-}
+  const aHasSort =
+    a.sort !== "" &&
+    a.sort !== null &&
+    a.sort !== undefined &&
+    !isNaN(aSort);
 
 
-// =========================
-// キッチンカー表示順取得
-// =========================
-
-function getKitchenSort(item){
-
-  const value =
-    item.kitchenSort;
+  const bHasSort =
+    b.sort !== "" &&
+    b.sort !== null &&
+    b.sort !== undefined &&
+    !isNaN(bSort);
 
 
+  // 両方に表示順あり
   if(
-    value !== undefined &&
-    value !== null &&
-    value !== ""
+    aHasSort &&
+    bHasSort
   ){
 
-    const number =
-      Number(value);
+    if(aSort !== bSort){
 
-
-    if(!isNaN(number)){
-
-      return number;
+      return aSort - bSort;
 
     }
 
   }
 
 
-  // N列が空の場合
-  // IDを仮の表示順として使用
+  // 表示順ありを先
+  if(aHasSort && !bHasSort){
 
-  return Number(
-    item.id
-  );
+    return -1;
+
+  }
+
+
+  if(!aHasSort && bHasSort){
+
+    return 1;
+
+  }
+
+
+  // 表示順が同じ・未設定
+  // ID順
+  return Number(a.id) -
+    Number(b.id);
+
+}
+
+
+// =========================
+// キッチンカー商品の比較
+// =========================
+
+function compareKitchenProducts(a,b){
+
+  const aSort =
+    Number(a.kitchenSort);
+
+
+  const bSort =
+    Number(b.kitchenSort);
+
+
+  const aHasSort =
+    a.kitchenSort !== "" &&
+    a.kitchenSort !== null &&
+    a.kitchenSort !== undefined &&
+    !isNaN(aSort);
+
+
+  const bHasSort =
+    b.kitchenSort !== "" &&
+    b.kitchenSort !== null &&
+    b.kitchenSort !== undefined &&
+    !isNaN(bSort);
+
+
+  // 両方に表示順あり
+  if(
+    aHasSort &&
+    bHasSort
+  ){
+
+    if(aSort !== bSort){
+
+      return aSort - bSort;
+
+    }
+
+  }
+
+
+  // 表示順ありを先
+  if(aHasSort && !bHasSort){
+
+    return -1;
+
+  }
+
+
+  if(!aHasSort && bHasSort){
+
+    return 1;
+
+  }
+
+
+  // 表示順が同じ・未設定
+  // ID順
+  return Number(a.id) -
+    Number(b.id);
 
 }
 
@@ -333,83 +405,52 @@ function renderStoreProducts(){
 
           </div>
 
-
           <div class="sort-info">
 
-            <div class="sort-name">
+            <div class="sort-product">
 
-              ${escapeHtml(
-                item.name || ""
-              )}
+              <span class="sort-id">
 
-            </div>
+                ID:${escapeHtml(
+                  item.id
+                )}
 
+              </span>
 
-            <div class="sort-detail">
+              <span class="sort-name">
 
-              ID：
-              ${item.id}
+                ${escapeHtml(
+                  item.name || ""
+                )}
 
-              ／
-
-              ${escapeHtml(
-                item.type || ""
-              )}
-
-              ／
-
-              店舗：
-              ${item.store || "×"}
+              </span>
 
             </div>
 
           </div>
 
-
           <div class="sort-buttons">
 
             <button
-
-              onclick="
-                moveStoreProduct(
-                  ${index},
-                  -1
-                )
-              "
-
-              ${
-                index === 0
-                  ? "disabled"
-                  : ""
-              }
-
+              onclick="moveStoreProduct(
+                ${index},
+                -1
+              )"
+              ${index === 0 ? "disabled" : ""}
+              aria-label="上へ"
             >
-
               ▲
-
             </button>
 
-
             <button
-
-              onclick="
-                moveStoreProduct(
-                  ${index},
-                  1
-                )
-              "
-
-              ${
-                index ===
-                storeProducts.length - 1
-                  ? "disabled"
-                  : ""
-              }
-
+              onclick="moveStoreProduct(
+                ${index},
+                1
+              )"
+              ${index === storeProducts.length - 1 ? "disabled" : ""}
+              aria-label="下へ"
             >
-
               ▼
-
             </button>
 
           </div>
@@ -426,7 +467,7 @@ function renderStoreProducts(){
 
     html = `
 
-      <div class="sort-info">
+      <div class="sort-message">
 
         店舗表示対象の商品がありません。
 
@@ -478,88 +519,52 @@ function renderKitchenProducts(){
 
           </div>
 
-
           <div class="sort-info">
 
-            <div class="sort-name">
+            <div class="sort-product">
 
-              ${escapeHtml(
-                item.name || ""
-              )}
+              <span class="sort-id">
 
-            </div>
+                ID:${escapeHtml(
+                  item.id
+                )}
 
+              </span>
 
-            <div class="sort-detail">
+              <span class="sort-name">
 
-              ID：
-              ${item.id}
+                ${escapeHtml(
+                  item.name || ""
+                )}
 
-              ／
-
-              ${escapeHtml(
-                item.type || ""
-              )}
-
-              ／
-
-              カー：
-              ${item.kitchenCar || "×"}
-
-              ／
-
-              現在の順：
-              ${getKitchenSort(item)}
+              </span>
 
             </div>
 
           </div>
 
-
           <div class="sort-buttons">
 
             <button
-
-              onclick="
-                moveKitchenProduct(
-                  ${index},
-                  -1
-                )
-              "
-
-              ${
-                index === 0
-                  ? "disabled"
-                  : ""
-              }
-
+              onclick="moveKitchenProduct(
+                ${index},
+                -1
+              )"
+              ${index === 0 ? "disabled" : ""}
+              aria-label="上へ"
             >
-
               ▲
-
             </button>
 
-
             <button
-
-              onclick="
-                moveKitchenProduct(
-                  ${index},
-                  1
-                )
-              "
-
-              ${
-                index ===
-                kitchenProducts.length - 1
-                  ? "disabled"
-                  : ""
-              }
-
+              onclick="moveKitchenProduct(
+                ${index},
+                1
+              )"
+              ${index === kitchenProducts.length - 1 ? "disabled" : ""}
+              aria-label="下へ"
             >
-
               ▼
-
             </button>
 
           </div>
@@ -576,7 +581,7 @@ function renderKitchenProducts(){
 
     html = `
 
-      <div class="sort-info">
+      <div class="sort-message">
 
         キッチンカー表示対象の商品がありません。
 
@@ -674,6 +679,73 @@ function moveKitchenProduct(
 
 
 // =========================
+// 商品表示順更新
+// =========================
+
+async function updateProductSort(
+  id,
+  sortData
+){
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/products/update",
+
+      {
+
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            "Bearer " +
+            localStorage.getItem(
+              "adminToken"
+            )
+
+        },
+
+        body:
+          JSON.stringify({
+
+            id:
+
+              id,
+
+            ...sortData
+
+          })
+
+      }
+
+    );
+
+
+  const result =
+    await res.json();
+
+
+  if(
+    !res.ok ||
+    !result.success
+  ){
+
+    throw new Error(
+      result.message ||
+      "保存失敗"
+    );
+
+  }
+
+}
+
+
+// =========================
 // 店舗表示順保存
 // =========================
 
@@ -688,7 +760,7 @@ async function saveStoreSortOrder(){
 
   if(
     !confirm(
-      "現在の店舗表示順を保存しますか？"
+      "店舗表示順を保存しますか？"
     )
   ){
 
@@ -718,7 +790,7 @@ async function saveStoreSortOrder(){
 
     // =========================
     // 上から1,2,3...
-    // G列「表示順」に保存
+    // G列へ保存
     // =========================
 
     for(
@@ -727,64 +799,16 @@ async function saveStoreSortOrder(){
       i++
     ){
 
-      const item =
-        storeProducts[i];
+      await updateProductSort(
 
+        storeProducts[i].id,
 
-      const res =
-        await fetch(
+        {
+          sort:
+            i + 1
+        }
 
-          API_URL +
-          "/api/products/update",
-
-          {
-
-            method:"POST",
-
-            headers:{
-
-              "Content-Type":
-                "application/json",
-
-              Authorization:
-                "Bearer " +
-                localStorage.getItem(
-                  "adminToken"
-                )
-
-            },
-
-            body:
-              JSON.stringify({
-
-                id:
-                  item.id,
-
-                sort:
-                  i + 1
-
-              })
-
-            }
-
-        );
-
-
-      const result =
-        await res.json();
-
-
-      if(
-        !res.ok ||
-        !result.success
-      ){
-
-        throw new Error(
-          result.message ||
-          "保存失敗"
-        );
-
-      }
+      );
 
     }
 
@@ -808,10 +832,7 @@ async function saveStoreSortOrder(){
 
   }catch(error){
 
-    console.error(
-      "店舗表示順保存エラー",
-      error
-    );
+    console.error(error);
 
 
     alert(
@@ -851,7 +872,7 @@ async function saveKitchenSortOrder(){
 
   if(
     !confirm(
-      "現在のキッチンカー表示順を保存しますか？"
+      "キッチンカー表示順を保存しますか？"
     )
   ){
 
@@ -881,7 +902,7 @@ async function saveKitchenSortOrder(){
 
     // =========================
     // 上から1,2,3...
-    // N列「カー表示順」に保存
+    // N列へ保存
     // =========================
 
     for(
@@ -890,64 +911,16 @@ async function saveKitchenSortOrder(){
       i++
     ){
 
-      const item =
-        kitchenProducts[i];
+      await updateProductSort(
 
+        kitchenProducts[i].id,
 
-      const res =
-        await fetch(
+        {
+          kitchenSort:
+            i + 1
+        }
 
-          API_URL +
-          "/api/products/update",
-
-          {
-
-            method:"POST",
-
-            headers:{
-
-              "Content-Type":
-                "application/json",
-
-              Authorization:
-                "Bearer " +
-                localStorage.getItem(
-                  "adminToken"
-                )
-
-            },
-
-            body:
-              JSON.stringify({
-
-                id:
-                  item.id,
-
-                kitchenSort:
-                  i + 1
-
-              })
-
-            }
-
-        );
-
-
-      const result =
-        await res.json();
-
-
-      if(
-        !res.ok ||
-        !result.success
-      ){
-
-        throw new Error(
-          result.message ||
-          "保存失敗"
-        );
-
-      }
+      );
 
     }
 
@@ -971,10 +944,7 @@ async function saveKitchenSortOrder(){
 
   }catch(error){
 
-    console.error(
-      "キッチンカー表示順保存エラー",
-      error
-    );
+    console.error(error);
 
 
     alert(
