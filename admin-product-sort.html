@@ -133,47 +133,73 @@
 <div class="admin-top-buttons">
 
 <a
-id="backLink"
-class="back-btn"
+  id="backLink"
+  class="back-btn"
 >
-← 管理画面へ戻る
+  ← 管理画面へ戻る
 </a>
 
-</div>
+
+<!-- =========================
+     店舗表示順
+========================= -->
+
+<section class="sort-section">
+
+  <h2>
+    店舗表示順
+  </h2>
+
+  <p>
+    店舗○の商品を上位にして、
+    ▲▼で表示順を変更できます。
+  </p>
+
+  <div
+    id="storeSortList"
+    class="sort-list"
+  ></div>
+
+  <button
+    id="saveStoreSortButton"
+    class="save-sort-btn"
+    onclick="saveStoreSortOrder()"
+  >
+    店舗表示順を保存
+  </button>
+
+</section>
 
 
-<div class="sort-info">
+<!-- =========================
+     キッチンカー表示順
+========================= -->
 
-<strong id="sortTarget">
-店舗表示順
-</strong>
+<section class="sort-section">
 
-<div style="margin-top:6px;font-size:14px;color:#666;">
-上から順番に表示されます。▲▼で並び替えてください。
-</div>
+  <h2>
+    キッチンカー表示順
+  </h2>
 
-</div>
+  <p>
+    カー○の商品を上位にして、
+    ▲▼で表示順を変更できます。
+  </p>
 
+  <div
+    id="kitchenSortList"
+    class="sort-list"
+  ></div>
 
-<div
-id="sortList"
-class="sort-list"
->
+  <button
+    id="saveKitchenSortButton"
+    class="save-sort-btn"
+    onclick="saveKitchenSortOrder()"
+  >
+    キッチンカー表示順を保存
+  </button>
 
-<div class="loading">
-読み込み中...
-</div>
-
-</div>
-
-
-<button
-id="saveSortButton"
-class="save-sort-btn"
-onclick="saveSortOrder()"
->
-表示順を保存
-</button>
+</section>
 
 
 </main>
