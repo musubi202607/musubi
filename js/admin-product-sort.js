@@ -1,10 +1,11 @@
 // =========================
-// 表示順管理
+// 商品表示順管理
+// 店舗 ＋ キッチンカー
 // =========================
 
 let products = [];
-
-let fromKitchen = false;
+let storeProducts = [];
+let kitchenProducts = [];
 
 
 // =========================
@@ -15,17 +16,6 @@ window.addEventListener(
   "DOMContentLoaded",
   async function(){
 
-    const params =
-      new URLSearchParams(
-        location.search
-      );
-
-    fromKitchen =
-      params.get("from") === "kitchen";
-
-
-    setupPage();
-
     await loadProducts();
 
   }
@@ -33,82 +23,10 @@ window.addEventListener(
 
 
 // =========================
-// 画面設定
-// =========================
-
-function setupPage(){
-
-  const backLink =
-    document.getElementById(
-      "backLink"
-    );
-
-  const pageTitle =
-    document.getElementById(
-      "pageTitle"
-    );
-
-  const pageDescription =
-    document.getElementById(
-      "pageDescription"
-    );
-
-  const sortTarget =
-    document.getElementById(
-      "sortTarget"
-    );
-
-
-  if(fromKitchen){
-
-    pageTitle.textContent =
-      "キッチンカー表示順管理";
-
-    pageDescription.textContent =
-      "キッチンカー商品の表示順を管理します";
-
-    sortTarget.textContent =
-      "キッチンカー表示順";
-
-    backLink.href =
-      "kitchen-index.html";
-
-    backLink.textContent =
-      "← キッチンカー管理へ戻る";
-
-  }else{
-
-    pageTitle.textContent =
-      "店舗表示順管理";
-
-    pageDescription.textContent =
-      "店舗商品の表示順を管理します";
-
-    sortTarget.textContent =
-      "店舗表示順";
-
-    backLink.href =
-      "admin.html";
-
-    backLink.textContent =
-      "← 管理画面へ戻る";
-
-  }
-
-}
-
-
-// =========================
 // 商品取得
 // =========================
 
 async function loadProducts(){
-
-  const list =
-    document.getElementById(
-      "sortList"
-    );
-
 
   try{
 
@@ -153,66 +71,135 @@ async function loadProducts(){
     }
 
 
-    // =========================
-    // 対象商品の抽出
-    // =========================
-
     products =
-      data
-      .filter(item => {
-
-        if(!item.id){
-
-          return false;
-
-        }
-
-
-        // -----------------------
-        // キッチンカー
-        // -----------------------
-
-        if(fromKitchen){
-
-          return item.kitchenCar === "○";
-
-        }
-
-
-        // -----------------------
-        // 店舗
-        // -----------------------
-
-        return item.store === "○";
-
-      });
+      data.filter(
+        item => item.id
+      );
 
 
     // =========================
-    // 並び順
+    // 店舗表示順
+    // 店舗○を上位
+    // その中で種類 → ID順
     // =========================
 
-    products.sort(
-      compareProducts
-    );
+    storeProducts =
+      products
+      .filter(
+        item =>
+          item.store === "○"
+      )
+      .sort(
+        compareStoreProducts
+      );
 
 
-    renderProducts();
+    // =========================
+    // 店舗×の商品
+    // =========================
+
+    const storeDisabled =
+      products
+      .filter(
+        item =>
+          item.store !== "○"
+      )
+      .sort(
+        compareStoreProducts
+      );
+
+
+    storeProducts =
+      storeProducts.concat(
+        storeDisabled
+      );
+
+
+    // =========================
+    // キッチンカー表示順
+    // カー○を上位
+    // =========================
+
+    kitchenProducts =
+      products
+      .filter(
+        item =>
+          item.kitchenCar === "○"
+      )
+      .sort(
+        compareKitchenProducts
+      );
+
+
+    // =========================
+    // カー×の商品
+    // =========================
+
+    const kitchenDisabled =
+      products
+      .filter(
+        item =>
+          item.kitchenCar !== "○"
+      )
+      .sort(
+        compareKitchenProducts
+      );
+
+
+    kitchenProducts =
+      kitchenProducts.concat(
+        kitchenDisabled
+      );
+
+
+    renderStoreProducts();
+    renderKitchenProducts();
 
 
   }catch(error){
 
     console.error(error);
 
-    list.innerHTML = `
 
-      <div class="sort-info">
+    const storeList =
+      document.getElementById(
+        "storeSortList"
+      );
 
-        商品一覧の取得に失敗しました。
+    const kitchenList =
+      document.getElementById(
+        "kitchenSortList"
+      );
 
-      </div>
 
-    `;
+    if(storeList){
+
+      storeList.innerHTML = `
+
+        <div class="sort-info">
+
+          商品一覧の取得に失敗しました。
+
+        </div>
+
+      `;
+
+    }
+
+
+    if(kitchenList){
+
+      kitchenList.innerHTML = `
+
+        <div class="sort-info">
+
+          商品一覧の取得に失敗しました。
+
+        </div>
+
+      `;
+
+    }
 
   }
 
@@ -220,119 +207,142 @@ async function loadProducts(){
 
 
 // =========================
-// 並び順比較
+// 店舗商品の比較
 // =========================
 
-function compareProducts(a,b){
+function compareStoreProducts(a,b){
 
-  const aSort =
-    fromKitchen
-      ? Number(a.kitchenSort || 999999)
-      : Number(a.sort || 999999);
+  const aType =
+    String(a.type || "");
 
-
-  const bSort =
-    fromKitchen
-      ? Number(b.kitchenSort || 999999)
-      : Number(b.sort || 999999);
+  const bType =
+    String(b.type || "");
 
 
-  // 表示順が設定されている場合
-  if(aSort !== bSort){
+  if(aType !== bType){
 
-    return aSort - bSort;
+    return aType.localeCompare(
+      bType,
+      "ja"
+    );
 
   }
 
 
-  // 表示順が同じ場合
-  // ID順
   return Number(a.id) -
-         Number(b.id);
+    Number(b.id);
 
 }
 
 
 // =========================
-// 商品一覧表示
+// キッチンカー商品の比較
 // =========================
 
-function renderProducts(){
+function compareKitchenProducts(a,b){
+
+  return Number(a.id) -
+    Number(b.id);
+
+}
+
+
+// =========================
+// 店舗表示
+// =========================
+
+function renderStoreProducts(){
 
   const list =
     document.getElementById(
-      "sortList"
+      "storeSortList"
     );
+
+
+  if(!list){
+
+    return;
+
+  }
 
 
   let html = "";
 
 
-  products.forEach(
+  storeProducts.forEach(
     (item,index)=>{
+
+      const enabled =
+        item.store === "○";
+
 
       html += `
 
-<div
-  class="sort-item"
-  data-index="${index}"
->
+        <div class="sort-item">
 
-  <div
-    class="sort-number"
-    id="sortNumber_${index}"
-  >
-    ${index + 1}
-  </div>
+          <div class="sort-number">
 
+            ${index + 1}
 
-  <div class="sort-info-main">
+          </div>
 
-    <div class="sort-name">
+          <div class="sort-info">
 
-      ${escapeHtml(
-        item.name || ""
-      )}
+            <div class="sort-name">
 
-    </div>
+              ${escapeHtml(
+                item.name || ""
+              )}
 
-    <div class="sort-detail">
+            </div>
 
-      ID：
-      ${item.id}
+            <div class="sort-detail">
 
-      ／
+              ID：
+              ${item.id}
 
-      ${escapeHtml(
-        item.type || ""
-      )}
+              ／
 
-    </div>
+              ${escapeHtml(
+                item.type || ""
+              )}
 
-  </div>
+              ／
 
+              店舗：
+              ${item.store || "×"}
 
-  <div class="sort-buttons">
+            </div>
 
-    <button
-      onclick="moveProduct(${index},-1)"
-      ${index === 0 ? "disabled" : ""}
-    >
-      ▲
-    </button>
+          </div>
 
-    <button
-      onclick="moveProduct(${index},1)"
-      ${index === products.length - 1 ? "disabled" : ""}
-    >
-      ▼
-    </button>
+          <div class="sort-buttons">
 
-  </div>
+            <button
+              onclick="moveStoreProduct(
+                ${index},
+                -1
+              )"
+              ${index === 0 ? "disabled" : ""}
+            >
+              ▲
+            </button>
 
-</div>
+            <button
+              onclick="moveStoreProduct(
+                ${index},
+                1
+              )"
+              ${index === storeProducts.length - 1 ? "disabled" : ""}
+            >
+              ▼
+            </button>
 
-`;
+          </div>
+
+        </div>
+
+      `;
 
     }
   );
@@ -344,7 +354,7 @@ function renderProducts(){
 
       <div class="sort-info">
 
-        表示対象の商品がありません。
+        商品がありません。
 
       </div>
 
@@ -360,10 +370,128 @@ function renderProducts(){
 
 
 // =========================
-// 並び替え
+// キッチンカー表示
 // =========================
 
-function moveProduct(
+function renderKitchenProducts(){
+
+  const list =
+    document.getElementById(
+      "kitchenSortList"
+    );
+
+
+  if(!list){
+
+    return;
+
+  }
+
+
+  let html = "";
+
+
+  kitchenProducts.forEach(
+    (item,index)=>{
+
+      html += `
+
+        <div class="sort-item">
+
+          <div class="sort-number">
+
+            ${index + 1}
+
+          </div>
+
+          <div class="sort-info">
+
+            <div class="sort-name">
+
+              ${escapeHtml(
+                item.name || ""
+              )}
+
+            </div>
+
+            <div class="sort-detail">
+
+              ID：
+              ${item.id}
+
+              ／
+
+              ${escapeHtml(
+                item.type || ""
+              )}
+
+              ／
+
+              カー：
+              ${item.kitchenCar || "×"}
+
+            </div>
+
+          </div>
+
+          <div class="sort-buttons">
+
+            <button
+              onclick="moveKitchenProduct(
+                ${index},
+                -1
+              )"
+              ${index === 0 ? "disabled" : ""}
+            >
+              ▲
+            </button>
+
+            <button
+              onclick="moveKitchenProduct(
+                ${index},
+                1
+              )"
+              ${index === kitchenProducts.length - 1 ? "disabled" : ""}
+            >
+              ▼
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  if(!html){
+
+    html = `
+
+      <div class="sort-info">
+
+        商品がありません。
+
+      </div>
+
+    `;
+
+  }
+
+
+  list.innerHTML =
+    html;
+
+}
+
+
+// =========================
+// 店舗並び替え
+// =========================
+
+function moveStoreProduct(
   index,
   direction
 ){
@@ -374,7 +502,7 @@ function moveProduct(
 
   if(
     newIndex < 0 ||
-    newIndex >= products.length
+    newIndex >= storeProducts.length
   ){
 
     return;
@@ -383,44 +511,78 @@ function moveProduct(
 
 
   const temp =
-    products[index];
+    storeProducts[index];
 
 
-  products[index] =
-    products[newIndex];
+  storeProducts[index] =
+    storeProducts[newIndex];
 
 
-  products[newIndex] =
+  storeProducts[newIndex] =
     temp;
 
 
-  renderProducts();
+  renderStoreProducts();
 
 }
 
 
 // =========================
-// 表示順保存
+// キッチンカー並び替え
 // =========================
 
-async function saveSortOrder(){
+function moveKitchenProduct(
+  index,
+  direction
+){
 
-  if(!products.length){
+  const newIndex =
+    index + direction;
+
+
+  if(
+    newIndex < 0 ||
+    newIndex >= kitchenProducts.length
+  ){
 
     return;
 
   }
 
 
-  const button =
-    document.getElementById(
-      "saveSortButton"
-    );
+  const temp =
+    kitchenProducts[index];
+
+
+  kitchenProducts[index] =
+    kitchenProducts[newIndex];
+
+
+  kitchenProducts[newIndex] =
+    temp;
+
+
+  renderKitchenProducts();
+
+}
+
+
+// =========================
+// 店舗表示順保存
+// =========================
+
+async function saveStoreSortOrder(){
+
+  if(!storeProducts.length){
+
+    return;
+
+  }
 
 
   if(
     !confirm(
-      "現在の並び順を保存しますか？"
+      "店舗表示順を保存しますか？"
     )
   ){
 
@@ -429,48 +591,33 @@ async function saveSortOrder(){
   }
 
 
-  button.disabled =
-    true;
+  const button =
+    document.getElementById(
+      "saveStoreSortButton"
+    );
 
-  button.textContent =
-    "保存中...";
+
+  if(button){
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "保存中...";
+
+  }
 
 
   try{
 
-    // =========================
-    // 上から1,2,3...
-    // =========================
-
     for(
       let i = 0;
-      i < products.length;
+      i < storeProducts.length;
       i++
     ){
 
       const item =
-        products[i];
-
-
-      const body = {
-
-        id:
-          item.id
-
-      };
-
-
-      if(fromKitchen){
-
-        body.kitchenSort =
-          i + 1;
-
-      }else{
-
-        body.sort =
-          i + 1;
-
-      }
+        storeProducts[i];
 
 
       const res =
@@ -497,7 +644,15 @@ async function saveSortOrder(){
             },
 
             body:
-              JSON.stringify(body)
+              JSON.stringify({
+
+                id:
+                  item.id,
+
+                sort:
+                  i + 1
+
+              })
 
           }
 
@@ -508,7 +663,10 @@ async function saveSortOrder(){
         await res.json();
 
 
-      if(!res.ok || !result.success){
+      if(
+        !res.ok ||
+        !result.success
+      ){
 
         throw new Error(
           result.message ||
@@ -520,51 +678,175 @@ async function saveSortOrder(){
     }
 
 
-    // ローカルの商品データも更新
-
-    products.forEach(
-      (item,index)=>{
-
-        if(fromKitchen){
-
-          item.kitchenSort =
-            index + 1;
-
-        }else{
-
-          item.sort =
-            index + 1;
-
-        }
-
-      }
-    );
-
-
     alert(
-      "表示順を保存しました"
+      "店舗表示順を保存しました"
     );
-
-
-    renderProducts();
 
 
   }catch(error){
 
     console.error(error);
 
+
     alert(
-      "表示順の保存に失敗しました"
+      "店舗表示順の保存に失敗しました"
     );
 
 
   }finally{
 
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "店舗表示順を保存";
+
+    }
+
+  }
+
+}
+
+
+// =========================
+// キッチンカー表示順保存
+// =========================
+
+async function saveKitchenSortOrder(){
+
+  if(!kitchenProducts.length){
+
+    return;
+
+  }
+
+
+  if(
+    !confirm(
+      "キッチンカー表示順を保存しますか？"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "saveKitchenSortButton"
+    );
+
+
+  if(button){
+
     button.disabled =
-      false;
+      true;
 
     button.textContent =
-      "表示順を保存";
+      "保存中...";
+
+  }
+
+
+  try{
+
+    for(
+      let i = 0;
+      i < kitchenProducts.length;
+      i++
+    ){
+
+      const item =
+        kitchenProducts[i];
+
+
+      const res =
+        await fetch(
+
+          API_URL +
+          "/api/products/update",
+
+          {
+
+            method:"POST",
+
+            headers:{
+
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                "Bearer " +
+                localStorage.getItem(
+                  "adminToken"
+                )
+
+            },
+
+            body:
+              JSON.stringify({
+
+                id:
+                  item.id,
+
+                kitchenSort:
+                  i + 1
+
+              })
+
+          }
+
+        );
+
+
+      const result =
+        await res.json();
+
+
+      if(
+        !res.ok ||
+        !result.success
+      ){
+
+        throw new Error(
+          result.message ||
+          "保存失敗"
+        );
+
+      }
+
+    }
+
+
+    alert(
+      "キッチンカー表示順を保存しました"
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    alert(
+      "キッチンカー表示順の保存に失敗しました"
+    );
+
+
+  }finally{
+
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "キッチンカー表示順を保存";
+
+    }
 
   }
 
@@ -578,22 +860,27 @@ async function saveSortOrder(){
 function escapeHtml(value){
 
   return String(value)
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
