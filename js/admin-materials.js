@@ -1,6 +1,6 @@
 // =========================
 // 材料管理
-// Ver.1.0
+// Ver.1.1
 // =========================
 
 let materials = [];
@@ -57,6 +57,7 @@ async function loadMaterials(){
 
       );
 
+
     if(!res.ok){
 
       throw new Error(
@@ -65,8 +66,10 @@ async function loadMaterials(){
 
     }
 
+
     materials =
       await res.json();
+
 
     if(
       !Array.isArray(materials)
@@ -76,41 +79,70 @@ async function loadMaterials(){
 
     }
 
+
+    // =========================
+    // 材料CD順
+    // M0001 → M0002
+    // =========================
+
     materials.sort(
 
-      (a,b)=>
+      (a,b)=>{
 
-        Number(a.id) -
+        const aNum =
+          Number(
+            String(a.id || "")
+              .replace(/^M/, "")
+          );
 
-        Number(b.id)
+        const bNum =
+          Number(
+            String(b.id || "")
+              .replace(/^M/, "")
+          );
+
+        return aNum - bNum;
+
+      }
 
     );
 
-    filteredMaterials =
 
+    filteredMaterials =
       [...materials];
+
 
     renderMaterials();
 
   }
 
+
   catch(error){
 
     console.error(error);
 
-    document.getElementById(
-      "materialList"
-    ).innerHTML =
 
-    `
+    const list =
+      document.getElementById(
+        "materialList"
+      );
 
-    <div class="card">
 
-      材料一覧の取得に失敗しました。
+    if(list){
 
-    </div>
+      list.innerHTML =
 
-    `;
+      `
+
+      <div class="card">
+
+        材料一覧の取得に失敗しました。
+
+      </div>
+
+      `;
+
+    }
 
   }
 
@@ -124,10 +156,17 @@ async function loadMaterials(){
 function renderMaterials(){
 
   const list =
-
     document.getElementById(
       "materialList"
     );
+
+
+  if(!list){
+
+    return;
+
+  }
+
 
   if(
     filteredMaterials.length === 0
@@ -149,91 +188,207 @@ function renderMaterials(){
 
   }
 
+
   let html = "";
+
 
   filteredMaterials.forEach(
 
     item=>{
 
+      const unit =
+        item.useUnit || "";
+
+
+      const unitCost =
+        Number(
+          item.unitCost || 0
+        );
+
+
       html +=
 
       `
 
-<div class="material-item">
+      <div class="material-card">
 
-<div class="material-info">
+        <div class="material-card-header">
 
-<div class="material-name">
+          <strong>
 
-${escapeHtml(item.name)}
+            ${escapeHtml(
+              item.name || ""
+            )}
 
-</div>
+          </strong>
 
-<div class="material-detail">
+          <span>
 
-ID：
+            ${escapeHtml(
+              item.id || ""
+            )}
 
-${item.id}
+          </span>
 
-／
+        </div>
 
-${escapeHtml(item.category)}
 
-／
+        <div class="material-card-info">
 
-使用：
+          <div>
 
-${item.use}
+            分類：
+            ${escapeHtml(
+              item.category || ""
+            )}
 
-</div>
+          </div>
 
-</div>
 
-<div class="material-actions">
+          <div>
 
-<button
+            使用：
+            ${escapeHtml(
+              item.use || ""
+            )}
 
-onclick="openEditModal(
+          </div>
 
-${item.id}
 
-)"
+          <div>
 
->
+            使用単位：
+            ${escapeHtml(
+              unit
+            )}
 
-編集
+          </div>
 
-</button>
 
-<button
+          <div>
 
-onclick="deleteMaterial(
+            仕入：
+            ${escapeHtml(
+              item.purchaseUnit || ""
+            )}
 
-${item.id}
+            /
 
-)"
+            ${Number(
+              item.purchaseQty || 0
+            )}
 
->
+            ${escapeHtml(
+              item.purchaseQtyUnit || ""
+            )}
 
-削除
+          </div>
 
-</button>
 
-</div>
+          <div>
 
-</div>
+            仕入価格：
+            ${Number(
+              item.purchasePrice || 0
+            ).toLocaleString()}
+            円
 
-`;
+          </div>
+
+
+          <div>
+
+            原価単価：
+            ${unitCost.toFixed(3)}
+            円/${escapeHtml(unit)}
+
+          </div>
+
+
+          <div>
+
+            現在在庫：
+            ${Number(
+              item.stock || 0
+            )}
+
+            ${escapeHtml(unit)}
+
+          </div>
+
+
+          <div>
+
+            発注点：
+            ${Number(
+              item.reorderPoint || 0
+            )}
+
+            ${escapeHtml(
+              item.reorderUnit || unit
+            )}
+
+          </div>
+
+
+          ${
+            item.supplier
+              ?
+              `<div>
+                仕入先：
+                ${escapeHtml(
+                  item.supplier
+                )}
+              </div>`
+              :
+              ""
+          }
+
+
+        </div>
+
+
+        <div class="material-card-actions">
+
+          <button
+            type="button"
+            onclick="openEditModal('${escapeHtml(
+              item.id
+            )}')"
+          >
+
+            編集
+
+          </button>
+
+
+          <button
+            type="button"
+            onclick="deleteMaterial('${escapeHtml(
+              item.id
+            )}')"
+          >
+
+            削除
+
+          </button>
+
+        </div>
+
+      </div>
+
+      `;
 
     }
 
   );
 
-  list.innerHTML =
 
+  list.innerHTML =
     html;
 
 }
+
 
 // =========================
 // 検索
@@ -251,12 +406,18 @@ function filterMaterials(){
       .trim()
       .toLowerCase();
 
-  if(keyword === ""){
+
+  if(
+    keyword === ""
+  ){
 
     filteredMaterials =
       [...materials];
 
-  }else{
+  }
+
+
+  else{
 
     filteredMaterials =
 
@@ -264,24 +425,36 @@ function filterMaterials(){
 
         item=>
 
-          String(item.name || "")
-            .toLowerCase()
-            .includes(keyword)
+          String(
+            item.name || ""
+          )
+          .toLowerCase()
+          .includes(keyword)
+
 
           ||
 
-          String(item.category || "")
-            .toLowerCase()
-            .includes(keyword)
+
+          String(
+            item.category || ""
+          )
+          .toLowerCase()
+          .includes(keyword)
+
 
           ||
 
-          String(item.id)
-            .includes(keyword)
+
+          String(
+            item.id || ""
+          )
+          .toLowerCase()
+          .includes(keyword)
 
       );
 
   }
+
 
   renderMaterials();
 
@@ -296,6 +469,7 @@ function openAddModal(){
 
   editId = null;
 
+
   document
     .getElementById(
       "modalTitle"
@@ -303,17 +477,21 @@ function openAddModal(){
     .textContent =
       "材料追加";
 
+
   document
     .getElementById(
       "materialForm"
     )
     .reset();
 
+
   document
     .getElementById(
       "materialId"
     )
-    .value = "";
+    .value =
+      "";
+
 
   document
     .getElementById(
@@ -322,12 +500,16 @@ function openAddModal(){
     .textContent =
       "0.000 円/g";
 
+
   document
     .getElementById(
       "materialModal"
     )
     .style.display =
       "block";
+
+
+  calculateUnitCost();
 
 }
 
@@ -340,22 +522,25 @@ function openEditModal(id){
 
   editId = id;
 
+
   const item =
 
     materials.find(
 
       m=>
 
-        Number(m.id) ===
-        Number(id)
+        String(m.id) ===
+        String(id)
 
     );
+
 
   if(!item){
 
     return;
 
   }
+
 
   document
     .getElementById(
@@ -364,12 +549,14 @@ function openEditModal(id){
     .textContent =
       "材料編集";
 
+
   document
     .getElementById(
       "materialId"
     )
     .value =
       item.id || "";
+
 
   document
     .getElementById(
@@ -378,12 +565,14 @@ function openEditModal(id){
     .value =
       item.name || "";
 
+
   document
     .getElementById(
       "materialCategory"
     )
     .value =
       item.category || "その他";
+
 
   document
     .getElementById(
@@ -392,6 +581,7 @@ function openEditModal(id){
     .value =
       item.use || "○";
 
+
   document
     .getElementById(
       "useUnit"
@@ -399,12 +589,14 @@ function openEditModal(id){
     .value =
       item.useUnit || "g";
 
+
   document
     .getElementById(
       "purchaseUnit"
     )
     .value =
-      item.purchaseUnit || "g";
+      item.purchaseUnit || "";
+
 
   document
     .getElementById(
@@ -413,12 +605,28 @@ function openEditModal(id){
     .value =
       item.purchaseQty || "";
 
+
+  // =========================
+  // 仕入数量単位
+  // =========================
+
+  document
+    .getElementById(
+      "purchaseQtyUnit"
+    )
+    .value =
+      item.purchaseQtyUnit ||
+      item.useUnit ||
+      "g";
+
+
   document
     .getElementById(
       "purchasePrice"
     )
     .value =
       item.purchasePrice || "";
+
 
   document
     .getElementById(
@@ -427,6 +635,7 @@ function openEditModal(id){
     .value =
       item.stock || "";
 
+
   document
     .getElementById(
       "reorderPoint"
@@ -434,12 +643,16 @@ function openEditModal(id){
     .value =
       item.reorderPoint || "";
 
+
   document
     .getElementById(
       "reorderUnit"
     )
     .value =
-      item.reorderUnit || "g";
+      item.reorderUnit ||
+      item.useUnit ||
+      "g";
+
 
   document
     .getElementById(
@@ -448,6 +661,7 @@ function openEditModal(id){
     .value =
       item.supplier || "";
 
+
   document
     .getElementById(
       "remarks"
@@ -455,14 +669,26 @@ function openEditModal(id){
     .value =
       item.remarks || "";
 
+
   document
     .getElementById(
       "unitCost"
-    ).textContent =
+    )
+    .textContent =
 
       item.unitCost
-      ? `${item.unitCost} 円/${item.useUnit || "g"}`
-      : `0.000 円/${item.useUnit || "g"}`;
+      ?
+
+      `${Number(
+        item.unitCost
+      ).toFixed(3)}
+      円/${item.useUnit || "g"}`
+
+      :
+
+      `0.000
+      円/${item.useUnit || "g"}`;
+
 
   document
     .getElementById(
@@ -470,6 +696,7 @@ function openEditModal(id){
     )
     .style.display =
       "block";
+
 
   calculateUnitCost();
 
@@ -491,6 +718,7 @@ function closeModal(){
 
 }
 
+
 // =========================
 // 保存
 // =========================
@@ -507,87 +735,150 @@ document
 
       e.preventDefault();
 
+
       const data = {
 
         id:
-          document.getElementById(
-            "materialId"
-          ).value,
+          document
+            .getElementById(
+              "materialId"
+            )
+            .value,
+
 
         name:
-          document.getElementById(
-            "materialName"
-          ).value.trim(),
+          document
+            .getElementById(
+              "materialName"
+            )
+            .value
+            .trim(),
+
 
         category:
-          document.getElementById(
-            "materialCategory"
-          ).value,
+          document
+            .getElementById(
+              "materialCategory"
+            )
+            .value,
+
 
         useUnit:
-          document.getElementById(
-            "useUnit"
-          ).value,
+          document
+            .getElementById(
+              "useUnit"
+            )
+            .value,
+
 
         purchaseUnit:
-          document.getElementById(
-            "purchaseUnit"
-          ).value,
+          document
+            .getElementById(
+              "purchaseUnit"
+            )
+            .value,
+
 
         purchaseQty:
           Number(
-            document.getElementById(
-              "purchaseQty"
-            ).value || 0
+            document
+              .getElementById(
+                "purchaseQty"
+              )
+              .value || 0
           ),
+
+
+        // =========================
+        // 仕入数量単位
+        // =========================
+
+        purchaseQtyUnit:
+          document
+            .getElementById(
+              "purchaseQtyUnit"
+            )
+            .value,
+
 
         purchasePrice:
           Number(
-            document.getElementById(
-              "purchasePrice"
-            ).value || 0
+            document
+              .getElementById(
+                "purchasePrice"
+              )
+              .value || 0
           ),
+
 
         stock:
           Number(
-            document.getElementById(
-              "stock"
-            ).value || 0
+            document
+              .getElementById(
+                "stock"
+              )
+              .value || 0
           ),
+
 
         reorderPoint:
           Number(
-            document.getElementById(
-              "reorderPoint"
-            ).value || 0
+            document
+              .getElementById(
+                "reorderPoint"
+              )
+              .value || 0
           ),
 
+
         reorderUnit:
-          document.getElementById(
-            "reorderUnit"
-          ).value,
+          document
+            .getElementById(
+              "reorderUnit"
+            )
+            .value,
+
 
         supplier:
-          document.getElementById(
-            "supplier"
-          ).value.trim(),
+          document
+            .getElementById(
+              "supplier"
+            )
+            .value
+            .trim(),
+
 
         use:
-          document.getElementById(
-            "materialUse"
-          ).value,
+          document
+            .getElementById(
+              "materialUse"
+            )
+            .value,
+
 
         remarks:
-          document.getElementById(
-            "remarks"
-          ).value.trim()
+          document
+            .getElementById(
+              "remarks"
+            )
+            .value
+            .trim()
 
       };
 
+
       const url =
+
         editId
-        ? "/api/materials/update"
-        : "/api/materials";
+
+        ?
+
+        "/api/materials/update"
+
+        :
+
+        "/api/materials";
+
 
       try{
 
@@ -598,12 +889,15 @@ document
 
             {
 
-              method:"POST",
+              method:
+                "POST",
+
 
               headers:{
 
                 "Content-Type":
                   "application/json",
+
 
                 Authorization:
                   "Bearer " +
@@ -613,15 +907,20 @@ document
 
               },
 
+
               body:
-                JSON.stringify(data)
+                JSON.stringify(
+                  data
+                )
 
             }
 
           );
 
+
         const result =
           await res.json();
+
 
         if(
           !res.ok ||
@@ -629,24 +928,36 @@ document
         ){
 
           throw new Error(
-            result.message
+            result.message ||
+            "保存失敗"
           );
 
         }
 
+
         closeModal();
+
 
         await loadMaterials();
 
-        alert("保存しました。");
+
+        alert(
+          "保存しました。"
+        );
 
       }
 
+
       catch(error){
 
-        console.error(error);
+        console.error(
+          error
+        );
 
-        alert("保存に失敗しました。");
+
+        alert(
+          "保存に失敗しました。"
+        );
 
       }
 
@@ -671,6 +982,7 @@ async function deleteMaterial(id){
 
   }
 
+
   try{
 
     const res =
@@ -681,12 +993,15 @@ async function deleteMaterial(id){
 
         {
 
-          method:"POST",
+          method:
+            "POST",
+
 
           headers:{
 
             "Content-Type":
               "application/json",
+
 
             Authorization:
               "Bearer " +
@@ -696,10 +1011,12 @@ async function deleteMaterial(id){
 
           },
 
+
           body:
             JSON.stringify({
 
-              id:id
+              id:
+                id
 
             })
 
@@ -707,26 +1024,44 @@ async function deleteMaterial(id){
 
       );
 
+
     const result =
       await res.json();
 
+
     if(
+      !res.ok ||
       !result.success
     ){
 
-      throw new Error();
+      throw new Error(
+        result.message ||
+        "削除失敗"
+      );
 
     }
 
+
     await loadMaterials();
+
+
+    alert(
+      "削除しました。"
+    );
 
   }
 
+
   catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
 
-    alert("削除できませんでした。");
+
+    alert(
+      "削除できませんでした。"
+    );
 
   }
 
@@ -741,39 +1076,62 @@ function calculateUnitCost(){
 
   const qty =
     Number(
-      document.getElementById(
-        "purchaseQty"
-      ).value || 0
+      document
+        .getElementById(
+          "purchaseQty"
+        )
+        .value || 0
     );
+
 
   const price =
     Number(
-      document.getElementById(
-        "purchasePrice"
-      ).value || 0
+      document
+        .getElementById(
+          "purchasePrice"
+        )
+        .value || 0
     );
 
-  const purchaseUnit =
-    document.getElementById(
-      "purchaseUnit"
-    ).value;
+
+  // =========================
+  // 仕入数量単位を使用
+  // =========================
+
+  const purchaseQtyUnit =
+    document
+      .getElementById(
+        "purchaseQtyUnit"
+      )
+      .value;
+
 
   const useUnit =
-    document.getElementById(
-      "useUnit"
-    ).value;
+    document
+      .getElementById(
+        "useUnit"
+      )
+      .value;
+
 
   const result =
     convertToUseUnit(
+
       qty,
-      purchaseUnit,
+
+      purchaseQtyUnit,
+
       useUnit
+
     );
 
+
   const area =
-    document.getElementById(
-      "unitCost"
-    );
+    document
+      .getElementById(
+        "unitCost"
+      );
+
 
   if(
     result <= 0 ||
@@ -787,8 +1145,10 @@ function calculateUnitCost(){
 
   }
 
+
   const cost =
     price / result;
+
 
   area.textContent =
     `${cost.toFixed(3)} 円/${useUnit}`;
@@ -801,21 +1161,31 @@ function calculateUnitCost(){
 // =========================
 
 function convertToUseUnit(
+
   qty,
-  purchaseUnit,
+
+  purchaseQtyUnit,
+
   useUnit
+
 ){
 
   if(
-    purchaseUnit === useUnit
+    purchaseQtyUnit ===
+    useUnit
   ){
 
     return qty;
 
   }
 
+
+  // =========================
+  // kg → g
+  // =========================
+
   if(
-    purchaseUnit === "kg" &&
+    purchaseQtyUnit === "kg" &&
     useUnit === "g"
   ){
 
@@ -823,8 +1193,13 @@ function convertToUseUnit(
 
   }
 
+
+  // =========================
+  // L → ml
+  // =========================
+
   if(
-    purchaseUnit === "L" &&
+    purchaseQtyUnit === "L" &&
     useUnit === "ml"
   ){
 
@@ -832,7 +1207,12 @@ function convertToUseUnit(
 
   }
 
-  return qty;
+
+  // =========================
+  // 換算できない単位
+  // =========================
+
+  return 0;
 
 }
 
