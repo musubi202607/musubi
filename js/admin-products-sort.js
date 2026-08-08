@@ -668,7 +668,6 @@ function moveKitchenProduct(
 
 // =========================
 // 店舗表示順保存
-// 一括保存
 // =========================
 
 async function saveStoreSortOrder(){
@@ -710,6 +709,10 @@ async function saveStoreSortOrder(){
 
   try{
 
+    // =========================
+    // 一括保存用データ作成
+    // =========================
+
     const items =
       storeProducts.map(
         (item,index)=>({
@@ -723,6 +726,10 @@ async function saveStoreSortOrder(){
         })
       );
 
+
+    // =========================
+    // Workerへ1回だけ送信
+    // =========================
 
     const res =
       await fetch(
@@ -780,6 +787,10 @@ async function saveStoreSortOrder(){
     }
 
 
+    // =========================
+    // ローカルデータ更新
+    // =========================
+
     storeProducts.forEach(
       (item,index)=>{
 
@@ -824,7 +835,6 @@ async function saveStoreSortOrder(){
 
 // =========================
 // キッチンカー表示順保存
-// 一括保存
 // =========================
 
 async function saveKitchenSortOrder(){
@@ -866,6 +876,10 @@ async function saveKitchenSortOrder(){
 
   try{
 
+    // =========================
+    // 一括保存用データ作成
+    // =========================
+
     const items =
       kitchenProducts.map(
         (item,index)=>({
@@ -879,6 +893,10 @@ async function saveKitchenSortOrder(){
         })
       );
 
+
+    // =========================
+    // Workerへ1回だけ送信
+    // =========================
 
     const res =
       await fetch(
@@ -935,6 +953,10 @@ async function saveKitchenSortOrder(){
 
     }
 
+
+    // =========================
+    // ローカルデータ更新
+    // =========================
 
     kitchenProducts.forEach(
       (item,index)=>{
