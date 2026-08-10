@@ -43,7 +43,7 @@ async function loadProducts(){
       await fetch(
 
         API_URL +
-        "/api/recipes",
+        "/api/products",
 
         {
 
@@ -63,23 +63,56 @@ async function loadProducts(){
 
     if(!res.ok){
 
-      throw new Error();
+      throw new Error(
+        "商品取得失敗"
+      );
 
     }
 
-    products =
+    const data =
       await res.json();
 
+    console.log(
+      "レシピ管理 商品一覧:",
+      data
+    );
+
     if(
-      !Array.isArray(products)
+      !Array.isArray(data)
     ){
 
       products = [];
 
+    }else{
+
+      // =========================
+      // 商品マスタ形式を
+      // レシピ管理用に統一
+      // =========================
+      products =
+        data.map(item => ({
+
+          productId:
+            item.id,
+
+          productName:
+            item.name,
+
+          price:
+            Number(
+              item.price || 0
+            ),
+
+          costRate:
+            Number(
+              item.costRate || 0
+            )
+
+        }));
+
     }
 
     filteredProducts =
-
       [...products];
 
     renderProducts();
@@ -88,23 +121,26 @@ async function loadProducts(){
 
   catch(error){
 
-    console.error(error);
+    console.error(
+      "商品取得エラー:",
+      error
+    );
+
+    products = [];
+
+    filteredProducts = [];
 
     document.getElementById(
-
       "productList"
-
     ).innerHTML =
 
-    `
+      `
+      <div class="card">
 
-    <div class="card">
+        商品取得失敗
 
-      商品取得失敗
-
-    </div>
-
-    `;
+      </div>
+      `;
 
   }
 
