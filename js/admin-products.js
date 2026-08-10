@@ -143,494 +143,517 @@ function initImageUpload(){
 // =========================
 async function loadProducts(){
 
-  const res =
-  await fetch(
+  try{
 
-    API_URL +
-    "/api/products",
+    const headers = {
+      Authorization:
+        "Bearer " +
+        localStorage.getItem("adminToken")
+    };
 
-    {
-      headers:{
-        Authorization:
-          "Bearer " +
-          localStorage.getItem("adminToken")
+    // =========================
+    // 商品取得
+    // =========================
+    const productsRes =
+      await fetch(
+        API_URL + "/api/products",
+        { headers }
+      );
+
+    if(!productsRes.ok){
+      throw new Error(
+        "商品取得失敗"
+      );
+    }
+
+    const data =
+      await productsRes.json();
+
+    // =========================
+    // レシピ情報取得
+    // =========================
+    const recipesRes =
+      await fetch(
+        API_URL + "/api/recipes",
+        { headers }
+      );
+
+    let recipes = [];
+
+    if(recipesRes.ok){
+
+      recipes =
+        await recipesRes.json();
+
+      if(!Array.isArray(recipes)){
+        recipes = [];
       }
+
     }
 
-  );
+    // =========================
+    // 商品ID → レシピ原価
+    // =========================
+    const recipeMap = {};
 
-  const data =
-    await res.json();
+    recipes.forEach(recipe => {
 
-  let html = "";
+      recipeMap[
+        String(recipe.productId)
+      ] = {
 
-const fromKitchen =
-  new URLSearchParams(location.search)
-    .get("from") === "kitchen";
+        cost:
+          Number(
+            recipe.cost || 0
+          ),
 
-data
-.filter(item => item.id)
-.sort((a,b)=>{
+        costRate:
+          Number(
+            recipe.costRate || 0
+          )
 
-  // キッチンカーから開いた場合だけ
-  if(fromKitchen){
+      };
 
-    const aKitchen =
-      a.kitchenCar === "○" ? 0 : 1;
+    });
 
-    const bKitchen =
-      b.kitchenCar === "○" ? 0 : 1;
+    // =========================
+    // 商品データに原価を追加
+    // =========================
+    data.forEach(item => {
 
-    // キッチンカー○を先頭
-    if(aKitchen !== bKitchen){
-      return aKitchen - bKitchen;
-    }
+      const recipe =
+        recipeMap[
+          String(item.id)
+        ];
+
+      item.recipeCost =
+        recipe
+        ? recipe.cost
+        : 0;
+
+      item.recipeCostRate =
+        recipe
+        ? recipe.costRate
+        : 0;
+
+    });
+
+    let html = "";
+
+    const fromKitchen =
+      new URLSearchParams(
+        location.search
+      ).get("from") === "kitchen";
+
+    data
+      .filter(item => item.id)
+      .sort((a,b)=>{
+
+        // キッチンカーから開いた場合だけ
+        if(fromKitchen){
+
+          const aKitchen =
+            a.kitchenCar === "○"
+              ? 0
+              : 1;
+
+          const bKitchen =
+            b.kitchenCar === "○"
+              ? 0
+              : 1;
+
+          if(
+            aKitchen !==
+            bKitchen
+          ){
+
+            return (
+              aKitchen -
+              bKitchen
+            );
+
+          }
+
+        }
+
+        return (
+          Number(a.sort || 9999) -
+          Number(b.sort || 9999)
+        );
+
+      })
+      .forEach(item=>{
+
+        html += `
+
+        <div class="product-card">
+
+          <strong>
+            ${item.name || ""}
+          </strong>
+
+          <br>
+
+          <b>
+            ${item.price || 0}円
+          </b>
+
+          <br>
+
+          商品原価：
+          ${
+            Number(
+              item.recipeCost || 0
+            ).toFixed(3)
+          }円
+
+          <br>
+
+          原価率：
+          ${
+            Number(
+              item.recipeCostRate || 0
+            ).toFixed(1)
+          }%
+
+          <br>
+
+          キッチンカー：
+          ${item.kitchenPrice || "-"}円
+
+          <br>
+
+          状態：
+          ${item.status || "停止"}
+
+          <br>
+
+          店舗：
+          ${item.store || "×"}
+
+          <br>
+
+          スタッフ：
+          ${item.staff || "×"}
+
+          <br>
+
+          タブレット：
+          ${item.tablet || "×"}
+
+          <br>
+
+          キッチンカー：
+          ${item.kitchenCar || "×"}
+
+          <br><br>
+
+          <button
+            class="save-btn"
+            onclick="openProductEdit(${item.id})"
+          >
+            ✏️ 編集
+          </button>
+
+          <div
+            id="edit_${item.id}"
+            class="product-edit-card"
+            style="display:none;"
+          >
+
+            <hr>
+
+            <div class="product-card-row">
+
+              <label>ID</label>
+
+              ${item.id}
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>商品名</label>
+
+              <input
+                id="name_${item.id}"
+                value="${item.name || ""}"
+              >
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>価格</label>
+
+              <input
+                type="number"
+                id="price_${item.id}"
+                value="${item.price || 0}"
+              >
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>商品原価</label>
+
+              <span>
+
+                ${
+                  Number(
+                    item.recipeCost || 0
+                  ).toFixed(3)
+                } 円
+
+              </span>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>原価率</label>
+
+              <span>
+
+                ${
+                  Number(
+                    item.recipeCostRate || 0
+                  ).toFixed(1)
+                } %
+
+              </span>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>
+                キッチンカー価格
+              </label>
+
+              <input
+                type="number"
+                id="kitchenPrice_${item.id}"
+                value="${item.kitchenPrice || ""}"
+              >
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>説明</label>
+
+              <input
+                id="desc_${item.id}"
+                value="${item.description || ""}"
+              >
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>画像URL</label>
+
+              <input
+                id="image_${item.id}"
+                value="${item.image || ""}"
+                readonly
+              >
+
+              <br><br>
+
+              <label class="image-change-btn">
+
+                📷 画像を変更
+
+                <input
+                  type="file"
+                  id="file_${item.id}"
+                  accept="image/*"
+                  onchange="uploadProductImage(${item.id})"
+                >
+
+              </label>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>種類</label>
+
+              <select id="type_${item.id}">
+
+                <option
+                  value="onigiri"
+                  ${item.type==="onigiri"?"selected":""}
+                >
+                  onigiri
+                </option>
+
+                <option
+                  value="bbq"
+                  ${item.type==="bbq"?"selected":""}
+                >
+                  bbq
+                </option>
+
+                <option
+                  value="bbq-option"
+                  ${item.type==="bbq-option"?"selected":""}
+                >
+                  bbq-option
+                </option>
+
+                <option
+                  value="drink"
+                  ${item.type==="drink"?"selected":""}
+                >
+                  drink
+                </option>
+
+              </select>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>店舗</label>
+
+              <select id="store_${item.id}">
+                <option value="○"
+                  ${item.store==="○"?"selected":""}>
+                  ○
+                </option>
+                <option value="×"
+                  ${item.store==="×"?"selected":""}>
+                  ×
+                </option>
+              </select>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>スタッフ</label>
+
+              <select id="staff_${item.id}">
+                <option value="○"
+                  ${item.staff==="○"?"selected":""}>
+                  ○
+                </option>
+                <option value="×"
+                  ${item.staff==="×"?"selected":""}>
+                  ×
+                </option>
+              </select>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>タブレット</label>
+
+              <select id="tablet_${item.id}">
+                <option value="○"
+                  ${item.tablet==="○"?"selected":""}>
+                  ○
+                </option>
+                <option value="×"
+                  ${item.tablet==="×"?"selected":""}>
+                  ×
+                </option>
+              </select>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>キッチンカー</label>
+
+              <select id="kitchenCar_${item.id}">
+                <option value="○"
+                  ${item.kitchenCar==="○"?"selected":""}>
+                  ○
+                </option>
+                <option value="×"
+                  ${item.kitchenCar==="×"?"selected":""}>
+                  ×
+                </option>
+              </select>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>販売状態</label>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="status_${item.id}"
+                  ${item.status==="販売中" ? "checked" : ""}
+                >
+
+                <span></span>
+
+              </label>
+
+            </div>
+
+            <div class="product-card-row">
+
+              <label>表示順</label>
+
+              <input
+                type="number"
+                id="sort_${item.id}"
+                value="${item.sort || ""}"
+              >
+
+            </div>
+
+            <div class="product-actions">
+
+              <button
+                class="save-btn"
+                onclick="saveProduct(${item.id})"
+              >
+                💾 保存
+              </button>
+
+              <button
+                class="delete-btn"
+                onclick="deleteProduct(${item.id})"
+              >
+                🗑 削除
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+      });
+
+    document.getElementById(
+      "productList"
+    ).innerHTML = html;
 
   }
+  catch(error){
 
-  // その後は表示順
-  return Number(a.sort || 9999) -
-         Number(b.sort || 9999);
+    console.error(error);
 
-})
-.forEach(item=>{
+    alert(
+      "商品情報の取得に失敗しました。"
+    );
 
-      html += `
-
-<div class="product-card">
-
-  <h3>
-
-    ${item.name || ""}
-
-  </h3>
-
-  <div class="product-card-row">
-
-    <img
-
-      id="preview_${item.id}"
-
-      src="${item.image || ""}"
-
-      class="preview-image"
-
-      loading="lazy"
-
-      style="
-        display:${
-          item.image
-          ? "block"
-          : "none"
-        };
-      "
-
-    >
-
-  </div>
-
-  <div class="product-card-row">
-
-    <b>
-
-      ${item.price || 0}円
-
-    </b>
-
-    <br>
-
-キッチンカー：
-${item.kitchenPrice || "-"}円
-
-  </div>
-
-  <div class="product-card-row">
-
-    状態：
-
-    ${item.status || "停止"}
-
-    <br>
-
-    店舗：
-    ${item.store || "×"}
-
-    <br>
-
-    スタッフ：
-    ${item.staff || "×"}
-
-    <br>
-
-    タブレット：
-    ${item.tablet || "×"}
-
-    <br>
-
-    キッチンカー：
-    ${item.kitchenCar || "×"}
-
-  </div>
-
-  <button
-
-    class="save-btn"
-
-    onclick="openProductEdit(
-
-      ${item.id}
-
-    )"
-
-  >
-
-    ✏️ 編集
-
-  </button>
-
-  <div
-
-    id="edit_${item.id}"
-
-    class="product-edit-card"
-
-    style="display:none;"
-
-  >
-
-    <hr>
-
-    <div class="product-card-row">
-
-      <label>
-
-        ID
-
-      </label>
-
-      ${item.id}
-
-    </div>
-
-    <div class="product-card-row">
-
-      <label>
-
-        商品名
-
-      </label>
-
-      <input
-
-        id="name_${item.id}"
-
-        value="${item.name || ""}"
-
-      >
-
-    </div>
-
-    <div class="product-card-row">
-
-<label>
-価格
-</label>
-
-<input
-  type="number"
-  id="price_${item.id}"
-  value="${item.price || 0}"
->
-
-</div>
-
-
-<div class="product-card-row">
-
-<label>
-キッチンカー価格
-</label>
-
-<input
-  type="number"
-  id="kitchenPrice_${item.id}"
-  value="${item.kitchenPrice || ""}"
->
-
-</div>
-
-    <div class="product-card-row">
-
-      <label>
-
-        説明
-
-      </label>
-
-      <input
-
-        id="desc_${item.id}"
-
-        value="${item.description || ""}"
-
-      >
-
-    </div>
-
-    <div class="product-card-row">
-
-      <label>
-
-        画像URL
-
-      </label>
-
-      <input
-
-        id="image_${item.id}"
-
-        value="${item.image || ""}"
-
-        readonly
-
-      >
-
-      <br><br>
-
-      <label
-
-        class="image-change-btn"
-
-      >
-
-        📷 画像を変更
-
-        <input
-
-          type="file"
-
-          id="file_${item.id}"
-
-          accept="image/*"
-
-          onchange="uploadProductImage(
-
-            ${item.id}
-
-          )"
-
-        >
-
-      </label>
-
-    </div>
-    
-        <div class="product-card-row">
-
-      <label>
-
-        種類
-
-      </label>
-
-      <select id="type_${item.id}">
-
-        <option
-          value="onigiri"
-          ${item.type==="onigiri"?"selected":""}
-        >
-          onigiri
-        </option>
-
-        <option
-          value="bbq"
-          ${item.type==="bbq"?"selected":""}
-        >
-          bbq
-        </option>
-
-        <option
-          value="bbq-option"
-          ${item.type==="bbq-option"?"selected":""}
-        >
-          bbq-option
-        </option>
-
-        <option
-          value="drink"
-          ${item.type==="drink"?"selected":""}
-        >
-          drink
-        </option>
-
-        </select>
-
-    </div>
-
-　　<div class="product-card-row">
-
-<label>
-店舗
-</label>
-
-<select id="store_${item.id}">
-
-<option value="○"
-${item.store==="○"?"selected":""}>
-○
-</option>
-
-<option value="×"
-${item.store==="×"?"selected":""}>
-×
-</option>
-
-</select>
-
-</div>
-
-
-<div class="product-card-row">
-
-<label>
-スタッフ
-</label>
-
-<select id="staff_${item.id}">
-
-<option value="○"
-${item.staff==="○"?"selected":""}>
-○
-</option>
-
-<option value="×"
-${item.staff==="×"?"selected":""}>
-×
-</option>
-
-</select>
-
-</div>
-
-
-<div class="product-card-row">
-
-<label>
-タブレット
-</label>
-
-<select id="tablet_${item.id}">
-
-<option value="○"
-${item.tablet==="○"?"selected":""}>
-○
-</option>
-
-<option value="×"
-${item.tablet==="×"?"selected":""}>
-×
-</option>
-
-</select>
-
-</div>
-
-
-<div class="product-card-row">
-
-<label>
-キッチンカー
-</label>
-
-<select id="kitchenCar_${item.id}">
-
-<option value="○"
-${item.kitchenCar==="○"?"selected":""}>
-○
-</option>
-
-<option value="×"
-${item.kitchenCar==="×"?"selected":""}>
-×
-</option>
-
-</select>
-
-</div>
-  
-    <div class="product-card-row">
-
-      <label>
-
-        販売状態
-
-      </label>
-
-      <label class="switch">
-
-        <input
-          type="checkbox"
-          id="status_${item.id}"
-          ${item.status==="販売中" ? "checked" : ""}
-        >
-
-        <span></span>
-
-      </label>
-
-    </div>
-
-    <div class="product-card-row">
-
-      <label>
-
-        表示順
-
-      </label>
-
-      <input
-        type="number"
-        id="sort_${item.id}"
-        value="${item.sort || ""}"
-      >
-
-    </div>
-
-    <div class="product-actions">
-
-      <button
-        class="save-btn"
-        onclick="saveProduct(${item.id})"
-      >
-
-        💾 保存
-
-      </button>
-
-      <button
-        class="delete-btn"
-        onclick="deleteProduct(${item.id})"
-      >
-
-        🗑 削除
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-`;
-
-  });
-
-  document.getElementById(
-
-    "productList"
-
-  ).innerHTML = html;
+  }
 
 }
 
