@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+売上取消
+</title>
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
+
+<style>
+
+.search-area{
+
+  background:#fff;
+
+  padding:20px;
+
+  border-radius:12px;
+
+  margin-bottom:20px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+
+}
+
+.search-area input{
+
+  margin-bottom:15px;
+
+}
+
+.sale-card{
+
+  background:#fff;
+
+  border-radius:12px;
+
+  padding:20px;
+
+  margin-bottom:15px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+
+}
+
+.sale-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:10px;
+
+}
+
+.sale-type{
+
+  display:inline-block;
+
+  padding:5px 12px;
+
+  border-radius:20px;
+
+  color:#fff;
+
+  font-size:13px;
+
+}
+
+.sale-type.onigiri{
+
+  background:#43a047;
+
+}
+
+.sale-type.bbq{
+
+  background:#ff7043;
+
+}
+
+.sale-total{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  margin:15px 0;
+
+}
+
+.sale-buttons{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+.sale-buttons button{
+
+  flex:1;
+
+}
+
+.cancel-btn{
+
+  background:#dc3545;
+
+  color:#fff;
+
+}
+
+.detail{
+
+  display:none;
+
+  margin-top:15px;
+
+  border-top:1px solid #ddd;
+
+  padding-top:15px;
+
+}
+
+.item-row{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  margin:6px 0;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container header-inner">
+
+<h1>
+
+売上取消
+
+</h1>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<a
+id="backBtn"
+class="back-btn"
+href="admin.html"
+>
+
+← 戻る
+
+</a>
+
+<div class="search-area">
+
+<label>
+
+開始日
+
+</label>
+
+<input
+type="date"
+id="startDate"
+>
+
+<label>
+
+終了日
+
+</label>
+
+<input
+type="date"
+id="endDate"
+>
+
+<label>
+
+注文番号
+
+</label>
+
+<input
+type="text"
+id="orderNo"
+placeholder="ON000001"
+>
+
+<button
+onclick="loadSales()"
+>
+
+検索
+
+</button>
+
+</div>
+
+<div
+id="salesList"
+>
+
+読み込み中...
+
+</div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/admin-auth.js"></script>
+
+<script>
+
+// =========================
+// 戻る
+// =========================
+
+const from =
+  new URLSearchParams(
+    location.search
+  ).get("from");
+
+document
+  .getElementById("backBtn")
+  .href =
+    from==="staff"
+      ? "staff.html"
+      : "admin.html";
+
+
+// =========================
+// 売上一覧取得
+// =========================
+
+async function loadSales(){
+
+  document
+    .getElementById(
+      "salesList"
+    )
+    .innerHTML =
+      "売上取得機能を接続予定";
+
+}
+
+
+// =========================
+// 詳細表示
+// =========================
+
+function toggleDetail(id){
+
+  const area =
+    document.getElementById(id);
+
+  area.style.display =
+    area.style.display==="block"
+      ? "none"
+      : "block";
+
+}
+
+loadSales();
+
+</script>
+
+</body>
+
+</html>
