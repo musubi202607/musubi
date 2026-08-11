@@ -398,6 +398,11 @@ async function submitStaffOrder(){
         "note"
       ).value,
 
+    unpaid:
+      document.getElementById(
+        "unpaidCheck"
+      ).checked,
+
     items
 
   };
