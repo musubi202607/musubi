@@ -360,6 +360,26 @@ main{
 
 }
 
+/* =========================
+   未会計チェック
+========================= */
+
+.unpaid-check{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.unpaid-check input{
+  width:26px;
+  height:26px;
+  margin:0;
+  cursor:pointer;
+}
+  
 </style>
 
 </head>
@@ -435,22 +455,12 @@ main{
     placeholder="備考"
   ></textarea>
 
-  <label
-    style="
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:15px;
-    "
+  <label class="unpaid-check">
+  <input
+    type="checkbox"
+    id="unpaidCheck"
   >
-
-    <input
-      type="checkbox"
-      id="unpaidCheck"
-    >
-
-    未会計で登録する
-
+  未会計で登録する
   </label>
 
 </div>
