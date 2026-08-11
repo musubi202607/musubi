@@ -6,8 +6,8 @@
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width,initial-scale=1.0"
 >
 
 <title>
@@ -15,125 +15,143 @@
 </title>
 
 <link
-  rel="stylesheet"
-  href="css/style.css"
+rel="stylesheet"
+href="css/style.css"
 >
 
 <style>
 
-.search-area{
+.search-card{
 
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
-
-}
-
-.search-area input{
-
-  margin-bottom:15px;
+background:#fff;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
 
 }
 
-.sale-card{
+.search-card label{
 
-  background:#fff;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
+display:block;
+margin-bottom:5px;
+font-weight:bold;
 
 }
 
-.sale-header{
+.search-card input{
 
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-
-}
-
-.sale-type{
-
-  display:inline-block;
-  padding:5px 12px;
-  border-radius:20px;
-  color:#fff;
-  font-size:13px;
+width:100%;
+padding:10px;
+margin-bottom:15px;
+box-sizing:border-box;
 
 }
 
-.sale-type.onigiri{
+.search-btn{
 
-  background:#43a047;
-
-}
-
-.sale-type.bbq{
-
-  background:#ff7043;
+width:100%;
+padding:14px;
+font-size:18px;
 
 }
 
-.sale-type.bbqoption{
+.order-card{
 
-  background:#42a5f5;
-
-}
-
-.sale-total{
-
-  font-size:24px;
-  font-weight:bold;
-  margin:15px 0;
+background:#fff;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,.1);
+cursor:pointer;
 
 }
 
-.sale-buttons{
+.order-card:hover{
 
-  display:flex;
-  gap:10px;
-  margin-top:15px;
+background:#f8f8f8;
 
 }
 
-.sale-buttons button{
+.order-top{
 
-  flex:1;
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+}
+
+.order-type{
+
+font-size:22px;
+
+}
+
+.order-no{
+
+font-size:18px;
+font-weight:bold;
+
+}
+
+.order-total{
+
+font-size:20px;
+font-weight:bold;
+color:#e53935;
+
+}
+
+.order-paid{
+
+margin-top:8px;
+font-weight:bold;
+
+}
+
+.detail-card{
+
+background:#fff;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+margin-bottom:90px;
+display:none;
+
+}
+
+.detail-item{
+
+display:flex;
+justify-content:space-between;
+margin:8px 0;
+
+}
+
+.action-area{
+
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+padding:15px;
+background:#fff;
+border-top:1px solid #ddd;
+display:none;
+
+}
+
+.action-btn{
+
+width:100%;
+padding:16px;
+font-size:20px;
 
 }
 
 .cancel-btn{
 
-  background:#dc3545;
-  color:#fff;
-
-}
-
-.detail{
-
-  display:none;
-  margin-top:15px;
-  border-top:1px solid #ddd;
-  padding-top:15px;
-
-}
-
-.item-row{
-
-  display:flex;
-  justify-content:space-between;
-  margin:6px 0;
-
-}
-
-.reason{
-
-  width:100%;
-  margin-top:15px;
+background:#d32f2f;
+color:#fff;
 
 }
 
@@ -157,19 +175,19 @@
 
 </header>
 
-<div class="container">
+<main class="container">
 
 <a
+href="#"
 id="backBtn"
 class="back-btn"
-href="admin.html"
 >
 
 ← 戻る
 
 </a>
 
-<div class="search-area">
+<div class="search-card">
 
 <label>
 
@@ -193,20 +211,9 @@ type="date"
 id="endDate"
 >
 
-<label>
-
-注文番号
-
-</label>
-
-<input
-type="text"
-id="orderNo"
-placeholder="ON000001"
->
-
 <button
-onclick="loadSales()"
+class="search-btn"
+onclick="loadOrders()"
 >
 
 検索
@@ -215,266 +222,46 @@ onclick="loadSales()"
 
 </div>
 
-<div
-id="salesList"
->
+<h2>
+
+注文一覧
+
+</h2>
+
+<div id="orderList">
 
 読み込み中...
 
 </div>
 
-</div>
-
-<script src="js/config.js"></script>
-<script src="js/admin-auth.js"></script>
-
-<script>
-
-// =========================
-// 戻る
-// =========================
-
-const from =
-new URLSearchParams(
-location.search
-).get("from");
-
-document
-.getElementById("backBtn")
-.href =
-from==="staff"
-? "staff.html"
-: "admin.html";
-
-
-// =========================
-// 売上一覧取得
-// =========================
-
-async function loadSales(){
-
-const token =
-localStorage.getItem(
-"adminToken"
-);
-
-const res =
-await fetch(
-
-API_URL +
-"/api/sales/list",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":
-"application/json",
-
-Authorization:
-"Bearer " + token
-
-},
-
-body:JSON.stringify({
-
-  startDate:
-    document.getElementById("startDate").value,
-
-  endDate:
-    document.getElementById("endDate").value,
-
-  orderNo:
-    document.getElementById("orderNo").value
-
-})
-
-}
-
-);
-
-const data =
-await res.json();
-
-const list =
-document.getElementById(
-"salesList"
-);
-
-list.innerHTML="";
-
-if(!Array.isArray(data) ||
-data.length===0){
-
-list.innerHTML=
-"<p>売上がありません。</p>";
-
-return;
-
-}
-
-for(const sale of data){
-
-let cls="onigiri";
-
-if(sale.type==="BBQ"){
-
-  cls="bbq";
-
-}
-else if(sale.type==="BBQ追加"){
-
-  cls="bbqoption";
-
-}
-
-const card =
-document.createElement("div");
-
-card.className =
-"sale-card";
-
-card.innerHTML=`
-
-<div class="sale-header">
-
-<div>
-
-<div class="sale-type ${cls}">
-
-${sale.type}
-
-</div>
-
-<h3>
-
-${sale.name}
-
-</h3>
-
-</div>
-
-<div>
-
-${sale.salesDate}
-
-</div>
-
-</div>
-
-<div>
-
-注文番号：
-<b>
-
-${sale.orderNo}
-
-</b>
-
-</div>
-
-<div class="sale-total">
-
-¥${Number(
-sale.amount
-).toLocaleString()}
-
-</div>
-
-<div class="detail"
-
-id="detail_${sale.orderNo}">
-
-<div class="item-row">
-
-<span>
-
-数量
-
-</span>
-
-<span>
-
-${sale.qty}
-
-</span>
-
-</div>
-
-<div class="item-row">
-
-<span>
-
-単価
-
-</span>
-
-<span>
-
-¥${Number(
-sale.price
-).toLocaleString()}
-
-</span>
-
-</div>
-
-<div class="item-row">
-
-<span>
-
-登録日時
-
-</span>
-
-<span>
-
-${sale.created}
-
-</span>
-
-</div>
-
-<textarea
-
-class="reason"
-
-id="reason_${sale.orderNo}"
-
-placeholder="取消理由（空白可）"
-
-></textarea>
-
-</div>
-
-<div class="sale-buttons">
-
-<button
-
-onclick="toggleDetail(
-
-'detail_${sale.orderNo}'
-
-)"
-
+<div
+id="detailCard"
+class="detail-card"
 >
 
-詳細
+<h2>
 
-</button>
+注文詳細
+
+</h2>
+
+<div id="detailBody">
+
+</div>
+
+</div>
+
+</main>
+
+<div
+id="actionArea"
+class="action-area"
+>
 
 <button
-
-class="cancel-btn"
-
-onclick="cancelSale(
-
-'${sale.orderNo}'
-
-)"
-
+id="actionBtn"
+class="action-btn cancel-btn"
+onclick="executeAction()"
 >
 
 取消
@@ -483,168 +270,45 @@ onclick="cancelSale(
 
 </div>
 
-`;
+<script src="js/config.js"></script>
+<script src="js/admin-auth.js"></script>
+<script src="js/sales-cancel.js"></script>
 
-list.appendChild(card);
+<script>
 
-}
+const params =
+new URLSearchParams(location.search);
 
-}
+const from =
+params.get("from");
 
-// =========================
-// 詳細表示
-// =========================
+const backBtn =
+document.getElementById("backBtn");
 
-function toggleDetail(id){
+if(from==="kitchen"){
 
-const area =
-document.getElementById(id);
-
-area.style.display =
-
-area.style.display === "block"
-
-? "none"
-
-: "block";
-
-}
-
-
-// =========================
-// 売上取消
-// =========================
-
-async function cancelSale(orderNo){
-
-if(
-
-!confirm(
-
-orderNo +
-
-" を取消しますか？"
-
-)
-
-){
-
-return;
-
-}
-
-const token =
-
-localStorage.getItem(
-
-"adminToken"
-
-);
-
-const reason =
-
-document.getElementById(
-
-"reason_" + orderNo
-
-)?.value || "";
-
-const res =
-
-await fetch(
-
-API_URL +
-
-"/api/sales/cancel",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":
-
-"application/json",
-
-Authorization:
-
-"Bearer " + token
-
-},
-
-body:JSON.stringify({
-
-orderNo,
-
-reason
-
-})
-
-}
-
-);
-
-const result =
-
-await res.json();
-
-if(result.success){
-
-alert(
-
-"売上を取り消しました。"
-
-);
-
-loadSales();
+backBtn.href =
+"kitchen-index.html";
 
 }else{
 
-alert(
-
-result.message ||
-
-"取消に失敗しました。"
-
-);
+backBtn.href =
+"staff.html";
 
 }
-
-}
-
-// =========================
-// 初期表示
-// =========================
 
 const today =
-new Date();
+new Date()
+.toISOString()
+.slice(0,10);
 
-const yyyy =
-today.getFullYear();
+startDate.value =
+today;
 
-const mm =
-String(
-today.getMonth()+1
-).padStart(2,"0");
+endDate.value =
+today;
 
-const dd =
-String(
-today.getDate()
-).padStart(2,"0");
-
-const todayStr =
-`${yyyy}-${mm}-${dd}`;
-
-document.getElementById(
-"startDate"
-).value = todayStr;
-
-document.getElementById(
-"endDate"
-).value = todayStr;
-
-loadSales();
+loadOrders();
 
 </script>
 
