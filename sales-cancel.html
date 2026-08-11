@@ -297,12 +297,26 @@ backBtn.href =
 
 }
 
-const today =
-new Date()
-.toISOString()
-.slice(0,10);
+const today = new Date();
+
+const yyyy = today.getFullYear();
+
+const mm = String(
+  today.getMonth() + 1
+).padStart(2,"0");
+
+const dd = String(
+  today.getDate()
+).padStart(2,"0");
+
+const todayStr =
+  `${yyyy}-${mm}-${dd}`;
 
 startDate.value =
+  todayStr;
+
+endDate.value =
+  todayStr;startDate.value =
 today;
 
 endDate.value =
