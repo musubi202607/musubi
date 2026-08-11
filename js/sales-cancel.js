@@ -319,69 +319,30 @@ async function showDetail(
     };
 
 
-    let url = "";
+try{
 
+    const res =
+        await fetch(
+            API_URL + "/api/sales/detail",
+            {
+                method:"POST",
 
-    // =========================
-    // おにぎり
-    // =========================
-    if(
-        type === "onigiri"
-    ){
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":
+                        "Bearer " +
+                        localStorage.getItem("adminToken")
+                },
 
-        url =
-            API_URL +
-            "/api/order?orderNo=" +
-            encodeURIComponent(no);
+                body:JSON.stringify({
 
-    }
+                    type:type,
 
+                    orderNo:no
 
-    // =========================
-    // BBQ
-    // =========================
-    if(
-        type === "bbq"
-    ){
-
-        url =
-            API_URL +
-            "/api/bbq/full-detail?no=" +
-            encodeURIComponent(no);
-
-    }
-
-
-    // =========================
-    // キッチンカー
-    // =========================
-    if(
-        type === "kitchen"
-    ){
-
-        url =
-            API_URL +
-            "/api/kitchen/order?orderNo=" +
-            encodeURIComponent(no);
-
-    }
-
-
-    try{
-
-        const res =
-            await fetch(
-                url,
-                {
-                    headers:{
-                        "Authorization":
-                            "Bearer " +
-                            localStorage.getItem(
-                                "adminToken"
-                            )
-                    }
-                }
-            );
+                })
+            }
+        );
 
 
         if(
