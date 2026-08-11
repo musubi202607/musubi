@@ -411,15 +411,11 @@ main{
 <div class="order-form">
 
   <h2>
-
     注文情報
-
   </h2>
 
   <label>
-
     氏名（車番）
-
   </label>
 
   <input
@@ -427,12 +423,10 @@ main{
     placeholder="お名前"
   >
 
-<br><br>
+  <br><br>
 
   <label>
-
     備考
-
   </label>
 
   <textarea
@@ -441,8 +435,25 @@ main{
     placeholder="備考"
   ></textarea>
 
-</div>
+  <label
+    style="
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:15px;
+    "
+  >
 
+    <input
+      type="checkbox"
+      id="unpaidCheck"
+    >
+
+    未会計で登録する
+
+  </label>
+
+</div>
 
 <!-- =========================
      注文完了モーダル
