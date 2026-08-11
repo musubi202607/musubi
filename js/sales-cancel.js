@@ -10,11 +10,15 @@ let currentOrder = null;
 // =========================
 document.addEventListener("DOMContentLoaded", () => {
 
-    const today =
-        new Date()
-            .toISOString()
-            .slice(0, 10);
+    const now = new Date();
 
+const today =
+    new Date(
+        now.getTime() -
+        now.getTimezoneOffset() * 60000
+    )
+    .toISOString()
+    .slice(0,10);
     document.getElementById("startDate").value =
         today;
 
