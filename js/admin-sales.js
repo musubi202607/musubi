@@ -1,14 +1,13 @@
 // ==================================================
 // admin-sales.js
-// 売上確認 Ver.2.1
+// 売上確認 Ver.2.0
 // ==================================================
 
 let currentTab = "store";
 
-
-// ==================================================
+// =========================
 // 初期化
-// ==================================================
+// =========================
 
 window.addEventListener(
   "DOMContentLoaded",
@@ -23,14 +22,13 @@ window.addEventListener(
   }
 );
 
-
-// ==================================================
+// =========================
 // タブ切替
-// ==================================================
+// =========================
 
 function showSalesTab(
   tab
-) {
+){
 
   currentTab = tab;
 
@@ -38,144 +36,94 @@ function showSalesTab(
     .querySelectorAll(
       ".tab-content"
     )
-    .forEach(
-      el => {
+    .forEach(el => {
 
-        el.classList.remove(
-          "active"
-        );
+      el.classList.remove(
+        "active"
+      );
 
-      }
-    );
+    });
 
   document
     .querySelectorAll(
       ".tab-btn"
     )
-    .forEach(
-      el => {
+    .forEach(el => {
 
-        el.classList.remove(
-          "active"
-        );
+      el.classList.remove(
+        "active"
+      );
 
-      }
-    );
+    });
 
+  if(tab === "store"){
 
-  // =========================
-  // 店舗
-  // =========================
-
-  if (tab === "store") {
-
-    const storeTab =
-      document.getElementById(
+    document
+      .getElementById(
         "storeTab"
+      )
+      .classList.add(
+        "active"
       );
 
-    const tabStore =
-      document.getElementById(
+    document
+      .getElementById(
         "tabStore"
-      );
-
-    if (storeTab) {
-
-      storeTab.classList.add(
+      )
+      .classList.add(
         "active"
       );
-
-    }
-
-    if (tabStore) {
-
-      tabStore.classList.add(
-        "active"
-      );
-
-    }
 
   }
 
+  if(tab === "kitchen"){
 
-  // =========================
-  // キッチンカー
-  // =========================
-
-  if (tab === "kitchen") {
-
-    const kitchenTab =
-      document.getElementById(
+    document
+      .getElementById(
         "kitchenTab"
+      )
+      .classList.add(
+        "active"
       );
 
-    const tabKitchen =
-      document.getElementById(
+    document
+      .getElementById(
         "tabKitchen"
-      );
-
-    if (kitchenTab) {
-
-      kitchenTab.classList.add(
+      )
+      .classList.add(
         "active"
       );
-
-    }
-
-    if (tabKitchen) {
-
-      tabKitchen.classList.add(
-        "active"
-      );
-
-    }
 
   }
 
+  if(tab === "total"){
 
-  // =========================
-  // 総合
-  // =========================
-
-  if (tab === "total") {
-
-    const totalTab =
-      document.getElementById(
+    document
+      .getElementById(
         "totalTab"
+      )
+      .classList.add(
+        "active"
       );
 
-    const tabTotal =
-      document.getElementById(
+    document
+      .getElementById(
         "tabTotal"
-      );
-
-    if (totalTab) {
-
-      totalTab.classList.add(
+      )
+      .classList.add(
         "active"
       );
-
-    }
-
-    if (tabTotal) {
-
-      tabTotal.classList.add(
-        "active"
-      );
-
-    }
 
   }
 
-
   // =========================
-  // 売上取得
+  // タブ切替時に売上取得
   // =========================
 
-  if (
+  if(
     tab === "kitchen" ||
     tab === "total"
-  ) {
+  ){
 
     loadSales();
 
@@ -183,14 +131,13 @@ function showSalesTab(
 
 }
 
-
-// ==================================================
+// =========================
 // 日付フォーマット
-// ==================================================
+// =========================
 
 function formatDate(
   date
-) {
+){
 
   const y =
     date.getFullYear();
@@ -199,19 +146,19 @@ function formatDate(
     String(
       date.getMonth() + 1
     )
-      .padStart(
-        2,
-        "0"
-      );
+    .padStart(
+      2,
+      "0"
+    );
 
   const d =
     String(
       date.getDate()
     )
-      .padStart(
-        2,
-        "0"
-      );
+    .padStart(
+      2,
+      "0"
+    );
 
   return (
     y +
@@ -223,54 +170,42 @@ function formatDate(
 
 }
 
-
-// ==================================================
+// =========================
 // 当日
-// ==================================================
+// =========================
 
-function setToday() {
+function setToday(){
 
   const today =
     new Date();
 
-  const startDate =
-    document.getElementById(
+  document
+    .getElementById(
       "startDate"
+    )
+    .value =
+    formatDate(
+      today
     );
 
-  const endDate =
-    document.getElementById(
+  document
+    .getElementById(
       "endDate"
+    )
+    .value =
+    formatDate(
+      today
     );
-
-  if (startDate) {
-
-    startDate.value =
-      formatDate(
-        today
-      );
-
-  }
-
-  if (endDate) {
-
-    endDate.value =
-      formatDate(
-        today
-      );
-
-  }
 
   loadSales();
 
 }
 
-
-// ==================================================
+// =========================
 // 当月
-// ==================================================
+// =========================
 
-function setThisMonth() {
+function setThisMonth(){
 
   const today =
     new Date();
@@ -282,46 +217,33 @@ function setThisMonth() {
       1
     );
 
-
-  const startDate =
-    document.getElementById(
+  document
+    .getElementById(
       "startDate"
+    )
+    .value =
+    formatDate(
+      start
     );
 
-  const endDate =
-    document.getElementById(
+  document
+    .getElementById(
       "endDate"
+    )
+    .value =
+    formatDate(
+      today
     );
-
-
-  if (startDate) {
-
-    startDate.value =
-      formatDate(
-        start
-      );
-
-  }
-
-  if (endDate) {
-
-    endDate.value =
-      formatDate(
-        today
-      );
-
-  }
 
   loadSales();
 
 }
 
-
-// ==================================================
+// =========================
 // 前月
-// ==================================================
+// =========================
 
-function setLastMonth() {
+function setLastMonth(){
 
   const today =
     new Date();
@@ -340,222 +262,40 @@ function setLastMonth() {
       0
     );
 
-
-  const startDate =
-    document.getElementById(
+  document
+    .getElementById(
       "startDate"
+    )
+    .value =
+    formatDate(
+      start
     );
 
-  const endDate =
-    document.getElementById(
+  document
+    .getElementById(
       "endDate"
+    )
+    .value =
+    formatDate(
+      end
     );
-
-
-  if (startDate) {
-
-    startDate.value =
-      formatDate(
-        start
-      );
-
-  }
-
-  if (endDate) {
-
-    endDate.value =
-      formatDate(
-        end
-      );
-
-  }
 
   loadSales();
 
 }
 
-
-// ==================================================
-// 売上API共通取得
-// ==================================================
-
-async function fetchSales(
-  startDate,
-  endDate
-) {
-
-  const token =
-    localStorage.getItem(
-      "adminToken"
-    );
-
-
-  if (!token) {
-
-    throw new Error(
-      "管理者認証トークンがありません"
-    );
-
-  }
-
-
-  const res =
-    await fetch(
-
-      API_URL +
-      "/api/sales",
-
-      {
-
-        method: "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          "Authorization":
-            "Bearer " +
-            token
-
-        },
-
-        body:
-          JSON.stringify({
-
-            startDate,
-            endDate
-
-          })
-
-      }
-
-    );
-
-
-  // =========================
-  // レスポンス本文取得
-  // =========================
-
-  const text =
-    await res.text();
-
-
-  console.log(
-    "SALES API STATUS =",
-    res.status
-  );
-
-  console.log(
-    "SALES API RAW =",
-    text
-  );
-
-
-  // =========================
-  // JSON解析
-  // =========================
-
-  let data;
-
-  try {
-
-    data =
-      JSON.parse(
-        text
-      );
-
-  } catch (error) {
-
-    throw new Error(
-      "APIレスポンスがJSONではありません: " +
-      text.substring(
-        0,
-        300
-      )
-    );
-
-  }
-
-
-  // =========================
-  // HTTPエラー
-  // =========================
-
-  if (!res.ok) {
-
-    throw new Error(
-
-      data.message ||
-      data.error ||
-      (
-        "売上APIエラー HTTP " +
-        res.status
-      )
-
-    );
-
-  }
-
-
-  // =========================
-  // success:false
-  // =========================
-
-  if (
-    data.success === false
-  ) {
-
-    throw new Error(
-
-      data.message ||
-      "売上取得に失敗しました"
-
-    );
-
-  }
-
-
-  // =========================
-  // データ構造確認
-  // =========================
-
-  if (
-    !data.store ||
-    !data.kitchen ||
-    !data.total
-  ) {
-
-    console.error(
-      "想定外の売上データ:",
-      data
-    );
-
-    throw new Error(
-      "売上データの形式が正しくありません"
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-// ==================================================
+// =========================
 // 売上集計
-// ==================================================
+// =========================
 
-async function loadSales() {
+async function loadSales(){
 
   const loading =
     document.getElementById(
       "salesLoading"
     );
 
-
-  if (loading) {
+  if(loading){
 
     loading.classList.add(
       "show"
@@ -563,33 +303,26 @@ async function loadSales() {
 
   }
 
-
-  try {
+  try{
 
     const startDate =
       document
         .getElementById(
           "startDate"
         )
-        ?.value || "";
-
+        .value;
 
     const endDate =
       document
         .getElementById(
           "endDate"
         )
-        ?.value || "";
+        .value;
 
-
-    // =========================
-    // 日付確認
-    // =========================
-
-    if (
+    if(
       !startDate ||
       !endDate
-    ) {
+    ){
 
       alert(
         "期間を指定してください"
@@ -599,168 +332,268 @@ async function loadSales() {
 
     }
 
-
     // =========================
-    // API取得
+    // 売上取得
     // =========================
 
-    const data =
-      await fetchSales(
-        startDate,
-        endDate
+    const res =
+      await fetch(
+
+        API_URL +
+        "/api/sales",
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              "Bearer " +
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          },
+
+          body:
+            JSON.stringify({
+
+              startDate,
+
+              endDate
+
+            })
+
+        }
+
       );
 
+    // =========================
+    // HTTPエラー確認
+    // =========================
+
+    if(!res.ok){
+
+      const errorText =
+        await res.text();
+
+      console.error(
+        "売上APIエラー:",
+        res.status,
+        errorText
+      );
+
+      throw new Error(
+        "売上APIエラー: " +
+        res.status
+      );
+
+    }
+
+    const data =
+      await res.json();
 
     console.log(
-      "売上集計結果:",
+      "売上データ:",
       data
     );
 
-
     // =========================
-    // 安全なデフォルト値
+    // データ構造確認
     // =========================
 
-    const store =
-      data.store || {
+    if(
+      !data ||
+      !data.store ||
+      !data.kitchen
+    ){
 
-        onigiriSales: 0,
-        bbqSales: 0,
-        optionSales: 0,
-        totalSales: 0,
-        products: []
+      console.error(
+        "売上データ形式エラー:",
+        data
+      );
 
-      };
+      throw new Error(
+        "売上データの形式が不正です"
+      );
 
-
-    const kitchen =
-      data.kitchen || {
-
-        totalSales: 0,
-        products: []
-
-      };
-
-
-    const total =
-      data.total || {
-
-        totalSales: 0
-
-      };
-
+    }
 
     // =========================
     // 店舗
     // =========================
 
-    setSalesText(
-      "onigiriSales",
-      store.onigiriSales
-    );
+    document
+      .getElementById(
+        "onigiriSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store.onigiriSales || 0
+        )
+        .toLocaleString();
 
+    document
+      .getElementById(
+        "bbqSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store.bbqSales || 0
+        )
+        .toLocaleString();
 
-    setSalesText(
-      "bbqSales",
-      store.bbqSales
-    );
+    document
+      .getElementById(
+        "optionSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store.optionSales || 0
+        )
+        .toLocaleString();
 
+    document
+      .getElementById(
+        "storeTotalSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store.totalSales || 0
+        )
+        .toLocaleString();
 
-    setSalesText(
-      "optionSales",
-      store.optionSales
-    );
-
-
-    setSalesText(
-      "storeTotalSales",
-      store.totalSales
-    );
-
+    // =========================
+    // 店舗 商品別
+    // =========================
 
     displayProductSales(
 
       "storeProductSales",
 
-      store.products || []
+      data.store.products || []
 
     );
-
 
     // =========================
     // キッチンカー
     // =========================
 
-    setSalesText(
-      "kitchenTotalSales",
-      kitchen.totalSales
-    );
+    document
+      .getElementById(
+        "kitchenTotalSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.kitchen.totalSales || 0
+        )
+        .toLocaleString();
 
+    // =========================
+    // キッチンカー 商品別
+    // =========================
 
     displayProductSales(
 
       "kitchenProductSales",
 
-      kitchen.products || []
+      data.kitchen.products || []
 
     );
-
 
     // =========================
     // 総合
     // =========================
 
-    setSalesText(
-      "totalStoreSales",
-      store.totalSales
-    );
+    const storeTotal =
+      Number(
+        data.store.totalSales || 0
+      );
 
+    const kitchenTotal =
+      Number(
+        data.kitchen.totalSales || 0
+      );
 
-    setSalesText(
-      "totalKitchenSales",
-      kitchen.totalSales
-    );
+    const grandTotal =
+      Number(
+        data.total?.totalSales ??
+        (storeTotal + kitchenTotal)
+      );
 
+    document
+      .getElementById(
+        "totalStoreSales"
+      )
+      .innerText =
+        "¥" +
+        storeTotal.toLocaleString();
 
-    setSalesText(
-      "grandTotalSales",
-      total.totalSales
-    );
+    document
+      .getElementById(
+        "totalKitchenSales"
+      )
+      .innerText =
+        "¥" +
+        kitchenTotal.toLocaleString();
 
+    document
+      .getElementById(
+        "grandTotalSales"
+      )
+      .innerText =
+        "¥" +
+        grandTotal.toLocaleString();
+
+    // =========================
+    // 総合 店舗商品別
+    // =========================
 
     displayProductSales(
 
-      "totalProductSales",
+      "totalStoreProductSales",
 
-      mergeProducts(
-
-        store.products || [],
-
-        kitchen.products || []
-
-      )
+      data.store.products || []
 
     );
 
+    // =========================
+    // 総合 キッチンカー商品別
+    // =========================
+
+    displayProductSales(
+
+      "totalKitchenProductSales",
+
+      data.kitchen.products || []
+
+    );
 
   }
-  catch (e) {
+  catch(e){
 
     console.error(
       "売上集計エラー",
       e
     );
 
-
     alert(
-      "売上取得中にエラーが発生しました\n\n" +
-      e.message
+      "売上取得中にエラーが発生しました"
     );
 
   }
-  finally {
+  finally{
 
-    if (loading) {
+    if(loading){
 
       loading.classList.remove(
         "show"
@@ -772,128 +605,137 @@ async function loadSales() {
 
 }
 
-
-// ==================================================
-// 売上表示共通
-// ==================================================
-
-function setSalesText(
-  elementId,
-  value
-) {
-
-  const element =
-    document.getElementById(
-      elementId
-    );
-
-
-  if (!element) {
-
-    return;
-
-  }
-
-
-  element.innerText =
-
-    "¥" +
-
-    Number(
-      value || 0
-    )
-      .toLocaleString();
-
-}
-
-
-// ==================================================
+// =========================
 // 店舗売上取得
-// ==================================================
+// =========================
 
 async function loadStoreSales(
-
   startDate,
   endDate
+){
 
-) {
+  try{
 
-  try {
+    const res =
+      await fetch(
 
-    const data =
-      await fetchSales(
-        startDate,
-        endDate
+        API_URL +
+        "/api/sales",
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              "Bearer " +
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          },
+
+          body:
+            JSON.stringify({
+
+              startDate,
+
+              endDate
+
+            })
+
+        }
+
       );
 
+    if(!res.ok){
 
-    const store =
-      data.store || {
+      throw new Error(
+        "売上APIエラー: " +
+        res.status
+      );
 
-        onigiriSales: 0,
-        bbqSales: 0,
-        optionSales: 0,
-        totalSales: 0,
-        products: []
+    }
 
-      };
+    const data =
+      await res.json();
 
+    document
+      .getElementById(
+        "onigiriSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store?.onigiriSales || 0
+        )
+        .toLocaleString();
 
-    setSalesText(
-      "onigiriSales",
-      store.onigiriSales
-    );
+    document
+      .getElementById(
+        "bbqSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store?.bbqSales || 0
+        )
+        .toLocaleString();
 
+    document
+      .getElementById(
+        "optionSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store?.optionSales || 0
+        )
+        .toLocaleString();
 
-    setSalesText(
-      "bbqSales",
-      store.bbqSales
-    );
-
-
-    setSalesText(
-      "optionSales",
-      store.optionSales
-    );
-
-
-    setSalesText(
-      "storeTotalSales",
-      store.totalSales
-    );
-
+    document
+      .getElementById(
+        "storeTotalSales"
+      )
+      .innerText =
+        "¥" +
+        Number(
+          data.store?.totalSales || 0
+        )
+        .toLocaleString();
 
     displayProductSales(
 
       "storeProductSales",
 
-      store.products || []
+      data.store?.products || []
 
     );
-
 
     return {
 
       total:
         Number(
-          store.totalSales || 0
+          data.store?.totalSales || 0
         ),
 
       products:
-        store.products || []
+        data.store?.products || []
 
     };
 
-
   }
-  catch (e) {
+  catch(e){
 
     console.error(
       "店舗売上取得エラー",
       e
     );
 
-
     return {
 
       total: 0,
@@ -906,80 +748,106 @@ async function loadStoreSales(
 
 }
 
-
-// ==================================================
+// =========================
 // キッチンカー売上取得
-// ==================================================
+// =========================
 
 async function loadKitchenSales(
-
   startDate,
   endDate
+){
 
-) {
+  try{
 
-  try {
+    const res =
+      await fetch(
 
-    const data =
-      await fetchSales(
-        startDate,
-        endDate
+        API_URL +
+        "/api/sales",
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              "Bearer " +
+              localStorage.getItem(
+                "adminToken"
+              )
+
+          },
+
+          body:
+            JSON.stringify({
+
+              startDate,
+
+              endDate
+
+            })
+
+        }
+
       );
 
+    if(!res.ok){
 
-    const kitchen =
-      data.kitchen || {
+      throw new Error(
+        "売上APIエラー: " +
+        res.status
+      );
 
-        totalSales: 0,
-        products: []
+    }
 
-      };
-
+    const data =
+      await res.json();
 
     const total =
       Number(
-        kitchen.totalSales || 0
+        data.kitchen?.totalSales || 0
       );
 
-
-    setSalesText(
-      "kitchenTotalSales",
-      total
-    );
-
+    document
+      .getElementById(
+        "kitchenTotalSales"
+      )
+      .innerText =
+        "¥" +
+        total.toLocaleString();
 
     displayProductSales(
 
       "kitchenProductSales",
 
-      kitchen.products || []
+      data.kitchen?.products || []
 
     );
-
 
     updateTotalSales(
       total
     );
-
 
     return {
 
       total,
 
       products:
-        kitchen.products || []
+        data.kitchen?.products || []
 
     };
 
-
   }
-  catch (e) {
+  catch(e){
 
     console.error(
       "キッチンカー売上取得エラー",
       e
     );
-
 
     return {
 
@@ -993,99 +861,94 @@ async function loadKitchenSales(
 
 }
 
-
-// ==================================================
+// =========================
 // 総合売上更新
-// ==================================================
+// =========================
 
 function updateTotalSales(
   kitchenTotal
-) {
+){
 
   const storeElement =
     document.getElementById(
       "storeTotalSales"
     );
 
-
-  let storeTotal = 0;
-
-
-  if (storeElement) {
-
-    storeTotal =
-      Number(
-
-        storeElement
-          .innerText
-          .replace(
-            /[^0-9]/g,
-            ""
-          )
-
-      ) || 0;
-
-  }
-
-
-  setSalesText(
-    "totalStoreSales",
-    storeTotal
-  );
-
-
-  setSalesText(
-    "totalKitchenSales",
-    kitchenTotal
-  );
-
-
-  setSalesText(
-
-    "grandTotalSales",
-
-    storeTotal +
+  const storeTotal =
     Number(
-      kitchenTotal || 0
-    )
+      storeElement
+        ?.innerText
+        .replace(
+          /[^0-9]/g,
+          ""
+        )
+      || 0
+    );
 
-  );
+  document
+    .getElementById(
+      "totalStoreSales"
+    )
+    .innerText =
+      "¥" +
+      storeTotal.toLocaleString();
+
+  document
+    .getElementById(
+      "totalKitchenSales"
+    )
+    .innerText =
+      "¥" +
+      Number(
+        kitchenTotal
+      )
+      .toLocaleString();
+
+  document
+    .getElementById(
+      "grandTotalSales"
+    )
+    .innerText =
+      "¥" +
+      (
+        storeTotal +
+        Number(kitchenTotal)
+      )
+      .toLocaleString();
 
 }
 
-
-// ==================================================
+// =========================
 // 商品別売上表示
-// ==================================================
+// =========================
 
 function displayProductSales(
-
   targetId,
   products
-
-) {
+){
 
   const area =
     document.getElementById(
       targetId
     );
 
+  if(!area){
 
-  if (!area) {
+    console.warn(
+      "商品別売上表示先がありません:",
+      targetId
+    );
 
     return;
 
   }
 
-
   area.innerHTML = "";
 
-
-  if (
+  if(
     !products ||
-    !Array.isArray(products) ||
     products.length === 0
-  ) {
+  ){
 
     area.innerHTML =
 
@@ -1100,7 +963,6 @@ function displayProductSales(
     return;
 
   }
-
 
   products.forEach(
     item => {
@@ -1126,7 +988,8 @@ function displayProductSales(
           <td>
             ¥${Number(
               item.amount || 0
-            ).toLocaleString()}
+            )
+            .toLocaleString()}
           </td>
 
         </tr>
@@ -1137,51 +1000,47 @@ function displayProductSales(
 
 }
 
-
-// ==================================================
+// =========================
 // HTMLエスケープ
-// ==================================================
+// =========================
 
 function escapeHtml(
   value
-) {
+){
 
   return String(
-    value ?? ""
+    value
   )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
 
 }
 
-
-// ==================================================
+// =========================
 // キッチンカー商品別表示
-// ==================================================
+// =========================
 
 function displayKitchenProducts(
-
   products
-
-) {
+){
 
   displayProductSales(
 
@@ -1193,76 +1052,51 @@ function displayKitchenProducts(
 
 }
 
-
-// ==================================================
+// =========================
 // 総合商品集計
-// ==================================================
+// =========================
 
 function mergeProducts(
-
   storeProducts,
   kitchenProducts
-
-) {
+){
 
   const result = {};
 
-
   [
-
-    ...(Array.isArray(
-      storeProducts
-    )
-      ? storeProducts
-      : []),
-
-    ...(Array.isArray(
-      kitchenProducts
-    )
-      ? kitchenProducts
-      : [])
-
+    ...(storeProducts || []),
+    ...(kitchenProducts || [])
   ]
-    .forEach(
-      item => {
+  .forEach(
+    item => {
 
-        const name =
-          item.name || "";
+      if(!result[item.name]){
 
+        result[item.name] = {
 
-        if (
-          !result[name]
-        ) {
+          name:
+            item.name,
 
-          result[name] = {
+          qty: 0,
 
-            name,
+          amount: 0
 
-            qty: 0,
-
-            amount: 0
-
-          };
-
-        }
-
-
-        result[name].qty +=
-
-          Number(
-            item.qty || 0
-          );
-
-
-        result[name].amount +=
-
-          Number(
-            item.amount || 0
-          );
+        };
 
       }
-    );
 
+      result[item.name].qty +=
+        Number(
+          item.qty || 0
+        );
+
+      result[item.name].amount +=
+        Number(
+          item.amount || 0
+        );
+
+    }
+  );
 
   return Object.values(
     result
@@ -1270,61 +1104,32 @@ function mergeProducts(
 
 }
 
-
-// ==================================================
+// =========================
 // CSV出力
-// ==================================================
+// =========================
 
-async function downloadSalesCSV() {
+async function downloadSalesCSV(){
 
   const startDate =
     document
       .getElementById(
         "startDate"
       )
-      ?.value || "";
-
+      .value;
 
   const endDate =
     document
       .getElementById(
         "endDate"
       )
-      ?.value || "";
-
-
-  if (
-    !startDate ||
-    !endDate
-  ) {
-
-    alert(
-      "期間を指定してください"
-    );
-
-    return;
-
-  }
-
+      .value;
 
   const token =
     localStorage.getItem(
       "adminToken"
     );
 
-
-  if (!token) {
-
-    alert(
-      "管理者認証がありません"
-    );
-
-    return;
-
-  }
-
-
-  try {
+  try{
 
     const res =
       await fetch(
@@ -1360,64 +1165,23 @@ async function downloadSalesCSV() {
 
       );
 
-
-    const text =
-      await res.text();
-
-
-    console.log(
-      "SALES CSV STATUS =",
-      res.status
-    );
-
-    console.log(
-      "SALES CSV RAW =",
-      text
-    );
-
-
-    let data;
-
-
-    try {
-
-      data =
-        JSON.parse(
-          text
-        );
-
-    }
-    catch (e) {
+    if(!res.ok){
 
       throw new Error(
-        "CSV APIのレスポンスがJSONではありません"
+        "CSV APIエラー: " +
+        res.status
       );
 
     }
 
+    const data =
+      await res.json();
 
-    if (!res.ok) {
-
-      throw new Error(
-
-        data.message ||
-        data.error ||
-        (
-          "CSV APIエラー HTTP " +
-          res.status
-        )
-
-      );
-
-    }
-
-
-    if (
+    if(
       !data.success
-    ) {
+    ){
 
       alert(
-        data.message ||
         "CSV作成失敗"
       );
 
@@ -1425,22 +1189,7 @@ async function downloadSalesCSV() {
 
     }
 
-
-    if (
-      !Array.isArray(
-        data.csv
-      )
-    ) {
-
-      throw new Error(
-        "CSVデータが正しくありません"
-      );
-
-    }
-
-
     const csv =
-
       data.csv
         .map(
           row =>
@@ -1450,27 +1199,23 @@ async function downloadSalesCSV() {
                 value =>
 
                   `"${String(
-                    value ?? ""
+                    value
                   )
-                    .replace(
-                      /"/g,
-                      '""'
-                    )}"`
+                  .replace(
+                    /"/g,
+                    '""'
+                  )}"`
               )
               .join(",")
-
         )
         .join("\n");
-
 
     const blob =
       new Blob(
 
         [
-
           "\uFEFF" +
           csv
-
         ],
 
         {
@@ -1482,60 +1227,42 @@ async function downloadSalesCSV() {
 
       );
 
-
     const url =
       URL.createObjectURL(
         blob
       );
-
 
     const a =
       document.createElement(
         "a"
       );
 
-
     a.href =
       url;
 
-
     a.download =
-
       "売上履歴_" +
       startDate +
       "_" +
       endDate +
       ".csv";
 
-
-    document.body.appendChild(
-      a
-    );
-
-
     a.click();
-
-
-    a.remove();
-
 
     URL.revokeObjectURL(
       url
     );
 
-
   }
-  catch (e) {
+  catch(e){
 
     console.error(
       "CSV出力エラー",
       e
     );
 
-
     alert(
-      "CSV作成中にエラーが発生しました\n\n" +
-      e.message
+      "CSV出力中にエラーが発生しました"
     );
 
   }
