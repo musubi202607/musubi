@@ -329,135 +329,152 @@ loadSales();
 // =========================
 // 売上集計
 // =========================
-
 async function loadSales(){
 
-
-const loading =
-document.getElementById(
-  "salesLoading"
-);
-
-
-// ローディング表示
-if(loading){
-
-  loading.classList.add(
-    "show"
+  const loading =
+  document.getElementById(
+    "salesLoading"
   );
 
+  if(loading){
+    loading.classList.add("show");
+  }
+
+  try{
+
+    const startDate =
+    document.getElementById(
+      "startDate"
+    ).value;
+
+    const endDate =
+    document.getElementById(
+      "endDate"
+    ).value;
+
+    if(!startDate || !endDate){
+
+      alert("期間を指定してください");
+      return;
+
+    }
+
+    // =========================
+    // 売上取得（1回だけ）
+    // =========================
+    const res =
+    await fetch(
+
+      API_URL +
+      "/api/sales",
+
+      {
+
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":"application/json",
+
+          "Authorization":
+          "Bearer " +
+          localStorage.getItem(
+            "adminToken"
+          )
+
+        },
+
+        body:
+        JSON.stringify({
+
+          startDate,
+
+          endDate
+
+        })
+
+      }
+
+    );
+
+    const data =
+    await res.json();
+
+    // -------------------------
+    // 店舗
+    // -------------------------
+    document.getElementById("onigiriSales").innerText =
+      "¥" + Number(data.onigiriSales || 0).toLocaleString();
+
+    document.getElementById("bbqSales").innerText =
+      "¥" + Number(data.bbqSales || 0).toLocaleString();
+
+    document.getElementById("optionSales").innerText =
+      "¥" + Number(data.optionSales || 0).toLocaleString();
+
+    const storeTotal =
+      Number(data.onigiriSales || 0) +
+      Number(data.bbqSales || 0) +
+      Number(data.optionSales || 0);
+
+    document.getElementById("storeTotalSales").innerText =
+      "¥" + storeTotal.toLocaleString();
+
+    displayProductSales(
+      "storeProductSales",
+      data.storeProducts || []
+    );
+
+    // -------------------------
+    // キッチンカー
+    // -------------------------
+    document.getElementById("kitchenTotalSales").innerText =
+      "¥" + Number(data.kitchenSales || 0).toLocaleString();
+
+    displayProductSales(
+      "kitchenProductSales",
+      data.kitchenProducts || []
+    );
+
+    // -------------------------
+    // 総合
+    // -------------------------
+    document.getElementById("totalStoreSales").innerText =
+      "¥" + storeTotal.toLocaleString();
+
+    document.getElementById("totalKitchenSales").innerText =
+      "¥" + Number(data.kitchenSales || 0).toLocaleString();
+
+    document.getElementById("grandTotalSales").innerText =
+      "¥" + Number(data.totalSales || 0).toLocaleString();
+
+    displayProductSales(
+      "totalProductSales",
+      data.totalProducts || []
+    );
+
+  }
+  catch(e){
+
+    console.error(
+      "売上集計エラー",
+      e
+    );
+
+    alert(
+      "売上取得中にエラーが発生しました"
+    );
+
+  }
+  finally{
+
+    if(loading){
+      loading.classList.remove("show");
+    }
+
+  }
+
 }
-
-
-
-try{
-
-
-const startDate =
-document
-.getElementById(
-  "startDate"
-)
-.value;
-
-
-const endDate =
-document
-.getElementById(
-  "endDate"
-)
-.value;
-
-
-
-if(
-!startDate ||
-!endDate
-){
-
-alert(
-"期間を指定してください"
-);
-
-return;
-
-}
-
-
-
-const [
-storeData,
-kitchenData
-] =
-
-await Promise.all([
-
-loadStoreSales(
-  startDate,
-  endDate
-),
-
-loadKitchenSales(
-  startDate,
-  endDate
-)
-
-]);
-
-
-
-// =========================
-// 総合商品集計
-// =========================
-
-displayProductSales(
-  "totalStoreProductSales",
-  storeData.products
-);
-
-displayProductSales(
-  "totalKitchenProductSales",
-  kitchenData.products
-);
-
-
-}
-catch(e){
-
-
-console.error(
-"売上集計エラー",
-e
-);
-
-
-alert(
-"売上取得中にエラーが発生しました"
-);
-
-
-
-}
-finally{
-
-
-// ローディング解除
-
-if(loading){
-
-  loading.classList.remove(
-    "show"
-  );
-
-}
-
-
-}
-
-
-
-}
-
 
 
 // =========================
