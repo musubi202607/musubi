@@ -13,15 +13,16 @@ window.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    setThisMonth();
+    showSalesTab("store");
 
-    showSalesTab(
-      "store"
-    );
+    // ページ表示直後のGAS/Worker初回接続が
+    // 不安定になる場合があるため少し待ってから集計
+    setTimeout(() => {
+      setThisMonth();
+    }, 500);
 
   }
 );
-
 // =========================
 // タブ切替
 // =========================
