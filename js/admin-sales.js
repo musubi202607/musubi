@@ -410,26 +410,15 @@ loadKitchenSales(
 // 総合商品集計
 // =========================
 
-const totalProducts =
-
-mergeProducts(
-
-storeData.products,
-
-kitchenData.products
-
+displayProductSales(
+  "totalStoreProductSales",
+  storeData.products
 );
-
-
 
 displayProductSales(
-
-"totalProductSales",
-
-totalProducts
-
+  "totalKitchenProductSales",
+  kitchenData.products
 );
-
 
 
 }
