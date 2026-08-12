@@ -1,17 +1,18 @@
 // ==================================================
 // admin-sales.js
-// 売上確認 Ver.2.0
+// 売上確認 Ver.2.1
 // ==================================================
 
 let currentTab = "store";
 
-// =========================
+
+// ==================================================
 // 初期化
-// =========================
+// ==================================================
 
 window.addEventListener(
   "DOMContentLoaded",
-  ()=>{
+  () => {
 
     setThisMonth();
 
@@ -22,104 +23,159 @@ window.addEventListener(
   }
 );
 
-// =========================
+
+// ==================================================
 // タブ切替
-// =========================
+// ==================================================
 
 function showSalesTab(
   tab
-){
+) {
 
   currentTab = tab;
 
   document
-  .querySelectorAll(
-    ".tab-content"
-  )
-  .forEach(el=>{
+    .querySelectorAll(
+      ".tab-content"
+    )
+    .forEach(
+      el => {
 
-    el.classList.remove(
-      "active"
+        el.classList.remove(
+          "active"
+        );
+
+      }
     );
-
-  });
 
   document
-  .querySelectorAll(
-    ".tab-btn"
-  )
-  .forEach(el=>{
-
-    el.classList.remove(
-      "active"
-    );
-
-  });
-
-  if(tab==="store"){
-
-    document
-    .getElementById(
-      "storeTab"
+    .querySelectorAll(
+      ".tab-btn"
     )
-    .classList.add(
-      "active"
+    .forEach(
+      el => {
+
+        el.classList.remove(
+          "active"
+        );
+
+      }
     );
 
-    document
-    .getElementById(
-      "tabStore"
-    )
-    .classList.add(
-      "active"
-    );
+
+  // =========================
+  // 店舗
+  // =========================
+
+  if (tab === "store") {
+
+    const storeTab =
+      document.getElementById(
+        "storeTab"
+      );
+
+    const tabStore =
+      document.getElementById(
+        "tabStore"
+      );
+
+    if (storeTab) {
+
+      storeTab.classList.add(
+        "active"
+      );
+
+    }
+
+    if (tabStore) {
+
+      tabStore.classList.add(
+        "active"
+      );
+
+    }
 
   }
 
-  if(tab==="kitchen"){
 
-    document
-    .getElementById(
-      "kitchenTab"
-    )
-    .classList.add(
-      "active"
-    );
+  // =========================
+  // キッチンカー
+  // =========================
 
-    document
-    .getElementById(
-      "tabKitchen"
-    )
-    .classList.add(
-      "active"
-    );
+  if (tab === "kitchen") {
 
-  }
+    const kitchenTab =
+      document.getElementById(
+        "kitchenTab"
+      );
 
-  if(tab==="total"){
+    const tabKitchen =
+      document.getElementById(
+        "tabKitchen"
+      );
 
-    document
-    .getElementById(
-      "totalTab"
-    )
-    .classList.add(
-      "active"
-    );
+    if (kitchenTab) {
 
-    document
-    .getElementById(
-      "tabTotal"
-    )
-    .classList.add(
-      "active"
-    );
+      kitchenTab.classList.add(
+        "active"
+      );
+
+    }
+
+    if (tabKitchen) {
+
+      tabKitchen.classList.add(
+        "active"
+      );
+
+    }
 
   }
 
-  if(
+
+  // =========================
+  // 総合
+  // =========================
+
+  if (tab === "total") {
+
+    const totalTab =
+      document.getElementById(
+        "totalTab"
+      );
+
+    const tabTotal =
+      document.getElementById(
+        "tabTotal"
+      );
+
+    if (totalTab) {
+
+      totalTab.classList.add(
+        "active"
+      );
+
+    }
+
+    if (tabTotal) {
+
+      tabTotal.classList.add(
+        "active"
+      );
+
+    }
+
+  }
+
+
+  // =========================
+  // 売上取得
+  // =========================
+
+  if (
     tab === "kitchen" ||
     tab === "total"
-  ){
+  ) {
 
     loadSales();
 
@@ -127,199 +183,413 @@ function showSalesTab(
 
 }
 
-// =========================
+
+// ==================================================
 // 日付フォーマット
-// =========================
+// ==================================================
 
 function formatDate(
   date
-){
+) {
 
   const y =
-  date.getFullYear();
+    date.getFullYear();
 
   const m =
-  String(
-    date.getMonth()+1
-  )
-  .padStart(
-    2,
-    "0"
-  );
+    String(
+      date.getMonth() + 1
+    )
+      .padStart(
+        2,
+        "0"
+      );
 
   const d =
-  String(
-    date.getDate()
-  )
-  .padStart(
-    2,
-    "0"
-  );
+    String(
+      date.getDate()
+    )
+      .padStart(
+        2,
+        "0"
+      );
 
   return (
-    y+
-    "-"+
-    m+
-    "-"+
+    y +
+    "-" +
+    m +
+    "-" +
     d
   );
 
 }
 
-// =========================
+
+// ==================================================
 // 当日
-// =========================
+// ==================================================
 
-function setToday(){
+function setToday() {
 
   const today =
-  new Date();
+    new Date();
 
-  document
-  .getElementById(
-    "startDate"
-  )
-  .value =
-  formatDate(
-    today
-  );
+  const startDate =
+    document.getElementById(
+      "startDate"
+    );
 
-  document
-  .getElementById(
-    "endDate"
-  )
-  .value =
-  formatDate(
-    today
-  );
+  const endDate =
+    document.getElementById(
+      "endDate"
+    );
+
+  if (startDate) {
+
+    startDate.value =
+      formatDate(
+        today
+      );
+
+  }
+
+  if (endDate) {
+
+    endDate.value =
+      formatDate(
+        today
+      );
+
+  }
 
   loadSales();
 
 }
 
 
-
-// =========================
+// ==================================================
 // 当月
-// =========================
+// ==================================================
 
-function setThisMonth(){
+function setThisMonth() {
 
   const today =
-  new Date();
+    new Date();
 
   const start =
-  new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1
-  );
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
 
-  document
-  .getElementById(
-    "startDate"
-  )
-  .value =
-  formatDate(
-    start
-  );
 
-  document
-  .getElementById(
-    "endDate"
-  )
-  .value =
-  formatDate(
-    today
-  );
+  const startDate =
+    document.getElementById(
+      "startDate"
+    );
+
+  const endDate =
+    document.getElementById(
+      "endDate"
+    );
+
+
+  if (startDate) {
+
+    startDate.value =
+      formatDate(
+        start
+      );
+
+  }
+
+  if (endDate) {
+
+    endDate.value =
+      formatDate(
+        today
+      );
+
+  }
 
   loadSales();
 
 }
 
 
-
-// =========================
+// ==================================================
 // 前月
-// =========================
+// ==================================================
 
-function setLastMonth(){
+function setLastMonth() {
 
   const today =
-  new Date();
+    new Date();
 
   const start =
-  new Date(
-    today.getFullYear(),
-    today.getMonth()-1,
-    1
-  );
+    new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      1
+    );
 
   const end =
-  new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    0
-  );
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      0
+    );
 
-  document
-  .getElementById(
-    "startDate"
-  )
-  .value =
-  formatDate(
-    start
-  );
 
-  document
-  .getElementById(
-    "endDate"
-  )
-  .value =
-  formatDate(
-    end
-  );
+  const startDate =
+    document.getElementById(
+      "startDate"
+    );
+
+  const endDate =
+    document.getElementById(
+      "endDate"
+    );
+
+
+  if (startDate) {
+
+    startDate.value =
+      formatDate(
+        start
+      );
+
+  }
+
+  if (endDate) {
+
+    endDate.value =
+      formatDate(
+        end
+      );
+
+  }
 
   loadSales();
 
 }
 
-// =========================
-// 売上集計
-// =========================
-async function loadSales(){
 
-  const loading =
-  document.getElementById(
-    "salesLoading"
+// ==================================================
+// 売上API共通取得
+// ==================================================
+
+async function fetchSales(
+  startDate,
+  endDate
+) {
+
+  const token =
+    localStorage.getItem(
+      "adminToken"
+    );
+
+
+  if (!token) {
+
+    throw new Error(
+      "管理者認証トークンがありません"
+    );
+
+  }
+
+
+  const res =
+    await fetch(
+
+      API_URL +
+      "/api/sales",
+
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            "Bearer " +
+            token
+
+        },
+
+        body:
+          JSON.stringify({
+
+            startDate,
+            endDate
+
+          })
+
+      }
+
+    );
+
+
+  // =========================
+  // レスポンス本文取得
+  // =========================
+
+  const text =
+    await res.text();
+
+
+  console.log(
+    "SALES API STATUS =",
+    res.status
   );
 
-  if(loading){
+  console.log(
+    "SALES API RAW =",
+    text
+  );
+
+
+  // =========================
+  // JSON解析
+  // =========================
+
+  let data;
+
+  try {
+
+    data =
+      JSON.parse(
+        text
+      );
+
+  } catch (error) {
+
+    throw new Error(
+      "APIレスポンスがJSONではありません: " +
+      text.substring(
+        0,
+        300
+      )
+    );
+
+  }
+
+
+  // =========================
+  // HTTPエラー
+  // =========================
+
+  if (!res.ok) {
+
+    throw new Error(
+
+      data.message ||
+      data.error ||
+      (
+        "売上APIエラー HTTP " +
+        res.status
+      )
+
+    );
+
+  }
+
+
+  // =========================
+  // success:false
+  // =========================
+
+  if (
+    data.success === false
+  ) {
+
+    throw new Error(
+
+      data.message ||
+      "売上取得に失敗しました"
+
+    );
+
+  }
+
+
+  // =========================
+  // データ構造確認
+  // =========================
+
+  if (
+    !data.store ||
+    !data.kitchen ||
+    !data.total
+  ) {
+
+    console.error(
+      "想定外の売上データ:",
+      data
+    );
+
+    throw new Error(
+      "売上データの形式が正しくありません"
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+// ==================================================
+// 売上集計
+// ==================================================
+
+async function loadSales() {
+
+  const loading =
+    document.getElementById(
+      "salesLoading"
+    );
+
+
+  if (loading) {
+
     loading.classList.add(
       "show"
     );
+
   }
 
-  try{
+
+  try {
 
     const startDate =
-    document
-    .getElementById(
-      "startDate"
-    )
-    .value;
+      document
+        .getElementById(
+          "startDate"
+        )
+        ?.value || "";
+
 
     const endDate =
-    document
-    .getElementById(
-      "endDate"
-    )
-    .value;
+      document
+        .getElementById(
+          "endDate"
+        )
+        ?.value || "";
 
-    if(
+
+    // =========================
+    // 日付確認
+    // =========================
+
+    if (
       !startDate ||
       !endDate
-    ){
+    ) {
 
       alert(
         "期間を指定してください"
@@ -329,164 +599,134 @@ async function loadSales(){
 
     }
 
+
     // =========================
-    // 売上取得
+    // API取得
     // =========================
-
-    const res =
-    await fetch(
-
-      API_URL +
-      "/api/sales",
-
-      {
-
-        method:"POST",
-
-        headers:{
-
-          "Content-Type":
-          "application/json",
-
-          "Authorization":
-          "Bearer " +
-          localStorage.getItem(
-            "adminToken"
-          )
-
-        },
-
-        body:
-        JSON.stringify({
-
-          startDate,
-
-          endDate
-
-        })
-
-      }
-
-    );
 
     const data =
-    await res.json();
+      await fetchSales(
+        startDate,
+        endDate
+      );
+
+
+    console.log(
+      "売上集計結果:",
+      data
+    );
+
+
+    // =========================
+    // 安全なデフォルト値
+    // =========================
+
+    const store =
+      data.store || {
+
+        onigiriSales: 0,
+        bbqSales: 0,
+        optionSales: 0,
+        totalSales: 0,
+        products: []
+
+      };
+
+
+    const kitchen =
+      data.kitchen || {
+
+        totalSales: 0,
+        products: []
+
+      };
+
+
+    const total =
+      data.total || {
+
+        totalSales: 0
+
+      };
+
 
     // =========================
     // 店舗
     // =========================
 
-    document
-    .getElementById(
-      "onigiriSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.store.onigiriSales || 0
-    )
-    .toLocaleString();
+    setSalesText(
+      "onigiriSales",
+      store.onigiriSales
+    );
 
-    document
-    .getElementById(
-      "bbqSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.store.bbqSales || 0
-    )
-    .toLocaleString();
 
-    document
-    .getElementById(
-      "optionSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.store.optionSales || 0
-    )
-    .toLocaleString();
+    setSalesText(
+      "bbqSales",
+      store.bbqSales
+    );
 
-    document
-    .getElementById(
-      "storeTotalSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.store.totalSales || 0
-    )
-    .toLocaleString();
+
+    setSalesText(
+      "optionSales",
+      store.optionSales
+    );
+
+
+    setSalesText(
+      "storeTotalSales",
+      store.totalSales
+    );
+
 
     displayProductSales(
 
       "storeProductSales",
 
-      data.store.products || []
+      store.products || []
 
     );
+
 
     // =========================
     // キッチンカー
     // =========================
 
-    document
-    .getElementById(
-      "kitchenTotalSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.kitchen.totalSales || 0
-    )
-    .toLocaleString();
+    setSalesText(
+      "kitchenTotalSales",
+      kitchen.totalSales
+    );
+
 
     displayProductSales(
 
       "kitchenProductSales",
 
-      data.kitchen.products || []
+      kitchen.products || []
 
     );
+
 
     // =========================
     // 総合
     // =========================
 
-    document
-    .getElementById(
-      "totalStoreSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.store.totalSales || 0
-    )
-    .toLocaleString();
+    setSalesText(
+      "totalStoreSales",
+      store.totalSales
+    );
 
-    document
-    .getElementById(
-      "totalKitchenSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.kitchen.totalSales || 0
-    )
-    .toLocaleString();
 
-    document
-    .getElementById(
-      "grandTotalSales"
-    )
-    .innerText =
-    "¥" +
-    Number(
-      data.total.totalSales || 0
-    )
-    .toLocaleString();
+    setSalesText(
+      "totalKitchenSales",
+      kitchen.totalSales
+    );
+
+
+    setSalesText(
+      "grandTotalSales",
+      total.totalSales
+    );
+
 
     displayProductSales(
 
@@ -494,30 +734,33 @@ async function loadSales(){
 
       mergeProducts(
 
-        data.store.products,
+        store.products || [],
 
-        data.kitchen.products
+        kitchen.products || []
 
       )
 
     );
 
+
   }
-  catch(e){
+  catch (e) {
 
     console.error(
       "売上集計エラー",
       e
     );
 
+
     alert(
-      "売上取得中にエラーが発生しました"
+      "売上取得中にエラーが発生しました\n\n" +
+      e.message
     );
 
   }
-  finally{
+  finally {
 
-    if(loading){
+    if (loading) {
 
       loading.classList.remove(
         "show"
@@ -529,619 +772,772 @@ async function loadSales(){
 
 }
 
-// =========================
+
+// ==================================================
+// 売上表示共通
+// ==================================================
+
+function setSalesText(
+  elementId,
+  value
+) {
+
+  const element =
+    document.getElementById(
+      elementId
+    );
+
+
+  if (!element) {
+
+    return;
+
+  }
+
+
+  element.innerText =
+
+    "¥" +
+
+    Number(
+      value || 0
+    )
+      .toLocaleString();
+
+}
+
+
+// ==================================================
 // 店舗売上取得
-// =========================
+// ==================================================
 
 async function loadStoreSales(
 
-startDate,
+  startDate,
+  endDate
 
-endDate
+) {
 
-){
+  try {
 
-try{
+    const data =
+      await fetchSales(
+        startDate,
+        endDate
+      );
 
-const res =
-await fetch(
 
-API_URL+
-"/api/sales",
+    const store =
+      data.store || {
 
-{
+        onigiriSales: 0,
+        bbqSales: 0,
+        optionSales: 0,
+        totalSales: 0,
+        products: []
 
-method:"POST",
+      };
 
-headers:{
 
-"Content-Type":
-"application/json",
+    setSalesText(
+      "onigiriSales",
+      store.onigiriSales
+    );
 
-"Authorization":
-"Bearer "+
-localStorage.getItem(
-"adminToken"
-)
 
-},
+    setSalesText(
+      "bbqSales",
+      store.bbqSales
+    );
 
-body:
 
-JSON.stringify({
+    setSalesText(
+      "optionSales",
+      store.optionSales
+    );
 
-startDate,
 
-endDate
+    setSalesText(
+      "storeTotalSales",
+      store.totalSales
+    );
 
-})
 
-}
+    displayProductSales(
 
-);
+      "storeProductSales",
 
-const data =
-await res.json();
+      store.products || []
 
-document
-.getElementById(
-"onigiriSales"
-)
-.innerText =
+    );
 
-"¥"+
-Number(
-data.store.onigiriSales || 0
-)
-.toLocaleString();
 
-document
-.getElementById(
-"bbqSales"
-)
-.innerText =
+    return {
 
-"¥"+
-Number(
-data.store.bbqSales || 0
-)
-.toLocaleString();
+      total:
+        Number(
+          store.totalSales || 0
+        ),
 
-document
-.getElementById(
-"optionSales"
-)
-.innerText =
+      products:
+        store.products || []
 
-"¥"+
-Number(
-data.store.optionSales || 0
-)
-.toLocaleString();
+    };
 
-document
-.getElementById(
-"storeTotalSales"
-)
-.innerText =
 
-"¥"+
-Number(
-data.store.totalSales || 0
-)
-.toLocaleString();
+  }
+  catch (e) {
 
-// =========================
-// 商品別表示
-// =========================
+    console.error(
+      "店舗売上取得エラー",
+      e
+    );
 
-displayProductSales(
 
-"storeProductSales",
+    return {
 
-data.store.products
+      total: 0,
 
-);
+      products: []
 
-return{
+    };
 
-total:
-Number(
-data.store.totalSales || 0
-),
-
-products:
-
-data.store.products || []
-
-};
-
-}catch(e){
-
-console.error(
-"店舗売上取得エラー",
-e
-);
-
-return{
-
-total:0,
-
-products:[]
-
-};
+  }
 
 }
 
-}
 
-// =========================
+// ==================================================
 // キッチンカー売上取得
-// =========================
+// ==================================================
 
 async function loadKitchenSales(
 
-startDate,
+  startDate,
+  endDate
 
-endDate
+) {
 
-){
+  try {
 
-try{
+    const data =
+      await fetchSales(
+        startDate,
+        endDate
+      );
 
-const res =
 
-await fetch(
+    const kitchen =
+      data.kitchen || {
 
-API_URL+
-"/api/sales",
+        totalSales: 0,
+        products: []
 
-{
+      };
 
-method:"POST",
 
-headers:{
+    const total =
+      Number(
+        kitchen.totalSales || 0
+      );
 
-"Content-Type":
-"application/json",
 
-"Authorization":
-"Bearer "+
-localStorage.getItem(
-"adminToken"
-)
+    setSalesText(
+      "kitchenTotalSales",
+      total
+    );
 
-},
 
-body:
+    displayProductSales(
 
-JSON.stringify({
+      "kitchenProductSales",
 
-startDate,
+      kitchen.products || []
 
-endDate
+    );
 
-})
 
-}
+    updateTotalSales(
+      total
+    );
 
-);
 
-const data =
+    return {
 
-await res.json();
+      total,
 
-const total =
+      products:
+        kitchen.products || []
 
-Number(
-data.kitchen.totalSales || 0
-);
+    };
 
-document
-.getElementById(
-"kitchenTotalSales"
-)
-.innerText =
 
-"¥"+
-total.toLocaleString();
+  }
+  catch (e) {
 
-// =========================
-// 商品別表示
-// =========================
+    console.error(
+      "キッチンカー売上取得エラー",
+      e
+    );
 
-displayProductSales(
 
-"kitchenProductSales",
+    return {
 
-data.kitchen.products
+      total: 0,
 
-);
+      products: []
 
-updateTotalSales(
+    };
 
-total
-
-);
-
-return{
-
-total,
-
-products:
-
-data.kitchen.products || []
-
-};
-
-}catch(e){
-
-console.error(
-"キッチンカー売上取得エラー",
-e
-);
-
-return{
-
-total:0,
-
-products:[]
-
-};
+  }
 
 }
 
-}
 
-// =========================
+// ==================================================
 // 総合売上更新
-// =========================
+// ==================================================
 
 function updateTotalSales(
+  kitchenTotal
+) {
 
-kitchenTotal
+  const storeElement =
+    document.getElementById(
+      "storeTotalSales"
+    );
 
-){
 
-const storeTotal =
+  let storeTotal = 0;
 
-Number(
 
-document
-.getElementById(
-"storeTotalSales"
-)
-.innerText
-.replace(
-/[^0-9]/g,
-""
-)
+  if (storeElement) {
 
-||0
+    storeTotal =
+      Number(
 
-);
+        storeElement
+          .innerText
+          .replace(
+            /[^0-9]/g,
+            ""
+          )
 
-document
-.getElementById(
-"totalStoreSales"
-)
-.innerText =
+      ) || 0;
 
-"¥"+
-storeTotal.toLocaleString();
+  }
 
-document
-.getElementById(
-"totalKitchenSales"
-)
-.innerText =
 
-"¥"+
-Number(
-kitchenTotal
-)
-.toLocaleString();
+  setSalesText(
+    "totalStoreSales",
+    storeTotal
+  );
 
-document
-.getElementById(
-"grandTotalSales"
-)
-.innerText =
 
-"¥"+
-(
-storeTotal
-+
-Number(kitchenTotal)
-)
-.toLocaleString();
+  setSalesText(
+    "totalKitchenSales",
+    kitchenTotal
+  );
+
+
+  setSalesText(
+
+    "grandTotalSales",
+
+    storeTotal +
+    Number(
+      kitchenTotal || 0
+    )
+
+  );
 
 }
 
-// =========================
+
+// ==================================================
 // 商品別売上表示
-// =========================
+// ==================================================
 
 function displayProductSales(
 
-targetId,
+  targetId,
+  products
 
-products
+) {
 
-){
+  const area =
+    document.getElementById(
+      targetId
+    );
 
-const area =
 
-document.getElementById(
-targetId
-);
+  if (!area) {
 
-if(!area){
+    return;
 
-return;
+  }
+
+
+  area.innerHTML = "";
+
+
+  if (
+    !products ||
+    !Array.isArray(products) ||
+    products.length === 0
+  ) {
+
+    area.innerHTML =
+
+      `
+      <tr>
+        <td colspan="3">
+          データがありません
+        </td>
+      </tr>
+      `;
+
+    return;
+
+  }
+
+
+  products.forEach(
+    item => {
+
+      area.innerHTML +=
+
+        `
+        <tr>
+
+          <td>
+            ${escapeHtml(
+              item.name || ""
+            )}
+          </td>
+
+          <td>
+            ${Number(
+              item.qty || 0
+            )}
+            個
+          </td>
+
+          <td>
+            ¥${Number(
+              item.amount || 0
+            ).toLocaleString()}
+          </td>
+
+        </tr>
+        `;
+
+    }
+  );
 
 }
 
-area.innerHTML = "";
 
-if(
-!products ||
-products.length===0
-){
+// ==================================================
+// HTMLエスケープ
+// ==================================================
 
-area.innerHTML =
+function escapeHtml(
+  value
+) {
 
-`
-<tr>
-<td colspan="3">
-データがありません
-</td>
-</tr>
-`;
-
-return;
-
-}
-
-products.forEach(item=>{
-
-area.innerHTML +=
-
-`
-
-<tr>
-
-<td>
-${item.name}
-</td>
-
-<td>
-${Number(item.qty || 0)}
-個
-</td>
-
-<td>
-¥${Number(item.amount || 0)
-.toLocaleString()}
-</td>
-
-</tr>
-
-`;
-
-});
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
-// =========================
+
+// ==================================================
 // キッチンカー商品別表示
-// =========================
+// ==================================================
 
 function displayKitchenProducts(
 
-products
+  products
 
-){
+) {
 
-displayProductSales(
+  displayProductSales(
 
-"kitchenProductSales",
+    "kitchenProductSales",
 
-products
+    products
 
-);
+  );
 
 }
 
-// =========================
+
+// ==================================================
 // 総合商品集計
-// =========================
+// ==================================================
 
 function mergeProducts(
 
-storeProducts,
+  storeProducts,
+  kitchenProducts
 
-kitchenProducts
+) {
 
-){
+  const result = {};
 
-const result = {};
 
-[
-...(storeProducts || []),
-...(kitchenProducts || [])
-]
-.forEach(item=>{
+  [
 
-if(!result[item.name]){
+    ...(Array.isArray(
+      storeProducts
+    )
+      ? storeProducts
+      : []),
 
-result[item.name]={
+    ...(Array.isArray(
+      kitchenProducts
+    )
+      ? kitchenProducts
+      : [])
 
-name:item.name,
+  ]
+    .forEach(
+      item => {
 
-qty:0,
+        const name =
+          item.name || "";
 
-amount:0
 
-};
+        if (
+          !result[name]
+        ) {
+
+          result[name] = {
+
+            name,
+
+            qty: 0,
+
+            amount: 0
+
+          };
+
+        }
+
+
+        result[name].qty +=
+
+          Number(
+            item.qty || 0
+          );
+
+
+        result[name].amount +=
+
+          Number(
+            item.amount || 0
+          );
+
+      }
+    );
+
+
+  return Object.values(
+    result
+  );
 
 }
 
-result[item.name].qty +=
 
-Number(item.qty || 0);
-
-result[item.name].amount +=
-
-Number(item.amount || 0);
-
-});
-
-return Object.values(result);
-
-}
-
-// =========================
+// ==================================================
 // CSV出力
-// =========================
+// ==================================================
 
-async function downloadSalesCSV(){
+async function downloadSalesCSV() {
 
-const startDate =
+  const startDate =
+    document
+      .getElementById(
+        "startDate"
+      )
+      ?.value || "";
 
-document
-.getElementById(
-"startDate"
-)
-.value;
 
-const endDate =
+  const endDate =
+    document
+      .getElementById(
+        "endDate"
+      )
+      ?.value || "";
 
-document
-.getElementById(
-"endDate"
-)
-.value;
 
-const token =
+  if (
+    !startDate ||
+    !endDate
+  ) {
 
-localStorage.getItem(
-"adminToken"
-);
+    alert(
+      "期間を指定してください"
+    );
 
-const res =
+    return;
 
-await fetch(
+  }
 
-API_URL+
-"/api/sales/csv",
 
-{
+  const token =
+    localStorage.getItem(
+      "adminToken"
+    );
 
-method:"POST",
 
-headers:{
+  if (!token) {
 
-"Content-Type":
-"application/json",
+    alert(
+      "管理者認証がありません"
+    );
 
-"Authorization":
-"Bearer "+token
+    return;
 
-},
+  }
 
-body:
 
-JSON.stringify({
+  try {
 
-startDate,
+    const res =
+      await fetch(
 
-endDate
+        API_URL +
+        "/api/sales/csv",
 
-})
+        {
 
-}
+          method: "POST",
 
-);
+          headers: {
 
-const data =
+            "Content-Type":
+              "application/json",
 
-await res.json();
+            "Authorization":
+              "Bearer " +
+              token
 
-if(
-!data.success
-){
+          },
 
-alert(
-"CSV作成失敗"
-);
+          body:
+            JSON.stringify({
 
-return;
+              startDate,
 
-}
+              endDate
 
-const csv =
+            })
 
-data.csv
-.map(row=>
+        }
 
-row.map(value=>
+      );
 
-`"${String(value)
-.replace(/"/g,'""')}"`
 
-)
-.join(",")
+    const text =
+      await res.text();
 
-)
-.join("\n");
 
-const blob =
+    console.log(
+      "SALES CSV STATUS =",
+      res.status
+    );
 
-new Blob(
+    console.log(
+      "SALES CSV RAW =",
+      text
+    );
 
-[
 
-"\uFEFF"+
-csv
+    let data;
 
-],
 
-{
+    try {
 
-type:
-"text/csv;charset=utf-8;"
+      data =
+        JSON.parse(
+          text
+        );
 
-}
+    }
+    catch (e) {
 
-);
+      throw new Error(
+        "CSV APIのレスポンスがJSONではありません"
+      );
 
-const url =
+    }
 
-URL.createObjectURL(
-blob
-);
 
-const a =
+    if (!res.ok) {
 
-document.createElement(
-"a"
-);
+      throw new Error(
 
-a.href=url;
+        data.message ||
+        data.error ||
+        (
+          "CSV APIエラー HTTP " +
+          res.status
+        )
 
-a.download=
+      );
 
-"売上履歴_"+
-startDate+
-"_"+
-endDate+
-".csv";
+    }
 
-a.click();
 
-URL.revokeObjectURL(
-url
-);
+    if (
+      !data.success
+    ) {
+
+      alert(
+        data.message ||
+        "CSV作成失敗"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !Array.isArray(
+        data.csv
+      )
+    ) {
+
+      throw new Error(
+        "CSVデータが正しくありません"
+      );
+
+    }
+
+
+    const csv =
+
+      data.csv
+        .map(
+          row =>
+
+            row
+              .map(
+                value =>
+
+                  `"${String(
+                    value ?? ""
+                  )
+                    .replace(
+                      /"/g,
+                      '""'
+                    )}"`
+              )
+              .join(",")
+
+        )
+        .join("\n");
+
+
+    const blob =
+      new Blob(
+
+        [
+
+          "\uFEFF" +
+          csv
+
+        ],
+
+        {
+
+          type:
+            "text/csv;charset=utf-8;"
+
+        }
+
+      );
+
+
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const a =
+      document.createElement(
+        "a"
+      );
+
+
+    a.href =
+      url;
+
+
+    a.download =
+
+      "売上履歴_" +
+      startDate +
+      "_" +
+      endDate +
+      ".csv";
+
+
+    document.body.appendChild(
+      a
+    );
+
+
+    a.click();
+
+
+    a.remove();
+
+
+    URL.revokeObjectURL(
+      url
+    );
+
+
+  }
+  catch (e) {
+
+    console.error(
+      "CSV出力エラー",
+      e
+    );
+
+
+    alert(
+      "CSV作成中にエラーが発生しました\n\n" +
+      e.message
+    );
+
+  }
 
 }
