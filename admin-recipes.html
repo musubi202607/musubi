@@ -57,7 +57,7 @@
 
 /* 左側カード */
 
-.left-panel .card{
+.left-panel > .card{
 
   width:100%;
 
@@ -108,8 +108,6 @@
 
   overflow-x:hidden;
 
-  padding:0;
-
   box-sizing:border-box;
 
 }
@@ -153,76 +151,90 @@
    商品カード
 ========================= */
 
-.product-card{
+.product-list .product-card{
 
-  display:block;
+  display:block !important;
 
-  width:100%;
+  position:relative;
 
-  min-width:0;
+  width:100% !important;
 
-  min-height:78px;
+  min-width:100%;
+
+  height:auto !important;
+
+  min-height:82px !important;
+
+  max-height:none !important;
 
   box-sizing:border-box;
+
+  padding:14px 16px !important;
+
+  margin:0;
 
   background:#fff;
 
   border-radius:10px;
 
-  padding:12px 15px;
+  border:2px solid transparent;
 
   cursor:pointer;
 
-  border:2px solid transparent;
+  line-height:1.6;
 
-  transition:.2s;
-
-  line-height:1.5;
-
-  overflow:hidden;
+  overflow:visible !important;
 
 }
 
 
 /* 商品名 */
 
-.product-card strong{
+.product-list .product-card strong{
 
   display:block;
 
   width:100%;
 
-  font-size:17px;
+  height:auto !important;
 
-  line-height:1.5;
+  min-height:26px;
 
   margin:0 0 5px 0;
+
+  font-size:17px;
+
+  line-height:1.6;
+
+  font-weight:600;
 
   color:#222;
 
   white-space:normal;
 
-  overflow-wrap:anywhere;
-
   word-break:break-word;
 
-}
-
-
-/* 商品カード内の文字 */
-
-.product-card{
-
-  font-size:14px;
-
-  color:#444;
+  overflow-wrap:anywhere;
 
 }
 
 
-/* hover */
+/* 商品カード内の改行 */
 
-.product-card:hover{
+.product-list .product-card br{
+
+  display:block;
+
+  content:"";
+
+  line-height:1.5;
+
+}
+
+
+/* ホバー */
+
+.product-list .product-card:hover{
 
   border-color:#4caf50;
 
@@ -231,7 +243,7 @@
 
 /* 選択中 */
 
-.product-card.active{
+.product-list .product-card.active{
 
   border-color:#4caf50;
 
@@ -255,7 +267,7 @@
 
 /* 右側カード */
 
-.right-panel .card{
+.right-panel > .card{
 
   width:100%;
 
@@ -541,8 +553,8 @@ select{
 @media(min-width:901px){
 
   /*
-   * 左の商品一覧だけスクロール
-   * 右側は通常表示
+   * 左の商品一覧だけ固定
+   * 商品一覧の中だけスクロール
    */
 
   .left-panel{
@@ -587,14 +599,16 @@ select{
   }
 
 
-  .product-card{
+  .product-list .product-card{
 
-    padding:12px 14px;
+    min-height:82px !important;
+
+    padding:13px 14px !important;
 
   }
 
 
-  .product-card strong{
+  .product-list .product-card strong{
 
     font-size:16px;
 
@@ -640,7 +654,7 @@ select{
   }
 
 
-  .left-panel .card{
+  .left-panel > .card{
 
     width:100%;
 
@@ -650,8 +664,7 @@ select{
 
 
   /*
-   * スマホでは商品一覧を
-   * 独立スクロール
+   * 商品一覧だけスクロール
    */
 
   .product-list{
@@ -667,22 +680,38 @@ select{
   }
 
 
-  .product-card{
+  .product-list .product-card{
 
-    width:100%;
+    display:block !important;
 
-    min-height:78px;
+    width:100% !important;
 
-    padding:12px 15px;
+    min-width:100%;
+
+    height:auto !important;
+
+    min-height:82px !important;
+
+    max-height:none !important;
+
+    padding:13px 15px !important;
 
   }
 
 
-  .product-card strong{
+  .product-list .product-card strong{
+
+    display:block;
+
+    width:100%;
+
+    height:auto !important;
+
+    min-height:25px;
 
     font-size:16px;
 
-    line-height:1.5;
+    line-height:1.6;
 
   }
 
@@ -837,16 +866,16 @@ select{
   }
 
 
-  .product-card{
+  .product-list .product-card{
 
-    min-height:78px;
+    min-height:82px !important;
 
-    padding:11px 13px;
+    padding:13px 14px !important;
 
   }
 
 
-  .product-card strong{
+  .product-list .product-card strong{
 
     font-size:16px;
 
@@ -885,6 +914,7 @@ select{
   }
 
 }
+  
 </style>
 
 </head>
