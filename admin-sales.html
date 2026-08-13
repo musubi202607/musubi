@@ -34,6 +34,10 @@ font-weight:bold;
 color:#007bff;
 }
 
+.gross-profit-card .sales-value{
+color:#28a745;
+}
+
 .tab-area{
 display:flex;
 margin:20px 0;
@@ -99,6 +103,32 @@ text-align:center;
 background:#f5f5f5;
 }
 
+@media(max-width:600px){
+
+.sales-card{
+padding:15px 10px;
+}
+
+.sales-value{
+font-size:24px;
+}
+
+.tab-btn{
+padding:12px 5px;
+font-size:14px;
+}
+
+.sales-table{
+font-size:14px;
+}
+
+.sales-table th,
+.sales-table td{
+padding:8px 5px;
+}
+
+}
+
 </style>
 
 </head>
@@ -110,9 +140,7 @@ background:#f5f5f5;
 <div class="container header-inner">
 
 <h1>
-
 売上確認
-
 </h1>
 
 </div>
@@ -125,9 +153,7 @@ background:#f5f5f5;
 href="admin.html"
 class="back-btn"
 >
-
 ← 戻る
-
 </a>
 
 <br><br>
@@ -135,9 +161,7 @@ class="back-btn"
 <div class="shop-info-card">
 
 <label>
-
 開始日
-
 </label>
 
 <input
@@ -148,9 +172,7 @@ id="startDate"
 <label
 style="margin-left:20px;"
 >
-
 終了日
-
 </label>
 
 <input
@@ -163,41 +185,31 @@ id="endDate"
 <button
 onclick="setToday()"
 >
-
 当日
-
 </button>
 
 <button
 onclick="setThisMonth()"
 >
-
 当月
-
 </button>
 
 <button
 onclick="setLastMonth()"
 >
-
 前月
-
 </button>
 
 <button
 onclick="loadSales()"
 >
-
 集計
-
 </button>
 
 <button
 onclick="downloadSalesCSV()"
 >
-
 CSV出力
-
 </button>
 
 </div>
@@ -211,9 +223,7 @@ id="tabStore"
 class="tab-btn active"
 onclick="showSalesTab('store')"
 >
-
 店舗
-
 </button>
 
 <button
@@ -221,9 +231,7 @@ id="tabKitchen"
 class="tab-btn"
 onclick="showSalesTab('kitchen')"
 >
-
 キッチンカー
-
 </button>
 
 <button
@@ -231,9 +239,7 @@ id="tabTotal"
 class="tab-btn"
 onclick="showSalesTab('total')"
 >
-
 総合
-
 </button>
 
 </div>
@@ -252,92 +258,84 @@ class="tab-content active"
 <div class="sales-card">
 
 <h3>
-
 おにぎり
-
 </h3>
 
 <div
 class="sales-value"
 id="onigiriSales"
 >
-
 ¥0
-
 </div>
 
 </div>
-
 
 <div class="sales-card">
 
 <h3>
-
 BBQ
-
 </h3>
 
 <div
 class="sales-value"
 id="bbqSales"
 >
-
 ¥0
-
 </div>
 
 </div>
-
 
 <div class="sales-card">
 
 <h3>
-
 オプション
-
 </h3>
 
 <div
 class="sales-value"
 id="optionSales"
 >
-
 ¥0
-
 </div>
 
 </div>
-
 
 <div class="sales-card">
 
 <h3>
-
-店舗合計
-
+店舗売上
 </h3>
 
 <div
 class="sales-value"
 id="storeTotalSales"
 >
-
 ¥0
+</div>
 
+</div>
+
+<div class="sales-card gross-profit-card">
+
+<h3>
+店舗粗利
+</h3>
+
+<div
+class="sales-value"
+id="storeGrossProfit"
+>
+¥0
 </div>
 
 </div>
 
 </div>
-
-
 
 <div class="shop-info-card">
 
 <h2>
-
 商品別売上
-
 </h2>
 
 <table class="sales-table">
@@ -347,21 +345,15 @@ id="storeTotalSales"
 <tr>
 
 <th>
-
 商品名
-
 </th>
 
 <th>
-
 数量
-
 </th>
 
 <th>
-
 金額
-
 </th>
 
 </tr>
@@ -371,7 +363,6 @@ id="storeTotalSales"
 <tbody
 id="storeProductSales"
 >
-
 </tbody>
 
 </table>
@@ -379,8 +370,6 @@ id="storeProductSales"
 </div>
 
 </div>
-
-
 
 <!-- =========================
 キッチンカー
@@ -396,32 +385,39 @@ class="tab-content"
 <div class="sales-card">
 
 <h3>
-
 キッチンカー売上
-
 </h3>
 
 <div
 class="sales-value"
 id="kitchenTotalSales"
 >
-
 ¥0
+</div>
 
+</div>
+
+<div class="sales-card gross-profit-card">
+
+<h3>
+キッチンカー粗利
+</h3>
+
+<div
+class="sales-value"
+id="kitchenGrossProfit"
+>
+¥0
 </div>
 
 </div>
 
 </div>
-
-
 
 <div class="shop-info-card">
 
 <h2>
-
 商品別売上
-
 </h2>
 
 <table class="sales-table">
@@ -431,21 +427,15 @@ id="kitchenTotalSales"
 <tr>
 
 <th>
-
 商品名
-
 </th>
 
 <th>
-
 数量
-
 </th>
 
 <th>
-
 金額
-
 </th>
 
 </tr>
@@ -455,7 +445,6 @@ id="kitchenTotalSales"
 <tbody
 id="kitchenProductSales"
 >
-
 </tbody>
 
 </table>
@@ -463,8 +452,6 @@ id="kitchenProductSales"
 </div>
 
 </div>
-
-
 
 <!-- =========================
 総合
@@ -480,18 +467,14 @@ class="tab-content"
 <div class="sales-card">
 
 <h3>
-
 店舗売上
-
 </h3>
 
 <div
 class="sales-value"
 id="totalStoreSales"
 >
-
 ¥0
-
 </div>
 
 </div>
@@ -499,18 +482,14 @@ id="totalStoreSales"
 <div class="sales-card">
 
 <h3>
-
 キッチンカー売上
-
 </h3>
 
 <div
 class="sales-value"
 id="totalKitchenSales"
 >
-
 ¥0
-
 </div>
 
 </div>
@@ -518,31 +497,40 @@ id="totalKitchenSales"
 <div class="sales-card">
 
 <h3>
-
 総売上
-
 </h3>
 
 <div
 class="sales-value"
 id="grandTotalSales"
 >
-
 ¥0
+</div>
 
+</div>
+
+<div class="sales-card gross-profit-card">
+
+<h3>
+総合粗利
+</h3>
+
+<div
+class="sales-value"
+id="grandGrossProfit"
+>
+¥0
 </div>
 
 </div>
 
 </div>
-
-
 
 <div class="shop-info-card">
 
-<div class="shop-info-card">
-
-<h2>店舗 商品別売上</h2>
+<h2>
+店舗 商品別売上
+</h2>
 
 <table class="sales-table">
 
@@ -550,29 +538,36 @@ id="grandTotalSales"
 
 <tr>
 
-<th>商品名</th>
+<th>
+商品名
+</th>
 
-<th>数量</th>
+<th>
+数量
+</th>
 
-<th>金額</th>
+<th>
+金額
+</th>
 
 </tr>
 
 </thead>
 
-<tbody id="totalStoreProductSales">
-
+<tbody
+id="totalStoreProductSales"
+>
 </tbody>
 
 </table>
 
 </div>
 
-
-
 <div class="shop-info-card">
 
-<h2>キッチンカー 商品別売上</h2>
+<h2>
+キッチンカー 商品別売上
+</h2>
 
 <table class="sales-table">
 
@@ -580,47 +575,55 @@ id="grandTotalSales"
 
 <tr>
 
-<th>商品名</th>
+<th>
+商品名
+</th>
 
-<th>数量</th>
+<th>
+数量
+</th>
 
-<th>金額</th>
+<th>
+金額
+</th>
 
 </tr>
 
 </thead>
 
-<tbody id="totalKitchenProductSales">
-
+<tbody
+id="totalKitchenProductSales"
+>
 </tbody>
 
 </table>
 
 </div>
+
+</div>
+
+<!-- =========================
+ローディング
+========================= -->
+
+<div
+id="salesLoading"
+class="sales-loading"
+>
+
+<div class="loading-box">
+集計中...
 </div>
 
 </div>
 
-<!-- ローディング -->
-<div id="salesLoading" class="sales-loading">
-
-  <div class="loading-box">
-
-    集計中...
-
-  </div>
-
-</div>
-  
 </main>
-
 
 <script src="js/config.js"></script>
 
 <script src="js/admin-auth.js"></script>
 
 <script src="js/admin-sales.js"></script>
-
 
 </body>
 
