@@ -24,699 +24,654 @@
 <style>
 
 /* =========================
+   レシピ管理
    レイアウト
 ========================= */
 
-.recipe-container{
+.recipe-container {
 
-  display:flex;
+  display: flex;
 
-  gap:20px;
+  gap: 20px;
 
-  align-items:flex-start;
+  align-items: flex-start;
 
-  width:100%;
+  width: 100%;
 
 }
+
 
 /* =========================
    左：商品一覧
 ========================= */
 
-.left-panel{
+.left-panel {
 
-  width:320px;
+  width: 300px;
 
-  flex-shrink:0;
-
-  position:sticky;
-
-  top:20px;
+  flex: 0 0 300px;
 
 }
 
-.left-panel .card{
 
-  display:flex;
+/* 商品一覧カード */
 
-  flex-direction:column;
+.left-panel > .card {
 
-  box-sizing:border-box;
-
-}
-/* =========================
-   商品検索
-========================= */
-
-.search-box{
-
-  margin-bottom:15px;
-
-  flex-shrink:0;
+  padding: 15px;
 
 }
 
-.search-box input{
 
-  width:100%;
+/* 検索 */
 
-  box-sizing:border-box;
+.search-box {
+
+  margin-bottom: 12px;
 
 }
+
+.search-box input {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+}
+
 
 /* =========================
    商品一覧
 ========================= */
 
-.product-list{
+.product-list {
 
-  display:flex;
+  display: flex;
 
-  flex-direction:column;
+  flex-direction: column;
 
-  gap:10px;
+  gap: 6px;
 
-  max-height:calc(100vh - 180px);
+  max-height: calc(100vh - 220px);
 
-  overflow-y:auto;
+  overflow-y: auto;
 
-  padding-right:5px;
-
-  scrollbar-width:thin;
-
-}
-  
-/* Chrome / Edge */
-.product-list::-webkit-scrollbar{
-
-  width:8px;
+  padding-right: 4px;
 
 }
 
-.product-list::-webkit-scrollbar-thumb{
 
-  background:#ccc;
+/* 商品カード */
 
-  border-radius:10px;
+.product-card {
+
+  background: #fff;
+
+  border-radius: 8px;
+
+  padding: 10px 12px;
+
+  cursor: pointer;
+
+  border: 2px solid transparent;
+
+  transition: .15s;
+
+  line-height: 1.4;
+
+  box-sizing: border-box;
 
 }
 
-.product-list::-webkit-scrollbar-track{
 
-  background:#f5f5f5;
+/* 商品名 */
+
+.product-card strong {
+
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 15px;
+
+  line-height: 1.3;
 
 }
+
+
+/* 商品情報 */
+
+.product-card {
+
+  font-size: 13px;
+
+}
+
+
+/* ホバー */
+
+.product-card:hover {
+
+  border-color: #4caf50;
+
+}
+
+
+/* 選択中 */
+
+.product-card.active {
+
+  border-color: #4caf50;
+
+  background: #f1fff2;
+
+}
+
 
 /* =========================
-   商品カード
+   右：レシピ
 ========================= */
 
-.product-card{
+.right-panel {
 
-  background:#fff;
+  flex: 1;
 
-  border-radius:10px;
-
-  padding:15px;
-
-  cursor:pointer;
-
-  border:2px solid transparent;
-
-  transition:.2s;
-
-  flex-shrink:0;
-
-  box-sizing:border-box;
+  min-width: 0;
 
 }
 
-.product-card:hover{
 
-  border-color:#4caf50;
+/* レシピヘッダー */
+
+.recipe-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
 
 }
 
-.product-card.active{
+.recipe-header h2 {
 
-  border-color:#4caf50;
-
-  background:#f1fff2;
+  margin: 0;
 
 }
+
 
 /* =========================
-   右：レシピ編集
+   レシピ概要
 ========================= */
 
-.right-panel{
+.recipe-summary {
 
-  flex:1;
+  display: flex;
 
-  min-width:0;
+  gap: 15px;
 
-  position:sticky;
+  margin-bottom: 20px;
 
-  top:20px;
-
-}
-
-/* =========================
-   レシピ
-========================= */
-
-.recipe-header{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  gap:15px;
-
-  margin-bottom:20px;
+  flex-wrap: wrap;
 
 }
 
-.recipe-header h2{
 
-  margin:0;
+.summary-card {
 
-  min-width:0;
+  background: #fff;
 
-  word-break:break-word;
+  border-radius: 10px;
 
-}
+  padding: 15px;
 
-.recipe-summary{
+  min-width: 160px;
 
-  display:flex;
-
-  gap:20px;
-
-  margin-bottom:20px;
-
-  flex-wrap:wrap;
+  box-sizing: border-box;
 
 }
 
-.summary-card{
-
-  background:#fff;
-
-  border-radius:10px;
-
-  padding:15px;
-
-  min-width:180px;
-
-  box-sizing:border-box;
-
-}
 
 /* =========================
    レシピテーブル
 ========================= */
 
-.recipe-table{
+.recipe-table {
 
-  width:100%;
+  width: 100%;
 
-  border-collapse:collapse;
-
-  table-layout:auto;
+  border-collapse: collapse;
 
 }
+
 
 .recipe-table th,
 
-.recipe-table td{
+.recipe-table td {
 
-  border-bottom:1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 
-  padding:10px;
+  padding: 10px;
 
-  text-align:center;
-
-  vertical-align:middle;
+  text-align: center;
 
 }
 
-.recipe-table th{
 
-  background:#f5f5f5;
+.recipe-table th {
 
-  position:sticky;
-
-  top:0;
-
-  z-index:2;
+  background: #f5f5f5;
 
 }
+
 
 /* =========================
-   レシピ操作
+   操作ボタン
 ========================= */
 
-.recipe-actions{
+.recipe-actions {
 
-  margin-top:20px;
+  margin-top: 20px;
 
-  display:flex;
+  display: flex;
 
-  gap:10px;
+  gap: 10px;
 
-  flex-wrap:wrap;
+  flex-wrap: wrap;
 
 }
+
 
 /* =========================
    モーダル
 ========================= */
 
-.modal{
+.modal {
 
-  display:none;
+  display: none;
 
-  position:fixed;
+  position: fixed;
 
-  inset:0;
+  inset: 0;
 
-  background:rgba(0,0,0,.45);
+  background: rgba(0, 0, 0, .45);
 
-  z-index:999;
-
-  overflow-y:auto;
-
-  padding:20px;
-
-  box-sizing:border-box;
+  z-index: 999;
 
 }
 
-.modal-content{
 
-  background:#fff;
+.modal-content {
 
-  width:100%;
+  background: #fff;
 
-  max-width:700px;
+  width: 95%;
 
-  margin:20px auto;
+  max-width: 700px;
 
-  border-radius:10px;
+  max-height: 90vh;
 
-  padding:20px;
+  overflow-y: auto;
 
-  box-sizing:border-box;
+  margin: 40px auto;
+
+  border-radius: 10px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+}
+
+
+.modal-body {
+
+  display: flex;
+
+  gap: 20px;
 
 }
 
-/* =========================
-   モーダル内部
-========================= */
-
-.modal-body{
-
-  display:flex;
-
-  gap:20px;
-
-  align-items:flex-start;
-
-}
 
 /* =========================
    材料一覧
 ========================= */
 
-.material-list{
+.material-list {
 
-  flex:1;
+  flex: 1;
 
-  min-width:0;
+  max-height: 350px;
 
-  max-height:350px;
+  overflow-y: auto;
 
-  overflow-y:auto;
+  border: 1px solid #ddd;
 
-  border:1px solid #ddd;
-
-  border-radius:6px;
+  border-radius: 6px;
 
 }
 
-.material-item{
 
-  padding:10px;
+.material-item {
 
-  cursor:pointer;
+  padding: 10px;
 
-  border-bottom:1px solid #eee;
+  cursor: pointer;
 
-  box-sizing:border-box;
+  border-bottom: 1px solid #eee;
 
-}
-
-.material-item:last-child{
-
-  border-bottom:none;
+  line-height: 1.4;
 
 }
 
-.material-item:hover{
 
-  background:#f5f5f5;
+.material-item:last-child {
+
+  border-bottom: none;
 
 }
+
+
+.material-item:hover {
+
+  background: #f5f5f5;
+
+}
+
 
 /* =========================
    材料入力
 ========================= */
 
-.material-form{
+.material-form {
 
-  width:260px;
+  width: 260px;
 
-  flex-shrink:0;
+  flex: 0 0 260px;
 
 }
+
 
 .material-form input,
 
-.material-form select{
+.material-form select {
 
-  width:100%;
+  width: 100%;
 
-  margin-bottom:12px;
+  margin-bottom: 12px;
 
-  box-sizing:border-box;
+  box-sizing: border-box;
 
 }
+
 
 /* =========================
-   ボタン
+   PC
 ========================= */
 
-.recipe-actions button{
+@media (min-width: 901px) {
 
-  min-height:40px;
+  /*
+   * 商品一覧だけスクロール
+   * 右側は画面上に残る
+   */
 
-  padding:8px 16px;
+  .left-panel {
+
+    position: sticky;
+
+    top: 20px;
+
+  }
+
+  .right-panel {
+
+    position: sticky;
+
+    top: 20px;
+
+  }
 
 }
+
 
 /* =========================
    タブレット
 ========================= */
 
-@media(max-width:1100px){
+@media (min-width: 601px) and (max-width: 900px) {
 
-  .recipe-container{
+  .recipe-container {
 
-    gap:15px;
-
-  }
-
-  .left-panel{
-
-    width:280px;
+    gap: 15px;
 
   }
 
-  .summary-card{
+  .left-panel {
 
-    min-width:150px;
+    width: 260px;
+
+    flex-basis: 260px;
+
+  }
+
+  .product-list {
+
+    max-height: calc(100vh - 200px);
+
+  }
+
+  .summary-card {
+
+    min-width: 140px;
 
   }
 
 }
+
 
 /* =========================
    スマホ
 ========================= */
 
-@media(max-width:900px){
+@media (max-width: 600px) {
 
-  .recipe-container{
+  .recipe-container {
 
-    flex-direction:column;
+    flex-direction: column;
 
-    gap:15px;
-
-  }
-
-  /* -------------------------
-     商品一覧
-  ------------------------- */
-
-  .left-panel{
-
-    width:100%;
-
-    position:static;
-
-    height:auto;
+    gap: 15px;
 
   }
 
-  .left-panel .card{
 
-    height:auto;
+  .left-panel {
 
-    max-height:420px;
+    width: 100%;
 
-  }
-
-  .product-list{
-
-    max-height:300px;
-
-    overflow-y:auto;
+    flex: none;
 
   }
 
-  /* -------------------------
-     レシピ
-  ------------------------- */
 
-  .right-panel{
+  /*
+   * スマホでは商品一覧を
+   * 横に広く使う
+   */
 
-    width:100%;
+  .product-list {
 
-    position:static;
+    max-height: 260px;
 
-  }
+    overflow-y: auto;
 
-  /* -------------------------
-     レシピヘッダー
-  ------------------------- */
-
-  .recipe-header{
-
-    align-items:flex-start;
-
-    flex-direction:column;
+    gap: 5px;
 
   }
 
-  .recipe-header button{
 
-    width:100%;
+  .product-card {
 
-  }
+    padding: 9px 11px;
 
-  /* -------------------------
-     サマリー
-  ------------------------- */
-
-  .recipe-summary{
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:10px;
+    border-radius: 7px;
 
   }
 
-  .summary-card{
 
-    min-width:0;
+  .product-card strong {
 
-    padding:12px;
-
-  }
-
-  /* -------------------------
-     レシピテーブル
-  ------------------------- */
-
-  .recipe-table{
-
-    display:block;
-
-    overflow-x:auto;
-
-    white-space:nowrap;
+    font-size: 14px;
 
   }
 
-  .recipe-table th,
 
-  .recipe-table td{
+  .right-panel {
 
-    padding:8px;
-
-  }
-
-  /* -------------------------
-     モーダル
-  ------------------------- */
-
-  .modal{
-
-    padding:10px;
+    width: 100%;
 
   }
 
-  .modal-content{
 
-    margin:10px auto;
+  .recipe-header {
 
-    padding:15px;
+    align-items: flex-start;
 
-    max-height:calc(100vh - 20px);
-
-    overflow-y:auto;
+    flex-direction: column;
 
   }
 
-  .modal-body{
 
-    flex-direction:column;
+  .recipe-header button {
 
-    gap:15px;
-
-  }
-
-  /* -------------------------
-     材料一覧
-  ------------------------- */
-
-  .material-list{
-
-    width:100%;
-
-    max-height:250px;
+    width: 100%;
 
   }
 
-  /* -------------------------
-     材料入力
-  ------------------------- */
 
-  .material-form{
+  .recipe-summary {
 
-    width:100%;
+    gap: 8px;
 
   }
 
-  /* -------------------------
-     ボタン
-  ------------------------- */
 
-  .recipe-actions{
+  .summary-card {
 
-    width:100%;
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 12px;
 
   }
 
-  .recipe-actions button{
 
-    flex:1;
+  /*
+   * レシピテーブルは横スクロール
+   */
 
-    min-width:120px;
+  .recipe-table {
+
+    min-width: 600px;
+
+  }
+
+
+  .right-panel {
+
+    overflow-x: auto;
+
+  }
+
+
+  .recipe-actions {
+
+    width: 100%;
+
+  }
+
+
+  .recipe-actions button {
+
+    flex: 1;
+
+  }
+
+
+  /* モーダル */
+
+  .modal-content {
+
+    width: 96%;
+
+    max-height: 92vh;
+
+    margin: 20px auto;
+
+    padding: 15px;
+
+  }
+
+
+  .modal-body {
+
+    flex-direction: column;
+
+  }
+
+
+  .material-list {
+
+    max-height: 250px;
+
+  }
+
+
+  .material-form {
+
+    width: 100%;
+
+    flex: none;
 
   }
 
 }
+
 
 /* =========================
-   小型スマホ
+   極小スマホ
 ========================= */
 
-@media(max-width:600px){
+@media (max-width: 380px) {
 
-  .recipe-summary{
+  .product-card {
 
-    grid-template-columns:1fr;
+    padding: 8px 10px;
 
-  }
-
-  .summary-card{
-
-    width:100%;
+    font-size: 12px;
 
   }
 
-  .product-card{
 
-    padding:12px;
+  .product-card strong {
 
-  }
-
-  .recipe-table th,
-
-  .recipe-table td{
-
-    padding:7px;
-
-    font-size:14px;
+    font-size: 13px;
 
   }
 
-  .modal-content{
 
-    padding:12px;
+  .summary-card {
 
-  }
-
-}
-
-/* =========================
-   超小型スマホ
-========================= */
-
-@media(max-width:400px){
-
-  .recipe-header h2{
-
-    font-size:20px;
+    padding: 10px;
 
   }
 
-  .product-card{
-
-    font-size:14px;
-
-  }
-
-  .recipe-actions{
-
-    flex-direction:column;
-
-  }
-
-  .recipe-actions button{
-
-    width:100%;
-
-  }
-
-}
-</style>
+}</style>
 
 </head>
 
