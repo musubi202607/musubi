@@ -39,29 +39,32 @@ async function loadProducts(){
 
   try{
 
-    const res =
+    const headers = {
+
+      Authorization:
+        "Bearer " +
+        localStorage.getItem(
+          "adminToken"
+        )
+
+    };
+
+    // =========================
+    // 商品取得
+    // =========================
+    const productsRes =
       await fetch(
 
         API_URL +
         "/api/products",
 
         {
-
-          headers:{
-
-            Authorization:
-              "Bearer " +
-              localStorage.getItem(
-                "adminToken"
-              )
-
-          }
-
+          headers
         }
 
       );
 
-    if(!res.ok){
+    if(!productsRes.ok){
 
       throw new Error(
         "商品取得失敗"
@@ -70,27 +73,100 @@ async function loadProducts(){
     }
 
     const data =
-      await res.json();
+      await productsRes.json();
 
     console.log(
       "レシピ管理 商品一覧:",
       data
     );
 
-    if(
-      !Array.isArray(data)
-    ){
+    if(!Array.isArray(data)){
 
       products = [];
 
-    }else{
+      filteredProducts = [];
 
-      // =========================
-      // 商品マスタ形式を
-      // レシピ管理用に統一
-      // =========================
-      products =
-        data.map(item => ({
+      renderProducts();
+
+      return;
+
+    }
+
+    // =========================
+    // レシピ情報取得
+    // =========================
+    const recipesRes =
+      await fetch(
+
+        API_URL +
+        "/api/recipes",
+
+        {
+          headers
+        }
+
+      );
+
+    let recipes = [];
+
+    if(recipesRes.ok){
+
+      recipes =
+        await recipesRes.json();
+
+      if(!Array.isArray(recipes)){
+
+        recipes = [];
+
+      }
+
+    }
+
+    console.log(
+      "レシピ管理 レシピ一覧:",
+      recipes
+    );
+
+    // =========================
+    // 商品ID → レシピ情報
+    // =========================
+    const recipeMap = {};
+
+    recipes.forEach(recipe => {
+
+      recipeMap[
+        String(
+          recipe.productId
+        )
+      ] = {
+
+        cost:
+          Number(
+            recipe.cost || 0
+          ),
+
+        costRate:
+          Number(
+            recipe.costRate || 0
+          )
+
+      };
+
+    });
+
+    // =========================
+    // 商品データを
+    // レシピ管理用に統一
+    // =========================
+    products =
+      data.map(item => {
+
+        const recipe =
+          recipeMap[
+            String(item.id)
+          ];
+
+        return {
 
           productId:
             item.id,
@@ -103,14 +179,25 @@ async function loadProducts(){
               item.price || 0
             ),
 
-          costRate:
-            Number(
-              item.costRate || 0
-            )
+          // =====================
+          // レシピ原価
+          // =====================
+          recipeCost:
+            recipe
+            ? recipe.cost
+            : 0,
 
-        }));
+          // =====================
+          // レシピ原価率
+          // =====================
+          recipeCostRate:
+            recipe
+            ? recipe.costRate
+            : 0
 
-    }
+        };
+
+      });
 
     filteredProducts =
       [...products];
