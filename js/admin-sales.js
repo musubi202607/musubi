@@ -40,8 +40,12 @@ function safeNumber(value) {
 
 function formatYen(value) {
 
-  return "¥" +
-    safeNumber(value).toLocaleString();
+  return (
+    "¥" +
+    Math.round(
+      safeNumber(value)
+    ).toLocaleString()
+  );
 
 }
 
