@@ -46,37 +46,35 @@
 
 .left-panel{
 
-  width:300px;
+  width:320px;
 
-  flex-shrink:0;
+  flex:0 0 320px;
+
+  min-width:320px;
 
 }
 
 
-/* 商品一覧カード内 */
+/* 左側カード */
 
 .left-panel .card{
+
+  width:100%;
+
+  box-sizing:border-box;
 
   padding:15px;
 
 }
 
 
-/* 検索 */
+/* =========================
+   商品検索
+========================= */
 
 .search-box{
 
   margin-bottom:12px;
-
-  position:sticky;
-
-  top:0;
-
-  background:#fff;
-
-  z-index:2;
-
-  padding-bottom:5px;
 
 }
 
@@ -90,7 +88,9 @@
 }
 
 
-/* 商品一覧 */
+/* =========================
+   商品一覧
+========================= */
 
 .product-list{
 
@@ -98,7 +98,9 @@
 
   flex-direction:column;
 
-  gap:8px;
+  gap:10px;
+
+  width:100%;
 
   max-height:calc(100vh - 190px);
 
@@ -106,7 +108,9 @@
 
   overflow-x:hidden;
 
-  padding-right:5px;
+  padding:0;
+
+  box-sizing:border-box;
 
 }
 
@@ -151,11 +155,21 @@
 
 .product-card{
 
+  display:block;
+
+  width:100%;
+
+  min-width:0;
+
+  min-height:78px;
+
+  box-sizing:border-box;
+
   background:#fff;
 
   border-radius:10px;
 
-  padding:12px 14px;
+  padding:12px 15px;
 
   cursor:pointer;
 
@@ -163,9 +177,9 @@
 
   transition:.2s;
 
-  line-height:1.45;
+  line-height:1.5;
 
-  box-sizing:border-box;
+  overflow:hidden;
 
 }
 
@@ -176,13 +190,21 @@
 
   display:block;
 
-  font-size:16px;
+  width:100%;
 
-  line-height:1.4;
+  font-size:17px;
 
-  margin-bottom:4px;
+  line-height:1.5;
+
+  margin:0 0 5px 0;
 
   color:#222;
+
+  white-space:normal;
+
+  overflow-wrap:anywhere;
+
+  word-break:break-word;
 
 }
 
@@ -194,15 +216,6 @@
   font-size:14px;
 
   color:#444;
-
-}
-
-
-/* 販売価格 */
-
-.product-card br + b{
-
-  font-size:15px;
 
 }
 
@@ -244,12 +257,16 @@
 
 .right-panel .card{
 
-  min-width:0;
+  width:100%;
+
+  box-sizing:border-box;
 
 }
 
 
-/* レシピヘッダー */
+/* =========================
+   レシピヘッダー
+========================= */
 
 .recipe-header{
 
@@ -518,14 +535,14 @@ select{
 
 
 /* =========================
-   PC表示
+   PC
 ========================= */
 
 @media(min-width:901px){
 
   /*
-   * ページ全体を通常スクロール
-   * 商品一覧だけ独立してスクロール
+   * 左の商品一覧だけスクロール
+   * 右側は通常表示
    */
 
   .left-panel{
@@ -533,6 +550,13 @@ select{
     position:sticky;
 
     top:20px;
+
+  }
+
+
+  .product-list{
+
+    max-height:calc(100vh - 190px);
 
   }
 
@@ -554,21 +578,25 @@ select{
 
   .left-panel{
 
-    width:270px;
+    width:300px;
+
+    flex:0 0 300px;
+
+    min-width:300px;
 
   }
 
 
   .product-card{
 
-    padding:11px 12px;
+    padding:12px 14px;
 
   }
 
 
   .product-card strong{
 
-    font-size:15px;
+    font-size:16px;
 
   }
 
@@ -598,17 +626,23 @@ select{
 
 
   /* -------------------------
-     商品一覧
+     左：商品一覧
   ------------------------- */
 
   .left-panel{
 
     width:100%;
 
+    flex:0 0 auto;
+
+    min-width:0;
+
   }
 
 
   .left-panel .card{
+
+    width:100%;
 
     padding:12px;
 
@@ -616,22 +650,30 @@ select{
 
 
   /*
-   * スマホでは商品一覧の高さを
-   * 固定しすぎない
+   * スマホでは商品一覧を
+   * 独立スクロール
    */
 
   .product-list{
 
+    width:100%;
+
     max-height:320px;
 
     overflow-y:auto;
+
+    overflow-x:hidden;
 
   }
 
 
   .product-card{
 
-    padding:12px 14px;
+    width:100%;
+
+    min-height:78px;
+
+    padding:12px 15px;
 
   }
 
@@ -640,19 +682,25 @@ select{
 
     font-size:16px;
 
+    line-height:1.5;
+
   }
 
 
   /* -------------------------
-     レシピ側
+     右：レシピ
   ------------------------- */
 
   .right-panel{
 
     width:100%;
 
+    min-width:0;
+
   }
 
+
+  /* ヘッダー */
 
   .recipe-header{
 
@@ -671,7 +719,7 @@ select{
 
 
   /* -------------------------
-     概要カード
+     概要
   ------------------------- */
 
   .recipe-summary{
@@ -691,7 +739,7 @@ select{
 
 
   /* -------------------------
-     レシピテーブル
+     テーブル
   ------------------------- */
 
   .recipe-table{
@@ -715,7 +763,7 @@ select{
 
 
   /* -------------------------
-     操作ボタン
+     ボタン
   ------------------------- */
 
   .recipe-actions{
@@ -791,14 +839,16 @@ select{
 
   .product-card{
 
-    padding:10px 12px;
+    min-height:78px;
+
+    padding:11px 13px;
 
   }
 
 
   .product-card strong{
 
-    font-size:15px;
+    font-size:16px;
 
   }
 
@@ -835,7 +885,6 @@ select{
   }
 
 }
-
 </style>
 
 </head>
