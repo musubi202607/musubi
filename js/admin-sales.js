@@ -330,17 +330,7 @@ async function loadSales() {
     const responseText =
       await res.text();
 
-    console.log(
-      "売上API status:",
-      res.status
-    );
-
-    console.log(
-      "売上API response:",
-      responseText
-    );
-
-    if(!res.ok) {
+        if(!res.ok) {
 
       throw new Error(
         "売上APIエラー: " +
