@@ -329,13 +329,13 @@ function renderProducts(){
       <br>
 
       原価率：
-
+      
       ${Number(
-
-        item.costRate
-
+      
+        item.recipeCostRate || 0
+      
       ).toFixed(1)}
-
+      
       %
 
       </div>
