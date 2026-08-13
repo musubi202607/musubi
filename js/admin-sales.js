@@ -1,6 +1,7 @@
 // ==================================================
 // admin-sales.js
-// 売上確認 Ver.2.0
+// 売上確認 Ver.2.1
+// 粗利対応
 // ==================================================
 
 let currentTab = "store";
@@ -15,49 +16,67 @@ window.addEventListener(
 
     showSalesTab("store");
 
-    // ページ表示直後のGAS/Worker初回接続が
-    // 不安定になる場合があるため少し待ってから集計
     setTimeout(() => {
       setThisMonth();
     }, 500);
 
   }
 );
+
+// =========================
+// 数値安全変換
+// =========================
+
+function safeNumber(value) {
+
+  const num =
+    Number(value);
+
+  return Number.isFinite(num)
+    ? num
+    : 0;
+
+}
+
+// =========================
+// 金額表示
+// =========================
+
+function formatYen(value) {
+
+  return (
+    "¥" +
+    safeNumber(value)
+      .toLocaleString()
+  );
+
+}
+
 // =========================
 // タブ切替
 // =========================
 
-function showSalesTab(
-  tab
-) {
+function showSalesTab(tab) {
 
   currentTab = tab;
 
   document
-    .querySelectorAll(
-      ".tab-content"
-    )
+    .querySelectorAll(".tab-content")
     .forEach(el => {
 
-      el.classList.remove(
-        "active"
-      );
+      el.classList.remove("active");
 
     });
 
   document
-    .querySelectorAll(
-      ".tab-btn"
-    )
+    .querySelectorAll(".tab-btn")
     .forEach(el => {
 
-      el.classList.remove(
-        "active"
-      );
+      el.classList.remove("active");
 
     });
 
-  if (tab === "store") {
+  if(tab === "store") {
 
     const storeTab =
       document.getElementById(
@@ -69,21 +88,17 @@ function showSalesTab(
         "tabStore"
       );
 
-    if (storeTab) {
-      storeTab.classList.add(
-        "active"
-      );
+    if(storeTab) {
+      storeTab.classList.add("active");
     }
 
-    if (tabStore) {
-      tabStore.classList.add(
-        "active"
-      );
+    if(tabStore) {
+      tabStore.classList.add("active");
     }
 
   }
 
-  if (tab === "kitchen") {
+  if(tab === "kitchen") {
 
     const kitchenTab =
       document.getElementById(
@@ -95,21 +110,17 @@ function showSalesTab(
         "tabKitchen"
       );
 
-    if (kitchenTab) {
-      kitchenTab.classList.add(
-        "active"
-      );
+    if(kitchenTab) {
+      kitchenTab.classList.add("active");
     }
 
-    if (tabKitchen) {
-      tabKitchen.classList.add(
-        "active"
-      );
+    if(tabKitchen) {
+      tabKitchen.classList.add("active");
     }
 
   }
 
-  if (tab === "total") {
+  if(tab === "total") {
 
     const totalTab =
       document.getElementById(
@@ -121,25 +132,17 @@ function showSalesTab(
         "tabTotal"
       );
 
-    if (totalTab) {
-      totalTab.classList.add(
-        "active"
-      );
+    if(totalTab) {
+      totalTab.classList.add("active");
     }
 
-    if (tabTotal) {
-      tabTotal.classList.add(
-        "active"
-      );
+    if(tabTotal) {
+      tabTotal.classList.add("active");
     }
 
   }
 
-  // =========================
-  // タブ切替時に再集計
-  // =========================
-
-  if (
+  if(
     tab === "kitchen" ||
     tab === "total"
   ) {
@@ -154,9 +157,7 @@ function showSalesTab(
 // 日付フォーマット
 // =========================
 
-function formatDate(
-  date
-) {
+function formatDate(date) {
 
   const y =
     date.getFullYear();
@@ -164,20 +165,12 @@ function formatDate(
   const m =
     String(
       date.getMonth() + 1
-    )
-      .padStart(
-        2,
-        "0"
-      );
+    ).padStart(2,"0");
 
   const d =
     String(
       date.getDate()
-    )
-      .padStart(
-        2,
-        "0"
-      );
+    ).padStart(2,"0");
 
   return (
     y +
@@ -198,23 +191,25 @@ function setToday() {
   const today =
     new Date();
 
-  document
-    .getElementById(
+  const start =
+    document.getElementById(
       "startDate"
-    )
-    .value =
-    formatDate(
-      today
     );
 
-  document
-    .getElementById(
+  const end =
+    document.getElementById(
       "endDate"
-    )
-    .value =
-    formatDate(
-      today
     );
+
+  if(start) {
+    start.value =
+      formatDate(today);
+  }
+
+  if(end) {
+    end.value =
+      formatDate(today);
+  }
 
   loadSales();
 
@@ -236,23 +231,25 @@ function setThisMonth() {
       1
     );
 
-  document
-    .getElementById(
+  const startElement =
+    document.getElementById(
       "startDate"
-    )
-    .value =
-    formatDate(
-      start
     );
 
-  document
-    .getElementById(
+  const endElement =
+    document.getElementById(
       "endDate"
-    )
-    .value =
-    formatDate(
-      today
     );
+
+  if(startElement) {
+    startElement.value =
+      formatDate(start);
+  }
+
+  if(endElement) {
+    endElement.value =
+      formatDate(today);
+  }
 
   loadSales();
 
@@ -281,23 +278,25 @@ function setLastMonth() {
       0
     );
 
-  document
-    .getElementById(
+  const startElement =
+    document.getElementById(
       "startDate"
-    )
-    .value =
-    formatDate(
-      start
     );
 
-  document
-    .getElementById(
+  const endElement =
+    document.getElementById(
       "endDate"
-    )
-    .value =
-    formatDate(
-      end
     );
+
+  if(startElement) {
+    startElement.value =
+      formatDate(start);
+  }
+
+  if(endElement) {
+    endElement.value =
+      formatDate(end);
+  }
 
   loadSales();
 
@@ -314,34 +313,33 @@ async function loadSales() {
       "salesLoading"
     );
 
-  if (loading) {
-
-    loading.classList.add(
-      "show"
-    );
-
+  if(loading) {
+    loading.classList.add("show");
   }
 
   try {
 
+    const startElement =
+      document.getElementById(
+        "startDate"
+      );
+
+    const endElement =
+      document.getElementById(
+        "endDate"
+      );
+
     const startDate =
-      document
-        .getElementById(
-          "startDate"
-        )
-        .value;
+      startElement
+      ? startElement.value
+      : "";
 
     const endDate =
-      document
-        .getElementById(
-          "endDate"
-        )
-        .value;
+      endElement
+      ? endElement.value
+      : "";
 
-    if (
-      !startDate ||
-      !endDate
-    ) {
+    if(!startDate || !endDate) {
 
       alert(
         "期間を指定してください"
@@ -363,9 +361,9 @@ async function loadSales() {
 
         {
 
-          method: "POST",
+          method:"POST",
 
-          headers: {
+          headers:{
 
             "Content-Type":
               "application/json",
@@ -382,7 +380,6 @@ async function loadSales() {
             JSON.stringify({
 
               startDate,
-
               endDate
 
             })
@@ -390,10 +387,6 @@ async function loadSales() {
         }
 
       );
-
-    // =========================
-    // レスポンス確認
-    // =========================
 
     const responseText =
       await res.text();
@@ -408,13 +401,7 @@ async function loadSales() {
       responseText
     );
 
-    if (!res.ok) {
-
-      console.error(
-        "売上APIエラー:",
-        res.status,
-        responseText
-      );
+    if(!res.ok) {
 
       throw new Error(
         "売上APIエラー: " +
@@ -434,16 +421,12 @@ async function loadSales() {
           responseText
         );
 
-    } catch (jsonError) {
+    }
+    catch(error) {
 
       console.error(
-        "売上API JSON解析エラー:",
-        jsonError
-      );
-
-      console.error(
-        "受信内容:",
-        responseText
+        "JSON解析エラー:",
+        error
       );
 
       throw new Error(
@@ -452,19 +435,10 @@ async function loadSales() {
 
     }
 
-    // =========================
-    // success:false の場合
-    // =========================
-
-    if (
+    if(
       data &&
       data.success === false
     ) {
-
-      console.error(
-        "売上API success:false:",
-        data
-      );
 
       throw new Error(
         data.message ||
@@ -473,18 +447,14 @@ async function loadSales() {
 
     }
 
-    // =========================
-    // データ構造確認
-    // =========================
-
-    if (
+    if(
       !data ||
       !data.store ||
       !data.kitchen
     ) {
 
       console.error(
-        "売上APIデータ構造エラー:",
+        "売上APIデータ:",
         data
       );
 
@@ -505,40 +475,54 @@ async function loadSales() {
       Array.isArray(
         store.products
       )
-        ? store.products
-        : [];
+      ? store.products
+      : [];
 
     const storeOnigiriSales =
-      Number(
-        store.onigiriSales || 0
+      safeNumber(
+        store.onigiriSales
       );
 
     const storeBbqSales =
-      Number(
-        store.bbqSales || 0
+      safeNumber(
+        store.bbqSales
       );
 
     const storeOptionSales =
-      Number(
-        store.optionSales || 0
+      safeNumber(
+        store.optionSales
       );
 
     const storeTotalSales =
-      Number(
-        store.totalSales || 0
+      safeNumber(
+        store.totalSales
       );
+
+    const storeTotalCost =
+      safeNumber(
+        store.totalCost
+      );
+
+    const storeGrossProfit =
+      safeNumber(
+        store.grossProfit
+      );
+
+    // =========================
+    // 店舗売上
+    // =========================
 
     const onigiriSales =
       document.getElementById(
         "onigiriSales"
       );
 
-    if (onigiriSales) {
+    if(onigiriSales) {
 
       onigiriSales.innerText =
-        "¥" +
-        storeOnigiriSales
-          .toLocaleString();
+        formatYen(
+          storeOnigiriSales
+        );
 
     }
 
@@ -547,12 +531,12 @@ async function loadSales() {
         "bbqSales"
       );
 
-    if (bbqSales) {
+    if(bbqSales) {
 
       bbqSales.innerText =
-        "¥" +
-        storeBbqSales
-          .toLocaleString();
+        formatYen(
+          storeBbqSales
+        );
 
     }
 
@@ -561,12 +545,12 @@ async function loadSales() {
         "optionSales"
       );
 
-    if (optionSales) {
+    if(optionSales) {
 
       optionSales.innerText =
-        "¥" +
-        storeOptionSales
-          .toLocaleString();
+        formatYen(
+          storeOptionSales
+        );
 
     }
 
@@ -575,12 +559,48 @@ async function loadSales() {
         "storeTotalSales"
       );
 
-    if (storeTotal) {
+    if(storeTotal) {
 
       storeTotal.innerText =
-        "¥" +
-        storeTotalSales
-          .toLocaleString();
+        formatYen(
+          storeTotalSales
+        );
+
+    }
+
+    // =========================
+    // 店舗原価
+    // =========================
+
+    const storeCostElement =
+      document.getElementById(
+        "storeTotalCost"
+      );
+
+    if(storeCostElement) {
+
+      storeCostElement.innerText =
+        formatYen(
+          storeTotalCost
+        );
+
+    }
+
+    // =========================
+    // 店舗粗利
+    // =========================
+
+    const storeGrossProfitElement =
+      document.getElementById(
+        "storeGrossProfit"
+      );
+
+    if(storeGrossProfitElement) {
+
+      storeGrossProfitElement.innerText =
+        formatYen(
+          storeGrossProfit
+        );
 
     }
 
@@ -589,11 +609,8 @@ async function loadSales() {
     // =========================
 
     displayProductSales(
-
       "storeProductSales",
-
       storeProducts
-
     );
 
     // =========================
@@ -607,12 +624,22 @@ async function loadSales() {
       Array.isArray(
         kitchen.products
       )
-        ? kitchen.products
-        : [];
+      ? kitchen.products
+      : [];
 
     const kitchenTotalSales =
-      Number(
-        kitchen.totalSales || 0
+      safeNumber(
+        kitchen.totalSales
+      );
+
+    const kitchenTotalCost =
+      safeNumber(
+        kitchen.totalCost
+      );
+
+    const kitchenGrossProfit =
+      safeNumber(
+        kitchen.grossProfit
       );
 
     const kitchenTotal =
@@ -620,25 +647,50 @@ async function loadSales() {
         "kitchenTotalSales"
       );
 
-    if (kitchenTotal) {
+    if(kitchenTotal) {
 
       kitchenTotal.innerText =
-        "¥" +
-        kitchenTotalSales
-          .toLocaleString();
+        formatYen(
+          kitchenTotalSales
+        );
+
+    }
+
+    const kitchenCost =
+      document.getElementById(
+        "kitchenTotalCost"
+      );
+
+    if(kitchenCost) {
+
+      kitchenCost.innerText =
+        formatYen(
+          kitchenTotalCost
+        );
+
+    }
+
+    const kitchenGross =
+      document.getElementById(
+        "kitchenGrossProfit"
+      );
+
+    if(kitchenGross) {
+
+      kitchenGross.innerText =
+        formatYen(
+          kitchenGrossProfit
+        );
 
     }
 
     // =========================
-    // キッチンカー 商品別
+    // キッチンカー商品別
     // =========================
 
     displayProductSales(
-
       "kitchenProductSales",
-
       kitchenProducts
-
     );
 
     // =========================
@@ -649,84 +701,126 @@ async function loadSales() {
       data.total || {};
 
     const grandTotalSales =
-      Number(
-        total.totalSales ||
-        (
-          storeTotalSales +
-          kitchenTotalSales
-        )
+      safeNumber(
+        total.totalSales
       );
+
+    const grandTotalCost =
+      safeNumber(
+        total.totalCost
+      );
+
+    const grandGrossProfit =
+      safeNumber(
+        total.grossProfit
+      );
+
+    // =========================
+    // 総合 店舗
+    // =========================
 
     const totalStore =
       document.getElementById(
         "totalStoreSales"
       );
 
-    if (totalStore) {
+    if(totalStore) {
 
       totalStore.innerText =
-        "¥" +
-        storeTotalSales
-          .toLocaleString();
+        formatYen(
+          storeTotalSales
+        );
 
     }
+
+    // =========================
+    // 総合 キッチンカー
+    // =========================
 
     const totalKitchen =
       document.getElementById(
         "totalKitchenSales"
       );
 
-    if (totalKitchen) {
+    if(totalKitchen) {
 
       totalKitchen.innerText =
-        "¥" +
-        kitchenTotalSales
-          .toLocaleString();
+        formatYen(
+          kitchenTotalSales
+        );
 
     }
+
+    // =========================
+    // 総合 売上
+    // =========================
 
     const grandTotal =
       document.getElementById(
         "grandTotalSales"
       );
 
-    if (grandTotal) {
+    if(grandTotal) {
 
       grandTotal.innerText =
-        "¥" +
-        grandTotalSales
-          .toLocaleString();
+        formatYen(
+          grandTotalSales
+        );
 
     }
 
     // =========================
-    // 総合の商品別
-    //
-    // HTMLには
-    // totalStoreProductSales
-    // totalKitchenProductSales
-    // が存在するので、
-    // それぞれ表示する
+    // 総合 原価
+    // =========================
+
+    const grandCost =
+      document.getElementById(
+        "grandTotalCost"
+      );
+
+    if(grandCost) {
+
+      grandCost.innerText =
+        formatYen(
+          grandTotalCost
+        );
+
+    }
+
+    // =========================
+    // 総合 粗利
+    // =========================
+
+    const grandGross =
+      document.getElementById(
+        "grandGrossProfit"
+      );
+
+    if(grandGross) {
+
+      grandGross.innerText =
+        formatYen(
+          grandGrossProfit
+        );
+
+    }
+
+    // =========================
+    // 総合 商品別
     // =========================
 
     displayProductSales(
-
       "totalStoreProductSales",
-
       storeProducts
-
     );
 
     displayProductSales(
-
       "totalKitchenProductSales",
-
       kitchenProducts
-
     );
 
   }
-  catch (e) {
+  catch(e) {
 
     console.error(
       "売上集計エラー",
@@ -741,7 +835,7 @@ async function loadSales() {
   }
   finally {
 
-    if (loading) {
+    if(loading) {
 
       loading.classList.remove(
         "show"
@@ -772,9 +866,9 @@ async function loadStoreSales(
 
         {
 
-          method: "POST",
+          method:"POST",
 
-          headers: {
+          headers:{
 
             "Content-Type":
               "application/json",
@@ -791,7 +885,6 @@ async function loadStoreSales(
             JSON.stringify({
 
               startDate,
-
               endDate
 
             })
@@ -803,7 +896,7 @@ async function loadStoreSales(
     const responseText =
       await res.text();
 
-    if (!res.ok) {
+    if(!res.ok) {
 
       throw new Error(
         "売上APIエラー: " +
@@ -826,12 +919,22 @@ async function loadStoreSales(
       Array.isArray(
         store.products
       )
-        ? store.products
-        : [];
+      ? store.products
+      : [];
 
     const total =
-      Number(
-        store.totalSales || 0
+      safeNumber(
+        store.totalSales
+      );
+
+    const cost =
+      safeNumber(
+        store.totalCost
+      );
+
+    const grossProfit =
+      safeNumber(
+        store.grossProfit
       );
 
     const onigiri =
@@ -839,14 +942,12 @@ async function loadStoreSales(
         "onigiriSales"
       );
 
-    if (onigiri) {
+    if(onigiri) {
 
       onigiri.innerText =
-        "¥" +
-        Number(
-          store.onigiriSales || 0
-        )
-          .toLocaleString();
+        formatYen(
+          store.onigiriSales
+        );
 
     }
 
@@ -855,14 +956,12 @@ async function loadStoreSales(
         "bbqSales"
       );
 
-    if (bbq) {
+    if(bbq) {
 
       bbq.innerText =
-        "¥" +
-        Number(
-          store.bbqSales || 0
-        )
-          .toLocaleString();
+        formatYen(
+          store.bbqSales
+        );
 
     }
 
@@ -871,14 +970,12 @@ async function loadStoreSales(
         "optionSales"
       );
 
-    if (option) {
+    if(option) {
 
       option.innerText =
-        "¥" +
-        Number(
-          store.optionSales || 0
-        )
-          .toLocaleString();
+        formatYen(
+          store.optionSales
+        );
 
     }
 
@@ -887,11 +984,36 @@ async function loadStoreSales(
         "storeTotalSales"
       );
 
-    if (storeTotal) {
+    if(storeTotal) {
 
       storeTotal.innerText =
-        "¥" +
-        total.toLocaleString();
+        formatYen(total);
+
+    }
+
+    const storeCost =
+      document.getElementById(
+        "storeTotalCost"
+      );
+
+    if(storeCost) {
+
+      storeCost.innerText =
+        formatYen(cost);
+
+    }
+
+    const storeGross =
+      document.getElementById(
+        "storeGrossProfit"
+      );
+
+    if(storeGross) {
+
+      storeGross.innerText =
+        formatYen(
+          grossProfit
+        );
 
     }
 
@@ -903,24 +1025,26 @@ async function loadStoreSales(
     return {
 
       total,
-
+      cost,
+      grossProfit,
       products
 
     };
 
   }
-  catch (e) {
+  catch(e) {
 
     console.error(
-      "店舗売上取得エラー",
+      "店舗売上取得エラー:",
       e
     );
 
     return {
 
-      total: 0,
-
-      products: []
+      total:0,
+      cost:0,
+      grossProfit:0,
+      products:[]
 
     };
 
@@ -947,9 +1071,9 @@ async function loadKitchenSales(
 
         {
 
-          method: "POST",
+          method:"POST",
 
-          headers: {
+          headers:{
 
             "Content-Type":
               "application/json",
@@ -966,7 +1090,6 @@ async function loadKitchenSales(
             JSON.stringify({
 
               startDate,
-
               endDate
 
             })
@@ -978,7 +1101,7 @@ async function loadKitchenSales(
     const responseText =
       await res.text();
 
-    if (!res.ok) {
+    if(!res.ok) {
 
       throw new Error(
         "売上APIエラー: " +
@@ -1001,12 +1124,22 @@ async function loadKitchenSales(
       Array.isArray(
         kitchen.products
       )
-        ? kitchen.products
-        : [];
+      ? kitchen.products
+      : [];
 
     const total =
-      Number(
-        kitchen.totalSales || 0
+      safeNumber(
+        kitchen.totalSales
+      );
+
+    const cost =
+      safeNumber(
+        kitchen.totalCost
+      );
+
+    const grossProfit =
+      safeNumber(
+        kitchen.grossProfit
       );
 
     const kitchenTotal =
@@ -1014,43 +1147,67 @@ async function loadKitchenSales(
         "kitchenTotalSales"
       );
 
-    if (kitchenTotal) {
+    if(kitchenTotal) {
 
       kitchenTotal.innerText =
-        "¥" +
-        total.toLocaleString();
+        formatYen(total);
+
+    }
+
+    const kitchenCost =
+      document.getElementById(
+        "kitchenTotalCost"
+      );
+
+    if(kitchenCost) {
+
+      kitchenCost.innerText =
+        formatYen(cost);
+
+    }
+
+    const kitchenGross =
+      document.getElementById(
+        "kitchenGrossProfit"
+      );
+
+    if(kitchenGross) {
+
+      kitchenGross.innerText =
+        formatYen(
+          grossProfit
+        );
 
     }
 
     displayProductSales(
-
       "kitchenProductSales",
-
       products
-
     );
 
     return {
 
       total,
-
+      cost,
+      grossProfit,
       products
 
     };
 
   }
-  catch (e) {
+  catch(e) {
 
     console.error(
-      "キッチンカー売上取得エラー",
+      "キッチンカー売上取得エラー:",
       e
     );
 
     return {
 
-      total: 0,
-
-      products: []
+      total:0,
+      cost:0,
+      grossProfit:0,
+      products:[]
 
     };
 
@@ -1073,17 +1230,18 @@ function updateTotalSales(
 
   let storeTotal = 0;
 
-  if (storeElement) {
+  if(storeElement) {
 
     storeTotal =
-      Number(
-        storeElement
-          .innerText
+      safeNumber(
+        String(
+          storeElement.innerText
+        )
           .replace(
-            /[^0-9]/g,
+            /[^0-9.-]/g,
             ""
           )
-      ) || 0;
+      );
 
   }
 
@@ -1092,12 +1250,12 @@ function updateTotalSales(
       "totalStoreSales"
     );
 
-  if (totalStore) {
+  if(totalStore) {
 
     totalStore.innerText =
-      "¥" +
-      storeTotal
-        .toLocaleString();
+      formatYen(
+        storeTotal
+      );
 
   }
 
@@ -1106,14 +1264,12 @@ function updateTotalSales(
       "totalKitchenSales"
     );
 
-  if (totalKitchen) {
+  if(totalKitchen) {
 
     totalKitchen.innerText =
-      "¥" +
-      Number(
-        kitchenTotal || 0
-      )
-        .toLocaleString();
+      formatYen(
+        kitchenTotal
+      );
 
   }
 
@@ -1122,17 +1278,15 @@ function updateTotalSales(
       "grandTotalSales"
     );
 
-  if (grandTotal) {
+  if(grandTotal) {
 
     grandTotal.innerText =
-      "¥" +
-      (
+      formatYen(
         storeTotal +
-        Number(
-          kitchenTotal || 0
+        safeNumber(
+          kitchenTotal
         )
-      )
-        .toLocaleString();
+      );
 
   }
 
@@ -1152,7 +1306,7 @@ function displayProductSales(
       targetId
     );
 
-  if (!area) {
+  if(!area) {
 
     console.warn(
       "商品別売上表示先が見つかりません:",
@@ -1165,20 +1319,29 @@ function displayProductSales(
 
   area.innerHTML = "";
 
-  if (
+  if(
     !Array.isArray(products) ||
     products.length === 0
   ) {
 
-    area.innerHTML =
+    const tr =
+      document.createElement(
+        "tr"
+      );
 
-      `
-      <tr>
-        <td colspan="3">
-          データがありません
-        </td>
-      </tr>
-      `;
+    const td =
+      document.createElement(
+        "td"
+      );
+
+    td.colSpan = 5;
+
+    td.textContent =
+      "データがありません";
+
+    tr.appendChild(td);
+
+    area.appendChild(tr);
 
     return;
 
@@ -1192,17 +1355,11 @@ function displayProductSales(
           "tr"
         );
 
+      // =========================
+      // 商品名
+      // =========================
+
       const nameTd =
-        document.createElement(
-          "td"
-        );
-
-      const qtyTd =
-        document.createElement(
-          "td"
-        );
-
-      const amountTd =
         document.createElement(
           "td"
         );
@@ -1210,18 +1367,66 @@ function displayProductSales(
       nameTd.textContent =
         item.name || "";
 
+      // =========================
+      // 数量
+      // =========================
+
+      const qtyTd =
+        document.createElement(
+          "td"
+        );
+
       qtyTd.textContent =
-        Number(
-          item.qty || 0
+        safeNumber(
+          item.qty
         ) +
         "個";
 
+      // =========================
+      // 売上
+      // =========================
+
+      const amountTd =
+        document.createElement(
+          "td"
+        );
+
       amountTd.textContent =
-        "¥" +
-        Number(
-          item.amount || 0
-        )
-          .toLocaleString();
+        formatYen(
+          item.amount
+        );
+
+      // =========================
+      // 原価
+      // =========================
+
+      const costTd =
+        document.createElement(
+          "td"
+        );
+
+      costTd.textContent =
+        formatYen(
+          item.costTotal
+        );
+
+      // =========================
+      // 粗利
+      // =========================
+
+      const grossProfitTd =
+        document.createElement(
+          "td"
+        );
+
+      grossProfitTd.textContent =
+        formatYen(
+          item.grossProfit
+        );
+
+      // =========================
+      // 行追加
+      // =========================
 
       tr.appendChild(
         nameTd
@@ -1233,6 +1438,14 @@ function displayProductSales(
 
       tr.appendChild(
         amountTd
+      );
+
+      tr.appendChild(
+        costTd
+      );
+
+      tr.appendChild(
+        grossProfitTd
       );
 
       area.appendChild(
@@ -1253,11 +1466,8 @@ function displayKitchenProducts(
 ) {
 
   displayProductSales(
-
     "kitchenProductSales",
-
     products
-
   );
 
 }
@@ -1289,28 +1499,49 @@ function mergeProducts(
         const name =
           item.name || "";
 
-        if (!result[name]) {
+        if(!result[name]) {
 
           result[name] = {
 
             name,
 
-            qty: 0,
+            qty:0,
 
-            amount: 0
+            amount:0,
+
+            cost:0,
+
+            costTotal:0,
+
+            grossProfit:0
 
           };
 
         }
 
         result[name].qty +=
-          Number(
-            item.qty || 0
+          safeNumber(
+            item.qty
           );
 
         result[name].amount +=
-          Number(
-            item.amount || 0
+          safeNumber(
+            item.amount
+          );
+
+        result[name].cost +=
+          safeNumber(
+            item.cost
+          );
+
+        result[name].costTotal +=
+          safeNumber(
+            item.costTotal
+          );
+
+        result[name].grossProfit +=
+          safeNumber(
+            item.grossProfit
           );
 
       }
@@ -1328,19 +1559,25 @@ function mergeProducts(
 
 async function downloadSalesCSV() {
 
+  const startElement =
+    document.getElementById(
+      "startDate"
+    );
+
+  const endElement =
+    document.getElementById(
+      "endDate"
+    );
+
   const startDate =
-    document
-      .getElementById(
-        "startDate"
-      )
-      .value;
+    startElement
+    ? startElement.value
+    : "";
 
   const endDate =
-    document
-      .getElementById(
-        "endDate"
-      )
-      .value;
+    endElement
+    ? endElement.value
+    : "";
 
   const token =
     localStorage.getItem(
@@ -1357,9 +1594,9 @@ async function downloadSalesCSV() {
 
         {
 
-          method: "POST",
+          method:"POST",
 
-          headers: {
+          headers:{
 
             "Content-Type":
               "application/json",
@@ -1374,7 +1611,6 @@ async function downloadSalesCSV() {
             JSON.stringify({
 
               startDate,
-
               endDate
 
             })
@@ -1386,7 +1622,7 @@ async function downloadSalesCSV() {
     const responseText =
       await res.text();
 
-    if (!res.ok) {
+    if(!res.ok) {
 
       console.error(
         "CSV APIエラー:",
@@ -1408,9 +1644,7 @@ async function downloadSalesCSV() {
         responseText
       );
 
-    if (
-      !data.success
-    ) {
+    if(!data.success) {
 
       alert(
         "CSV作成失敗"
@@ -1446,17 +1680,13 @@ async function downloadSalesCSV() {
       new Blob(
 
         [
-
           "\uFEFF" +
           csv
-
         ],
 
         {
-
           type:
             "text/csv;charset=utf-8;"
-
         }
 
       );
@@ -1496,7 +1726,7 @@ async function downloadSalesCSV() {
     );
 
   }
-  catch (e) {
+  catch(e) {
 
     console.error(
       "CSV出力エラー:",
