@@ -1,4 +1,4 @@
-const CACHE_NAME = "musubi-staff-v3";
+const CACHE_NAME = "musubi-staff-v4";
 
 const FILES = [
   "staff.html",
@@ -6,9 +6,7 @@ const FILES = [
   "staff-bbq.html",
   "bbq-option.html",
   "payment-waiting.html",
-
   "css/style.css",
-
   "js/config.js",
   "js/staff-auth.js",
   "js/staff-order.js",
@@ -16,21 +14,24 @@ const FILES = [
   "js/bbq-tablet.js"
 ];
 
+// =========================
+// インストール
+// =========================
 self.addEventListener("install", event => {
 
   event.waitUntil(
 
     caches.open(CACHE_NAME)
-      .then(cache =>
-        cache.addAll(FILES)
-      )
+      .then(cache => cache.addAll(FILES))
+      .then(() => self.skipWaiting())
 
   );
 
-  self.skipWaiting();
-
 });
 
+// =========================
+// 古いキャッシュ削除
+// =========================
 self.addEventListener("activate", event => {
 
   event.waitUntil(
@@ -42,10 +43,8 @@ self.addEventListener("activate", event => {
 
           keys.map(key => {
 
-            if(key !== CACHE_NAME){
-
+            if (key !== CACHE_NAME) {
               return caches.delete(key);
-
             }
 
           })
@@ -53,24 +52,24 @@ self.addEventListener("activate", event => {
         )
 
       )
+      .then(() => self.clients.claim())
 
   );
 
-  self.clients.claim();
-
 });
 
+// =========================
+// 通信（ネットワーク優先）
+// =========================
 self.addEventListener("fetch", event => {
 
   event.respondWith(
 
-    caches.match(event.request)
-      .then(cached =>
+    fetch(event.request)
 
-        cached ||
-        fetch(event.request)
+      .then(response => response)
 
-      )
+      .catch(() => caches.match(event.request))
 
   );
 
