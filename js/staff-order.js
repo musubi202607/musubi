@@ -39,19 +39,17 @@ async function loadProducts(){
     const data =
       await response.json();
 
-    products =
-  data.filter(item=>
-
+    products = data
+  .filter(item =>
     item.id &&
-    item.status==="販売中" &&
-    item.staff==="○" &&
+    item.status === "販売中" &&
+    item.staff === "○" &&
     (
-      item.type==="onigiri" ||
-      item.type==="drink"
+      item.type === "onigiri" ||
+      item.type === "drink"
     )
-
-  );
-
+  )
+  .sort((a, b) => Number(a.sort || 9999) - Number(b.sort || 9999));
     renderProducts();
 
     updateTotal();
