@@ -33,15 +33,15 @@ async function loadKitchenProducts(){
       await res.json();
 
 
-    kitchenProducts =
-      data.filter(item=>
-
-        item.status === "販売中" &&
-
-        item.kitchenCar === "○"
-
-      );
-
+    kitchenProducts = data
+  .filter(item =>
+    item.status === "販売中" &&
+    item.kitchenCar === "○"
+  )
+  .sort((a, b) =>
+    Number(a.kitchenSort || 9999) -
+    Number(b.kitchenSort || 9999)
+  );
 
     displayKitchenProducts();
 
