@@ -319,11 +319,15 @@ order.paid==="未"
 "未会計"
 :
 order.paid || "";
-
-
-
-
-
+const statusText =
+(
+order.status==="取消" ||
+order.status==="キャンセル"
+)
+?
+`<p>状態：${order.status}</p>`
+:
+"";
 
 // =========================
 // おにぎり
