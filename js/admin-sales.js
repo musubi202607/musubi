@@ -124,16 +124,6 @@ function showSalesTab(tab) {
 
   }
 
-  // キッチンカー・総合に切替時も再集計
-  if(
-    tab === "kitchen" ||
-    tab === "total"
-  ) {
-
-    loadSales();
-
-  }
-
 }
 
 // =========================
@@ -746,6 +736,25 @@ displayCategoryAnalysis(
   "categoryAnalysis",
   totalProducts
 );
+
+const grandTotalQty =
+  document.getElementById(
+    "grandTotalQty"
+  );
+
+if(grandTotalQty){
+
+  const qty =
+    totalProducts.reduce(
+      (sum,item)=>
+        sum + safeNumber(item.qty),
+      0
+    );
+
+  grandTotalQty.innerText =
+    qty + "個";
+
+}
 
 analysisProducts =
   totalProducts;
