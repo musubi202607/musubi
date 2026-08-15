@@ -1321,6 +1321,34 @@ function displayKitchenProducts(
 
 }
 
+function getCategoryName(item){
+
+  const type =
+    item.category ||
+    item.type ||
+    "";
+
+  switch(type){
+
+    case "onigiri":
+      return "おにぎり";
+
+    case "bbq":
+      return "BBQ";
+
+    case "bbq-option":
+      return "BBQオプション";
+
+    case "drink":
+      return "ドリンク";
+
+    default:
+      return "その他";
+
+  }
+
+}
+
 // =========================
 // 総合商品集計
 // =========================
@@ -1356,10 +1384,7 @@ function mergeProducts(
 
         // 商品カテゴリ
         category:
-          item.category ||
-          item.type ||
-          "その他",
-
+         getCategoryName(item),
         qty:0,
 
         amount:0,
