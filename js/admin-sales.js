@@ -5,7 +5,12 @@
 // ==================================================
 
 let currentTab = "store";
-let analysisProducts = [];
+
+let storeAnalysisProducts = [];
+
+let kitchenAnalysisProducts = [];
+
+let totalAnalysisProducts = [];
 
 // =========================
 // 初期化
@@ -732,15 +737,60 @@ const totalProducts =
     kitchenProducts
   );
 
+
+// =========================
+// 商品分析データ保持
+// =========================
+
+storeAnalysisProducts =
+  mergeProducts(
+    storeProducts,
+    []
+  );
+
+
+kitchenAnalysisProducts =
+  mergeProducts(
+    kitchenProducts,
+    []
+  );
+
+
+totalAnalysisProducts =
+  totalProducts;
+
+
+// =========================
+// カテゴリ分析
+// =========================
+
+displayCategoryAnalysis(
+  "storeCategoryAnalysis",
+  storeAnalysisProducts
+);
+
+
+displayCategoryAnalysis(
+  "kitchenCategoryAnalysis",
+  kitchenAnalysisProducts
+);
+
+
 displayCategoryAnalysis(
   "categoryAnalysis",
-  totalProducts
+  totalAnalysisProducts
 );
+
+
+// =========================
+// 総販売数量
+// =========================
 
 const grandTotalQty =
   document.getElementById(
     "grandTotalQty"
   );
+
 
 if(grandTotalQty){
 
@@ -751,16 +801,24 @@ if(grandTotalQty){
       0
     );
 
+
   grandTotalQty.innerText =
     qty + "個";
 
 }
 
-analysisProducts =
-  totalProducts;
 
-updateAnalysis();    
-} catch(e) {
+// =========================
+// 分析初期表示
+// =========================
+
+updateStoreAnalysis();
+
+updateKitchenAnalysis();
+  
+} 
+  
+  catch(e) {
     
 
   console.error(
@@ -1709,35 +1767,31 @@ async function downloadSalesCSV() {
 
 }
 
-// =========================
-// 商品分析ランキング
-// =========================
-function updateAnalysis() {
+function updateStoreAnalysis(){
 
   const tbody =
-    document.getElementById("analysisTable");
+    document.getElementById(
+      "storeAnalysisTable"
+    );
+
 
   if(!tbody){
     return;
   }
 
+
   tbody.innerHTML = "";
 
-  if(
-    !Array.isArray(analysisProducts) ||
-    analysisProducts.length === 0
-  ){
-    tbody.innerHTML =
-      "<tr><td colspan='6'>データがありません</td></tr>";
-    return;
-  }
 
   const sort =
-    document.getElementById("analysisSort")?.value
-    || "amount";
+    document.getElementById(
+      "storeAnalysisSort"
+    )?.value || "amount";
+
 
   const list =
-    [...analysisProducts];
+    [...storeAnalysisProducts];
+
 
   list.sort(
     (a,b)=>
@@ -1745,19 +1799,92 @@ function updateAnalysis() {
       safeNumber(a[sort])
   );
 
-  list.forEach((item,index)=>{
 
-    tbody.innerHTML += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${item.name}</td>
-        <td>${item.category || "その他"}</td>
-        <td>${safeNumber(item.qty)}個</td>
-        <td>${formatYen(item.amount)}</td>
-        <td>${formatYen(item.grossProfit)}</td>
-      </tr>
-    `;
+  list.forEach(
+    (item,index)=>{
 
-  });
+      tbody.innerHTML += `
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${item.name}</td>
+
+<td>${item.category || "その他"}</td>
+
+<td>${safeNumber(item.qty)}個</td>
+
+<td>${formatYen(item.amount)}</td>
+
+<td>${formatYen(item.grossProfit)}</td>
+
+</tr>
+
+`;
+
+    }
+  );
+
+}
+
+function updateKitchenAnalysis(){
+
+  const tbody =
+    document.getElementById(
+      "kitchenAnalysisTable"
+    );
+
+
+  if(!tbody){
+    return;
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  const sort =
+    document.getElementById(
+      "kitchenAnalysisSort"
+    )?.value || "amount";
+
+
+  const list =
+    [...kitchenAnalysisProducts];
+
+
+  list.sort(
+    (a,b)=>
+      safeNumber(b[sort]) -
+      safeNumber(a[sort])
+  );
+
+
+  list.forEach(
+    (item,index)=>{
+
+      tbody.innerHTML += `
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${item.name}</td>
+
+<td>${item.category || "その他"}</td>
+
+<td>${safeNumber(item.qty)}個</td>
+
+<td>${formatYen(item.amount)}</td>
+
+<td>${formatYen(item.grossProfit)}</td>
+
+</tr>
+
+`;
+
+    }
+  );
 
 }
