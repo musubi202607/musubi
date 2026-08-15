@@ -5,6 +5,7 @@
 // ==================================================
 
 let currentTab = "store";
+let analysisProducts = [];
 
 // =========================
 // 初期化
@@ -721,44 +722,48 @@ async function loadSales() {
 
     }
 
-    // =========================
-    // 総合 商品別
-    // =========================
+// =========================
+// 総合 商品別
+// =========================
 
-    displayProductSales(
-      "totalStoreProductSales",
-      storeProducts
-    );
+const totalProducts =
+  mergeProducts(
+    storeProducts,
+    kitchenProducts
+  );
 
-    displayProductSales(
-      "totalKitchenProductSales",
-      kitchenProducts
-    );
+displayProductSales(
+  "totalProductSales",
+  totalProducts
+);
 
+displayCategoryAnalysis(
+  "categorySales",
+  totalProducts
+);
+
+analysisProducts =
+  totalProducts;
+    
+} catch(e) {
+
+  console.error(
+    "売上集計エラー:",
+    e
+  );
+
+  alert(
+    "売上取得中にエラーが発生しました\n\n" +
+    e.message
+  );
+
+} finally {
+
+  if(loading){
+    loading.classList.remove("show");
   }
-  catch(e) {
-
-    console.error(
-      "売上集計エラー:",
-      e
-    );
-
-    alert(
-      "売上取得中にエラーが発生しました\n\n" +
-      e.message
-    );
-
-  }
-  finally {
-
-    if(loading) {
-      loading.classList.remove("show");
-    }
-
-  }
-
 }
-
+}
 // =========================
 // 店舗売上取得
 // =========================
@@ -1303,15 +1308,15 @@ function displayKitchenProducts(
 // =========================
 // 総合商品集計
 // =========================
-
 function mergeProducts(
   storeProducts,
   kitchenProducts
-) {
+){
 
   const result = {};
 
   const list = [
+
     ...(Array.isArray(storeProducts)
       ? storeProducts
       : []),
@@ -1319,54 +1324,136 @@ function mergeProducts(
     ...(Array.isArray(kitchenProducts)
       ? kitchenProducts
       : [])
+
   ];
 
-  list.forEach(item => {
+  list.forEach(item=>{
 
     const name =
       item.name || "";
 
-    if(!result[name]) {
+    if(!result[name]){
 
       result[name] = {
+
         name,
+
+        // 商品カテゴリ
+        category:
+          item.category ||
+          item.type ||
+          "その他",
+
+        qty:0,
+
+        amount:0,
+
+        cost:0,
+
+        costTotal:0,
+
+        grossProfit:0
+
+      };
+
+    }
+
+    result[name].qty +=
+      safeNumber(item.qty);
+
+    result[name].amount +=
+      safeNumber(item.amount);
+
+    result[name].cost +=
+      safeNumber(item.cost);
+
+    result[name].costTotal +=
+      safeNumber(item.costTotal);
+
+    result[name].grossProfit +=
+      safeNumber(item.grossProfit);
+
+  });
+
+  return Object.values(result);
+
+}
+
+// =========================
+// 商品カテゴリ分析表示
+// =========================
+function displayCategoryAnalysis(targetId, products){
+
+  const tbody =
+    document.getElementById(targetId);
+
+  if(!tbody){
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  if(
+    !Array.isArray(products) ||
+    products.length === 0
+  ){
+
+    tbody.innerHTML =
+      "<tr><td colspan='6'>データがありません</td></tr>";
+
+    return;
+
+  }
+
+  const categoryMap = {};
+
+  products.forEach(item=>{
+
+    const category =
+      item.category || "その他";
+
+    if(!categoryMap[category]){
+
+      categoryMap[category]={
+        category,
         qty:0,
         amount:0,
-        cost:0,
         costTotal:0,
         grossProfit:0
       };
 
     }
 
-    result[name].qty +=
-      safeNumber(
-        item.qty
-      );
+    categoryMap[category].qty +=
+      safeNumber(item.qty);
 
-    result[name].amount +=
-      safeNumber(
-        item.amount
-      );
+    categoryMap[category].amount +=
+      safeNumber(item.amount);
 
-    result[name].cost +=
-      safeNumber(
-        item.cost
-      );
+    categoryMap[category].costTotal +=
+      safeNumber(item.costTotal);
 
-    result[name].costTotal +=
-      safeNumber(
-        item.costTotal
-      );
-
-    result[name].grossProfit +=
-      safeNumber(
-        item.grossProfit
-      );
+    categoryMap[category].grossProfit +=
+      safeNumber(item.grossProfit);
 
   });
 
-  return Object.values(result);
+  Object.values(categoryMap)
+    .sort((a,b)=>b.amount-a.amount)
+    .forEach(item=>{
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${item.category}</td>
+          <td>${item.qty}個</td>
+          <td>${formatYen(item.amount)}</td>
+          <td>${formatYen(item.costTotal)}</td>
+          <td>${formatYen(item.grossProfit)}</td>
+          <td>${item.amount===0 ? 0 : ((item.grossProfit/item.amount)*100).toFixed(1)}%</td>
+        </tr>
+      `;
+
+    });
 
 }
 
