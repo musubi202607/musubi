@@ -232,6 +232,11 @@
 <div class="sales-value" id="grandGrossProfit">¥0</div>
 </div>
 
+<div class="sales-card">
+<h3>総販売数量</h3>
+<div class="sales-value" id="grandTotalQty">0個</div>
+</div>
+
 </div>
 
 <div class="shop-info-card">
@@ -273,6 +278,63 @@
 </thead>
 
 <tbody id="totalKitchenProductSales"></tbody>
+
+</table>
+
+</div>
+
+<div class="shop-info-card">
+
+<h2>商品分析ランキング</h2>
+
+<div class="quick-btns">
+
+<label>並び順</label>
+
+<select id="analysisSort" onchange="updateAnalysis()">
+<option value="amount">売上順</option>
+<option value="qty">販売数量順</option>
+<option value="grossProfit">粗利順</option>
+</select>
+
+</div>
+
+<table class="sales-table">
+
+<thead>
+<tr>
+<th>順位</th>
+<th>商品名</th>
+<th>カテゴリ</th>
+<th>数量</th>
+<th>売上</th>
+<th>粗利</th>
+</tr>
+</thead>
+
+<tbody id="analysisTable"></tbody>
+
+</table>
+
+</div>
+
+<div class="shop-info-card">
+
+<h2>カテゴリ別分析</h2>
+
+<table class="sales-table">
+
+<thead>
+<tr>
+<th>カテゴリ</th>
+<th>数量</th>
+<th>売上</th>
+<th>粗利</th>
+<th>構成比</th>
+</tr>
+</thead>
+
+<tbody id="categoryAnalysis"></tbody>
 
 </table>
 
