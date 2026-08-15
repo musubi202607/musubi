@@ -732,18 +732,16 @@ const totalProducts =
     kitchenProducts
   );
 
-displayProductSales(
-  "totalProductSales",
-  totalProducts
-);
-
 displayCategoryAnalysis(
-  "categorySales",
+  "categoryAnalysis",
   totalProducts
 );
 
 analysisProducts =
   totalProducts;
+
+updateAnalysis();
+
     
 } catch(e) {
 
@@ -1657,5 +1655,58 @@ async function downloadSalesCSV() {
     );
 
   }
+
+}
+
+// =========================
+// 商品分析ランキング
+// =========================
+function updateAnalysis() {
+
+  const tbody =
+    document.getElementById("analysisTable");
+
+  if(!tbody){
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  if(
+    !Array.isArray(analysisProducts) ||
+    analysisProducts.length === 0
+  ){
+    tbody.innerHTML =
+      "<tr><td colspan='6'>データがありません</td></tr>";
+    return;
+  }
+
+  const sort =
+    document.getElementById("analysisSort")?.value
+    || "amount";
+
+  const list =
+    [...analysisProducts];
+
+  list.sort(
+    (a,b)=>
+      safeNumber(b[sort]) -
+      safeNumber(a[sort])
+  );
+
+  list.forEach((item,index)=>{
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.name}</td>
+        <td>${item.category || "その他"}</td>
+        <td>${safeNumber(item.qty)}個</td>
+        <td>${formatYen(item.amount)}</td>
+        <td>${formatYen(item.grossProfit)}</td>
+      </tr>
+    `;
+
+  });
 
 }
