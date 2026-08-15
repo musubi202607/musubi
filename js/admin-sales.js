@@ -1479,6 +1479,14 @@ function displayCategoryAnalysis(targetId, products){
 
   });
 
+  const totalAmount =
+  Object.values(categoryMap)
+    .reduce(
+      (sum,item)=>
+        sum + item.amount,
+      0
+    );
+  
   Object.values(categoryMap)
     .sort((a,b)=>b.amount-a.amount)
     .forEach(item=>{
@@ -1490,7 +1498,7 @@ function displayCategoryAnalysis(targetId, products){
           <td>${formatYen(item.amount)}</td>
           <td>${formatYen(item.costTotal)}</td>
           <td>${formatYen(item.grossProfit)}</td>
-          <td>${item.amount===0 ? 0 : ((item.grossProfit/item.amount)*100).toFixed(1)}%</td>
+          <td>${totalAmount===0 ? 0 : ((item.amount / totalAmount) * 100).toFixed(1)}%</td>
         </tr>
       `;
 
