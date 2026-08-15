@@ -726,6 +726,16 @@ async function loadSales() {
 // 総合 商品別
 // =========================
 
+displayProductSales(
+  "totalStoreProductSales",
+  storeProducts
+);
+
+displayProductSales(
+  "totalKitchenProductSales",
+  kitchenProducts
+);
+
 const totalProducts =
   mergeProducts(
     storeProducts,
@@ -740,10 +750,9 @@ displayCategoryAnalysis(
 analysisProducts =
   totalProducts;
 
-updateAnalysis();
-
-    
+updateAnalysis();    
 } catch(e) {
+    
 
   console.error(
     "売上集計エラー:",
