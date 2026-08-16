@@ -1821,19 +1821,39 @@ function renderAnalysisTable(
 
   tbody.innerHTML = "";
 
-  const sort =
-    document.getElementById(sortId)?.value
-    || "amount";
+const sort =
+  document.getElementById(sortId)?.value
+  || "amount";
 
-  const list = [...products];
+const list = [...products];
 
-  list.sort((a,b)=>{
+list.sort((a,b)=>{
 
-    return safeNumber(b[sort]) -
-           safeNumber(a[sort]);
+  if(sort === "grossRate"){
 
-  });
+    const rateA =
+      safeNumber(a.amount) === 0
+        ? 0
+        : safeNumber(a.grossProfit) /
+          safeNumber(a.amount);
 
+    const rateB =
+      safeNumber(b.amount) === 0
+        ? 0
+        : safeNumber(b.grossProfit) /
+          safeNumber(b.amount);
+
+    return rateB - rateA;
+
+  }
+
+  return (
+    safeNumber(b[sort]) -
+    safeNumber(a[sort])
+  );
+
+});
+  
   list.forEach((item,index)=>{
 
     const rate =
@@ -1882,78 +1902,13 @@ function updateKitchenAnalysis(){
 // =========================
 function updateAnalysis(){
 
-  const tbody =
-    document.getElementById(
-      "analysisTable"
-    );
-
-  if(!tbody){
-    return;
-  }
-
-  tbody.innerHTML = "";
-
-  const sort =
-    document.getElementById(
-      "analysisSort"
-    )?.value || "amount";
-
-  const list =
-    [...totalAnalysisProducts];
-
-  list.sort((a,b)=>{
-
-    if(sort === "grossRate"){
-
-      const rateA =
-        safeNumber(a.amount) === 0
-          ? 0
-          : (safeNumber(a.grossProfit) / safeNumber(a.amount));
-
-      const rateB =
-        safeNumber(b.amount) === 0
-          ? 0
-          : (safeNumber(b.grossProfit) / safeNumber(b.amount));
-
-      return rateB - rateA;
-
-    }
-
-    return (
-      safeNumber(b[sort]) -
-      safeNumber(a[sort])
-    );
-
-  });
-
-  list.forEach((item,index)=>{
-
-    const rate =
-      safeNumber(item.amount) === 0
-        ? 0
-        : (
-            safeNumber(item.grossProfit) /
-            safeNumber(item.amount) *
-            100
-          );
-
-    tbody.innerHTML += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${item.name}</td>
-        <td>${item.category || "その他"}</td>
-        <td>${safeNumber(item.qty)}個</td>
-        <td>${formatYen(item.amount)}</td>
-        <td>${formatYen(item.costTotal)}</td>
-        <td>${formatYen(item.grossProfit)}</td>
-        <td>${rate.toFixed(1)}%</td>
-      </tr>
-    `;
-
-  });
+  renderAnalysisTable(
+    "analysisTable",
+    totalAnalysisProducts,
+    "analysisSort"
+  );
 
 }
-
 // =========================
 // カテゴリ分析更新
 // =========================
