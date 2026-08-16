@@ -1,5 +1,5 @@
 const CACHE_NAME =
-"musubi-kitchen-v3";
+"musubi-kitchen-v4";
 
 
 const CACHE_FILES = [
