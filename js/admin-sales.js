@@ -815,7 +815,9 @@ if(grandTotalQty){
 updateStoreAnalysis();
 
 updateKitchenAnalysis();
-  
+
+updateAnalysis();
+    
 } 
   
   catch(e) {
@@ -1886,5 +1888,78 @@ function updateKitchenAnalysis(){
 
     }
   );
+
+}
+
+function updateAnalysis(){
+
+  const tbody =
+    document.getElementById(
+      "analysisTable"
+    );
+
+  if(!tbody){
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  const sort =
+    document.getElementById(
+      "analysisSort"
+    )?.value || "amount";
+
+  const map = {};
+
+  [...storeAnalysisProducts, ...kitchenAnalysisProducts]
+    .forEach(item => {
+
+      if(!map[item.name]){
+
+        map[item.name] = {
+          name: item.name,
+          category: item.category || "その他",
+          qty: 0,
+          amount: 0,
+          cost: 0,
+          grossProfit: 0
+        };
+
+      }
+
+      map[item.name].qty += safeNumber(item.qty);
+      map[item.name].amount += safeNumber(item.amount);
+      map[item.name].cost += safeNumber(item.costTotal);
+      map[item.name].grossProfit += safeNumber(item.grossProfit);
+
+    });
+
+  const list = Object.values(map);
+
+  list.sort(
+    (a,b)=>
+      safeNumber(b[sort])-
+      safeNumber(a[sort])
+  );
+
+  list.forEach((item,index)=>{
+
+    const rate =
+      item.amount
+      ? (item.grossProfit / item.amount * 100)
+      : 0;
+
+    tbody.innerHTML += `
+<tr>
+<td>${index+1}</td>
+<td>${item.name}</td>
+<td>${item.category}</td>
+<td>${item.qty}個</td>
+<td>${formatYen(item.amount)}</td>
+<td>${formatYen(item.cost)}</td>
+<td>${formatYen(item.grossProfit)}</td>
+<td>${rate.toFixed(1)}%</td>
+</tr>`;
+  });
 
 }
