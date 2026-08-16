@@ -775,10 +775,6 @@ displayCategoryAnalysis(
   kitchenAnalysisProducts
 );
 
-
-updateCategoryAnalysis();
-
-
 // =========================
 // 総販売数量
 // =========================
