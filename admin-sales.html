@@ -128,28 +128,6 @@
 
 <div class="shop-info-card">
 
-<h2>商品別売上</h2>
-
-<table class="sales-table">
-
-<thead>
-<tr>
-<th>商品名</th>
-<th>数量</th>
-<th>売上</th>
-<th>原価</th>
-<th>粗利</th>
-</tr>
-</thead>
-
-<tbody id="storeProductSales"></tbody>
-
-</table>
-
-</div>
-
-<div class="shop-info-card">
-
 <h2>商品分析ランキング</h2>
 
 <div class="quick-btns">
@@ -222,29 +200,7 @@
 </div>
 
 <div class="shop-info-card">
-
-<h2>商品別売上</h2>
-
-<table class="sales-table">
-
-<thead>
-<tr>
-<th>商品名</th>
-<th>数量</th>
-<th>売上</th>
-<th>原価</th>
-<th>粗利</th>
-</tr>
-</thead>
-
-<tbody id="kitchenProductSales"></tbody>
-
-</table>
-
-</div>
-
-<div class="shop-info-card">
-
+  
 <h2>商品分析ランキング</h2>
 
 <div class="quick-btns">
@@ -333,48 +289,41 @@
 
 <div class="shop-info-card">
 
-<h2>店舗 商品別売上</h2>
+<h2>商品別分析（店舗＋キッチンカー合計）</h2>
+
+<div class="quick-btns">
+
+<label>並び順</label>
+
+<select id="analysisSort" onchange="updateAnalysis()">
+  <option value="amount">売上順</option>
+  <option value="qty">販売数量順</option>
+  <option value="grossProfit">粗利順</option>
+</select>
+
+</div>
 
 <table class="sales-table">
 
 <thead>
 <tr>
+<th>順位</th>
 <th>商品名</th>
+<th>カテゴリ</th>
 <th>数量</th>
 <th>売上</th>
 <th>原価</th>
 <th>粗利</th>
+<th>粗利率</th>
 </tr>
 </thead>
 
-<tbody id="totalStoreProductSales"></tbody>
+<tbody id="analysisTable"></tbody>
 
 </table>
 
 </div>
-
-<div class="shop-info-card">
-
-<h2>キッチンカー 商品別売上</h2>
-
-<table class="sales-table">
-
-<thead>
-<tr>
-<th>商品名</th>
-<th>数量</th>
-<th>売上</th>
-<th>原価</th>
-<th>粗利</th>
-</tr>
-</thead>
-
-<tbody id="totalKitchenProductSales"></tbody>
-
-</table>
-
-</div>
-
+  
 <div class="shop-info-card">
 
 <h2>総合カテゴリ分析</h2>
