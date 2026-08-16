@@ -1769,134 +1769,14 @@ async function downloadSalesCSV() {
 
 }
 
-function updateStoreAnalysis(){
+function renderAnalysisTable(
+  tableId,
+  products,
+  sortId
+){
 
   const tbody =
-    document.getElementById(
-      "storeAnalysisTable"
-    );
-
-
-  if(!tbody){
-    return;
-  }
-
-
-  tbody.innerHTML = "";
-
-
-  const sort =
-    document.getElementById(
-      "storeAnalysisSort"
-    )?.value || "amount";
-
-
-  const list =
-    [...storeAnalysisProducts];
-
-
-  list.sort(
-    (a,b)=>
-      safeNumber(b[sort]) -
-      safeNumber(a[sort])
-  );
-
-
-  list.forEach(
-    (item,index)=>{
-
-      tbody.innerHTML += `
-
-<tr>
-
-<td>${index+1}</td>
-
-<td>${item.name}</td>
-
-<td>${item.category || "その他"}</td>
-
-<td>${safeNumber(item.qty)}個</td>
-
-<td>${formatYen(item.amount)}</td>
-
-<td>${formatYen(item.grossProfit)}</td>
-
-</tr>
-
-`;
-
-    }
-  );
-
-}
-
-function updateKitchenAnalysis(){
-
-  const tbody =
-    document.getElementById(
-      "kitchenAnalysisTable"
-    );
-
-
-  if(!tbody){
-    return;
-  }
-
-
-  tbody.innerHTML = "";
-
-
-  const sort =
-    document.getElementById(
-      "kitchenAnalysisSort"
-    )?.value || "amount";
-
-
-  const list =
-    [...kitchenAnalysisProducts];
-
-
-  list.sort(
-    (a,b)=>
-      safeNumber(b[sort]) -
-      safeNumber(a[sort])
-  );
-
-
-  list.forEach(
-    (item,index)=>{
-
-      tbody.innerHTML += `
-
-<tr>
-
-<td>${index+1}</td>
-
-<td>${item.name}</td>
-
-<td>${item.category || "その他"}</td>
-
-<td>${safeNumber(item.qty)}個</td>
-
-<td>${formatYen(item.amount)}</td>
-
-<td>${formatYen(item.grossProfit)}</td>
-
-</tr>
-
-`;
-
-    }
-  );
-
-}
-
-function updateAnalysis(){
-
-  const tbody =
-    document.getElementById(
-      "analysisTable"
-    );
+    document.getElementById(tableId);
 
   if(!tbody){
     return;
@@ -1905,61 +1785,67 @@ function updateAnalysis(){
   tbody.innerHTML = "";
 
   const sort =
-    document.getElementById(
-      "analysisSort"
-    )?.value || "amount";
+    document.getElementById(sortId)?.value
+    || "amount";
 
-  const map = {};
+  const list = [...products];
 
-  [...storeAnalysisProducts, ...kitchenAnalysisProducts]
-    .forEach(item => {
+  list.sort((a,b)=>{
 
-      if(!map[item.name]){
+    return safeNumber(b[sort]) -
+           safeNumber(a[sort]);
 
-        map[item.name] = {
-          name: item.name,
-          category: item.category || "その他",
-          qty: 0,
-          amount: 0,
-          cost: 0,
-          grossProfit: 0
-        };
-
-      }
-
-      map[item.name].qty += safeNumber(item.qty);
-      map[item.name].amount += safeNumber(item.amount);
-      map[item.name].cost += safeNumber(item.costTotal);
-      map[item.name].grossProfit += safeNumber(item.grossProfit);
-
-    });
-
-  const list = Object.values(map);
-
-  list.sort(
-    (a,b)=>
-      safeNumber(b[sort])-
-      safeNumber(a[sort])
-  );
+  });
 
   list.forEach((item,index)=>{
 
     const rate =
-      item.amount
-      ? (item.grossProfit / item.amount * 100)
+      safeNumber(item.amount) > 0
+      ? item.grossProfit /
+        item.amount * 100
       : 0;
 
     tbody.innerHTML += `
 <tr>
 <td>${index+1}</td>
 <td>${item.name}</td>
-<td>${item.category}</td>
-<td>${item.qty}個</td>
+<td>${item.category || "その他"}</td>
+<td>${safeNumber(item.qty)}個</td>
 <td>${formatYen(item.amount)}</td>
-<td>${formatYen(item.cost)}</td>
+<td>${formatYen(item.costTotal)}</td>
 <td>${formatYen(item.grossProfit)}</td>
 <td>${rate.toFixed(1)}%</td>
 </tr>`;
   });
+
+}
+
+function updateStoreAnalysis(){
+
+  renderAnalysisTable(
+    "storeAnalysisTable",
+    storeAnalysisProducts,
+    "storeAnalysisSort"
+  );
+
+}
+
+function updateKitchenAnalysis(){
+
+  renderAnalysisTable(
+    "kitchenAnalysisTable",
+    kitchenAnalysisProducts,
+    "kitchenAnalysisSort"
+  );
+
+}
+
+function updateAnalysis(){
+
+  renderAnalysisTable(
+    "analysisTable",
+    totalAnalysisProducts,
+    "analysisSort"
+  );
 
 }
