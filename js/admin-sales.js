@@ -776,10 +776,7 @@ displayCategoryAnalysis(
 );
 
 
-displayCategoryAnalysis(
-  "categoryAnalysis",
-  totalAnalysisProducts
-);
+updateCategoryAnalysis();
 
 
 // =========================
@@ -817,6 +814,8 @@ updateStoreAnalysis();
 updateKitchenAnalysis();
 
 updateAnalysis();
+
+updateCategoryAnalysis();
     
 } 
   
@@ -1483,7 +1482,11 @@ function mergeProducts(
 // =========================
 // 商品カテゴリ分析表示
 // =========================
-function displayCategoryAnalysis(targetId, products){
+function displayCategoryAnalysis(
+  targetId,
+  products,
+  sort = "amount"
+){
 
   const tbody =
     document.getElementById(targetId);
@@ -1500,7 +1503,7 @@ function displayCategoryAnalysis(targetId, products){
   ){
 
     tbody.innerHTML =
-      "<tr><td colspan='6'>データがありません</td></tr>";
+      "<tr><td colspan='7'>データがありません</td></tr>";
 
     return;
 
@@ -1515,12 +1518,18 @@ function displayCategoryAnalysis(targetId, products){
 
     if(!categoryMap[category]){
 
-      categoryMap[category]={
+      categoryMap[category] = {
+
         category,
+
         qty:0,
+
         amount:0,
+
         costTotal:0,
+
         grossProfit:0
+
       };
 
     }
@@ -1539,33 +1548,61 @@ function displayCategoryAnalysis(targetId, products){
 
   });
 
+  const list =
+    Object.values(categoryMap);
+
   const totalAmount =
-  Object.values(categoryMap)
-    .reduce(
+    list.reduce(
       (sum,item)=>
-        sum + item.amount,
+        sum + safeNumber(item.amount),
       0
     );
-  
-  Object.values(categoryMap)
-    .sort((a,b)=>b.amount-a.amount)
-    .forEach(item=>{
 
-      tbody.innerHTML += `
-        <tr>
-          <td>${item.category}</td>
-          <td>${item.qty}個</td>
-          <td>${formatYen(item.amount)}</td>
-          <td>${formatYen(item.costTotal)}</td>
-          <td>${formatYen(item.grossProfit)}</td>
-          <td>${totalAmount===0 ? 0 : ((item.amount / totalAmount) * 100).toFixed(1)}%</td>
-        </tr>
-      `;
+  list.sort((a,b)=>{
 
-    });
+    switch(sort){
+
+      case "qty":
+        return b.qty - a.qty;
+
+      case "grossProfit":
+        return b.grossProfit - a.grossProfit;
+
+      case "cost":
+        return b.costTotal - a.costTotal;
+
+      default:
+        return b.amount - a.amount;
+
+    }
+
+  });
+
+  list.forEach(item=>{
+
+    const ratio =
+      totalAmount > 0
+      ? item.amount / totalAmount * 100
+      : 0;
+
+    const grossRate =
+      item.amount > 0
+      ? item.grossProfit / item.amount * 100
+      : 0;
+
+    tbody.innerHTML += `
+<tr>
+<td>${item.category}</td>
+<td>${item.qty}個</td>
+<td>${formatYen(item.amount)}</td>
+<td>${ratio.toFixed(1)}%</td>
+<td>${formatYen(item.costTotal)}</td>
+<td>${formatYen(item.grossProfit)}</td>
+<td>${grossRate.toFixed(1)}%</td>
+</tr>`;
+  });
 
 }
-
 // =========================
 // CSV出力
 // =========================
@@ -1840,12 +1877,97 @@ function updateKitchenAnalysis(){
 
 }
 
+// =========================
+// 総合 商品分析ランキング
+// =========================
 function updateAnalysis(){
 
-  renderAnalysisTable(
-    "analysisTable",
+  const tbody =
+    document.getElementById(
+      "analysisTable"
+    );
+
+  if(!tbody){
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  const sort =
+    document.getElementById(
+      "analysisSort"
+    )?.value || "amount";
+
+  const list =
+    [...totalAnalysisProducts];
+
+  list.sort((a,b)=>{
+
+    if(sort === "grossRate"){
+
+      const rateA =
+        safeNumber(a.amount) === 0
+          ? 0
+          : (safeNumber(a.grossProfit) / safeNumber(a.amount));
+
+      const rateB =
+        safeNumber(b.amount) === 0
+          ? 0
+          : (safeNumber(b.grossProfit) / safeNumber(b.amount));
+
+      return rateB - rateA;
+
+    }
+
+    return (
+      safeNumber(b[sort]) -
+      safeNumber(a[sort])
+    );
+
+  });
+
+  list.forEach((item,index)=>{
+
+    const rate =
+      safeNumber(item.amount) === 0
+        ? 0
+        : (
+            safeNumber(item.grossProfit) /
+            safeNumber(item.amount) *
+            100
+          );
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.name}</td>
+        <td>${item.category || "その他"}</td>
+        <td>${safeNumber(item.qty)}個</td>
+        <td>${formatYen(item.amount)}</td>
+        <td>${formatYen(item.costTotal)}</td>
+        <td>${formatYen(item.grossProfit)}</td>
+        <td>${rate.toFixed(1)}%</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+// =========================
+// カテゴリ分析更新
+// =========================
+function updateCategoryAnalysis(){
+
+  const sort =
+    document.getElementById(
+      "categorySort"
+    )?.value || "amount";
+
+  displayCategoryAnalysis(
+    "categoryAnalysis",
     totalAnalysisProducts,
-    "analysisSort"
+    sort
   );
 
 }
