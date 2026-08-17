@@ -12,12 +12,15 @@ let hourlyChart = null;
 // =========================
 
 window.addEventListener(
+
   "DOMContentLoaded",
+
   () => {
 
     loadDashboard();
 
   }
+
 );
 
 
@@ -70,37 +73,31 @@ async function loadDashboard(){
     dashboardData =
       await response.json();
 
-
     // =========================
-    // 基本表示
+    // KPI表示
     // =========================
 
     renderDashboard(
       dashboardData
     );
 
-
     // =========================
-    // 昨日比較
+    // 前日比較
     // =========================
 
     renderYesterdayCard(
       dashboardData
     );
 
-
     // =========================
-    // 時間帯売上
+    // 時間帯グラフ
     // =========================
 
     renderHourlyChart(
 
-      dashboardData.hourlySales,
-
-      dashboardData.yesterdayHourlySales
+      dashboardData.hourlyChart
 
     );
-
 
     // =========================
     // 人気商品
@@ -112,7 +109,6 @@ async function loadDashboard(){
 
     );
 
-
     // =========================
     // カテゴリ売上
     // =========================
@@ -122,7 +118,6 @@ async function loadDashboard(){
       dashboardData.categorySales
 
     );
-
 
     // =========================
     // 天気
@@ -137,7 +132,7 @@ async function loadDashboard(){
     console.error(error);
 
     alert(
-      "ダッシュボード取得に失敗しました。"
+      "ダッシュボードの取得に失敗しました。"
     );
 
   }
@@ -145,7 +140,7 @@ async function loadDashboard(){
 }
 
 // =========================
-// 基本表示
+// KPI表示
 // =========================
 
 function renderDashboard(data){
@@ -178,75 +173,67 @@ function renderDashboard(data){
   document.getElementById(
     "bbqSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.bbqSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.bbqSales
+    );
 
   document.getElementById(
     "optionSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.optionSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.optionSales
+    );
 
   document.getElementById(
     "onigiriSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.onigiriSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.onigiriSales
+    );
 
   document.getElementById(
     "kitchenSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.kitchenSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.kitchenSales
+    );
 
   document.getElementById(
     "todaySales"
   ).innerText =
-    "¥" +
-    Number(
-      data.todaySales || 0
-    ).toLocaleString();
+    formatYen(
+      data.todaySales
+    );
+
+  document.getElementById(
+    "yesterdaySales"
+  ).innerText =
+    formatYen(
+      data.yesterdaySales
+    );
 
   document.getElementById(
     "monthSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.monthSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.monthSales
+    );
 
   document.getElementById(
     "totalSales"
   ).innerText =
-    "¥" +
-    Number(
-      data.totalSales || 0
-    ).toLocaleString();
+    formatYen(
+      data.totalSales
+    );
 
 }
 
 
 // =========================
-// 昨日比較
+// 前日比較
 // =========================
 
 function renderYesterdayCard(data){
-
-  document.getElementById(
-    "yesterdaySales"
-  ).innerText =
-    "¥" +
-    Number(
-      data.yesterdaySales || 0
-    ).toLocaleString();
 
   const diff =
     document.getElementById(
@@ -286,10 +273,7 @@ function renderYesterdayCard(data){
 // 時間帯別売上グラフ
 // =========================
 
-function renderHourlyChart(
-  today,
-  yesterday
-){
+function renderHourlyChart(chartData){
 
   const canvas =
     document.getElementById(
@@ -322,13 +306,9 @@ function renderHourlyChart(
 
         data:{
 
-          labels:[
-            "11時",
-            "12時",
-            "13時",
-            "14時",
-            "15時"
-          ],
+          labels:
+
+            chartData.labels,
 
           datasets:[
 
@@ -336,15 +316,11 @@ function renderHourlyChart(
 
               label:"今日",
 
-              data:[
+              data:
+                chartData.today,
 
-                today["11"] || 0,
-                today["12"] || 0,
-                today["13"] || 0,
-                today["14"] || 0,
-                today["15"] || 0
-
-              ]
+              backgroundColor:
+                "#4CAF50"
 
             },
 
@@ -352,15 +328,11 @@ function renderHourlyChart(
 
               label:"昨日",
 
-              data:[
+              data:
+                chartData.yesterday,
 
-                yesterday["11"] || 0,
-                yesterday["12"] || 0,
-                yesterday["13"] || 0,
-                yesterday["14"] || 0,
-                yesterday["15"] || 0
-
-              ]
+              backgroundColor:
+                "#90CAF9"
 
             }
 
@@ -388,7 +360,21 @@ function renderHourlyChart(
 
             y:{
 
-              beginAtZero:true
+              beginAtZero:true,
+
+              ticks:{
+
+                callback:function(value){
+
+                  return "¥" +
+
+                    Number(value)
+
+                    .toLocaleString();
+
+                }
+
+              }
 
             }
 
@@ -407,9 +393,7 @@ function renderHourlyChart(
 // 人気商品TOP5
 // =========================
 
-function renderTopProducts(
-  products
-){
+function renderTopProducts(products){
 
   const list =
     document.getElementById(
@@ -435,15 +419,29 @@ function renderTopProducts(
 
       li.innerHTML =
 
-        `<strong>${index+1}位</strong>
-         ${item.name}
-         <br>
-         <small>
-         ${item.qty}個　
-         ¥${Number(item.sales).toLocaleString()}
-         </small>`;
+        `
+        <strong>
 
-      list.appendChild(li);
+        ${index + 1}位
+
+        </strong>
+
+        ${item.name}
+
+        <br>
+
+        <small>
+
+        ${item.qty}個　
+
+        ¥${Number(item.sales).toLocaleString()}
+
+        </small>
+        `;
+
+      list.appendChild(
+        li
+      );
 
     }
 
@@ -456,9 +454,7 @@ function renderTopProducts(
 // カテゴリ売上
 // =========================
 
-function renderCategorySales(
-  categories
-){
+function renderCategorySales(categories){
 
   const list =
     document.getElementById(
@@ -484,13 +480,21 @@ function renderCategorySales(
 
       li.innerHTML =
 
-        `${item.category}
+        `
+
+        <span>
+
+        ${item.category}
+
+        </span>
 
         <span>
 
         ¥${Number(item.amount).toLocaleString()}
 
-        </span>`;
+        </span>
+
+        `;
 
       list.appendChild(
         li
@@ -531,7 +535,7 @@ async function loadWeather(){
 
     // =========================
     // Open-Meteo
-    // 緯度経度は店舗所在地へ変更可
+    // ※緯度・経度は店舗所在地
     // =========================
 
     const response =
@@ -544,7 +548,7 @@ async function loadWeather(){
     if(!response.ok){
 
       throw new Error(
-        "天気取得失敗"
+        "Weather Error"
       );
 
     }
@@ -556,14 +560,17 @@ async function loadWeather(){
       data.current || {};
 
     weatherText.innerText =
+
       weatherName(
         current.weather_code
       );
 
     weatherTemp.innerText =
+
       Number(
         current.temperature_2m || 0
       ).toFixed(1)
+
       + "℃";
 
   }
@@ -592,45 +599,55 @@ function weatherName(code){
   switch(Number(code)){
 
     case 0:
+
       return "☀ 快晴";
 
     case 1:
     case 2:
+
       return "🌤 晴れ";
 
     case 3:
+
       return "☁ 曇り";
 
     case 45:
     case 48:
+
       return "🌫 霧";
 
     case 51:
     case 53:
     case 55:
+
       return "🌦 小雨";
 
     case 61:
     case 63:
     case 65:
+
       return "🌧 雨";
 
     case 71:
     case 73:
     case 75:
+
       return "❄ 雪";
 
     case 80:
     case 81:
     case 82:
+
       return "🌦 にわか雨";
 
     case 95:
     case 96:
     case 99:
+
       return "⛈ 雷雨";
 
     default:
+
       return "－";
 
   }
@@ -653,10 +670,10 @@ function formatYen(value){
 
 
 // =========================
-// 件数表示
+// 数値表示
 // =========================
 
-function formatCount(value){
+function formatNumber(value){
 
   return Number(
     value || 0
@@ -666,20 +683,7 @@ function formatCount(value){
 
 
 // =========================
-// パーセント表示
-// =========================
-
-function formatPercent(value){
-
-  return Number(
-    value || 0
-  ).toFixed(1) + "%";
-
-}
-
-
-// =========================
-// グラフ更新
+// ダッシュボード更新
 // =========================
 
 function reloadDashboard(){
@@ -698,6 +702,63 @@ setInterval(
   reloadDashboard,
 
   1000 * 60 * 5
+
+);
+
+
+// =========================
+// ページ表示中に再取得
+// =========================
+
+document.addEventListener(
+
+  "visibilitychange",
+
+  ()=>{
+
+    if(
+
+      document.visibilityState ===
+
+      "visible"
+
+    ){
+
+      reloadDashboard();
+
+    }
+
+  }
+
+);
+
+
+// =========================
+// リサイズ時
+// （Chart.js再描画）
+// =========================
+
+window.addEventListener(
+
+  "resize",
+
+  ()=>{
+
+    if(
+
+      dashboardData.hourlyChart
+
+    ){
+
+      renderHourlyChart(
+
+        dashboardData.hourlyChart
+
+      );
+
+    }
+
+  }
 
 );
 
