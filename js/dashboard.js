@@ -1,6 +1,15 @@
 // ==================================================
-// dashboard.js Ver2
+// ダッシュボード Ver.3
 // ==================================================
+
+let dashboardData = {};
+
+let hourlyChart = null;
+
+
+// =========================
+// 初期化
+// =========================
 
 window.addEventListener(
   "DOMContentLoaded",
@@ -11,18 +20,19 @@ window.addEventListener(
   }
 );
 
+
 // =========================
 // ダッシュボード取得
 // =========================
 
 async function loadDashboard(){
 
-  const token =
-    localStorage.getItem(
-      "adminToken"
-    );
-
   try{
+
+    const token =
+      localStorage.getItem(
+        "adminToken"
+      );
 
     const response =
       await fetch(
@@ -35,7 +45,8 @@ async function loadDashboard(){
           headers:{
 
             Authorization:
-              "Bearer " + token
+              "Bearer " +
+              token
 
           }
 
@@ -56,38 +67,77 @@ async function loadDashboard(){
 
     }
 
-    const data =
+    dashboardData =
       await response.json();
 
-    updateSummaryCards(
-      data
+
+    // =========================
+    // 基本表示
+    // =========================
+
+    renderDashboard(
+      dashboardData
     );
 
-    updateSalesCards(
-      data
+
+    // =========================
+    // 昨日比較
+    // =========================
+
+    renderYesterdayCard(
+      dashboardData
     );
 
-    updateAnalysisCards(
-      data
+
+    // =========================
+    // 時間帯売上
+    // =========================
+
+    renderHourlyChart(
+
+      dashboardData.hourlySales,
+
+      dashboardData.yesterdayHourlySales
+
     );
 
-    updateTopProducts(
-      data.topProducts || []
+
+    // =========================
+    // 人気商品
+    // =========================
+
+    renderTopProducts(
+
+      dashboardData.topProducts
+
     );
 
-    updateCategorySales(
-      data.categorySales || []
+
+    // =========================
+    // カテゴリ売上
+    // =========================
+
+    renderCategorySales(
+
+      dashboardData.categorySales
+
     );
 
-  }catch(error){
 
-    console.error(
-      "Dashboard Error",
-      error
-    );
+    // =========================
+    // 天気
+    // =========================
+
+    loadWeather();
+
+  }
+
+  catch(error){
+
+    console.error(error);
 
     alert(
-      "ダッシュボードの取得に失敗しました。"
+      "ダッシュボード取得に失敗しました。"
     );
 
   }
@@ -95,155 +145,356 @@ async function loadDashboard(){
 }
 
 // =========================
-// 売上カード
+// 基本表示
 // =========================
 
-function updateSalesCards(
-  data
-){
+function renderDashboard(data){
 
-  setYen(
+  document.getElementById(
+    "reservationCount"
+  ).innerText =
+    data.reservationCount || 0;
 
-    "bbqSales",
+  document.getElementById(
+    "checkedInCount"
+  ).innerText =
+    data.checkedInCount || 0;
 
-    data.bbqSales
+  document.getElementById(
+    "visitRate"
+  ).innerText =
+    (data.visitRate || 0) + "%";
 
-  );
+  document.getElementById(
+    "bbqUnpaidCount"
+  ).innerText =
+    data.bbqUnpaidCount || 0;
 
-  setYen(
+  document.getElementById(
+    "onigiriUnpaidCount"
+  ).innerText =
+    data.onigiriUnpaidCount || 0;
 
-    "optionSales",
+  document.getElementById(
+    "bbqSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.bbqSales || 0
+    ).toLocaleString();
 
-    data.optionSales
+  document.getElementById(
+    "optionSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.optionSales || 0
+    ).toLocaleString();
 
-  );
+  document.getElementById(
+    "onigiriSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.onigiriSales || 0
+    ).toLocaleString();
 
-  setYen(
+  document.getElementById(
+    "kitchenSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.kitchenSales || 0
+    ).toLocaleString();
 
-    "onigiriSales",
+  document.getElementById(
+    "todaySales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.todaySales || 0
+    ).toLocaleString();
 
-    data.onigiriSales
+  document.getElementById(
+    "monthSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.monthSales || 0
+    ).toLocaleString();
 
-  );
-
-  setYen(
-
-    "kitchenSales",
-
-    data.kitchenSales
-
-  );
-
-  setYen(
-
-    "totalSales",
-
-    data.totalSales
-
-  );
-
-  setYen(
-
-    "todaySales",
-
-    data.todaySales
-
-  );
-
-  setYen(
-
-    "monthSales",
-
-    data.monthSales
-
-  );
+  document.getElementById(
+    "totalSales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.totalSales || 0
+    ).toLocaleString();
 
 }
+
+
+// =========================
+// 昨日比較
+// =========================
+
+function renderYesterdayCard(data){
+
+  document.getElementById(
+    "yesterdaySales"
+  ).innerText =
+    "¥" +
+    Number(
+      data.yesterdaySales || 0
+    ).toLocaleString();
+
+  const diff =
+    document.getElementById(
+      "salesDiff"
+    );
+
+  const value =
+    Number(
+      data.salesDiff || 0
+    );
+
+  diff.innerText =
+    value + "%";
+
+  if(value > 0){
+
+    diff.style.color =
+      "#2e7d32";
+
+  }
+  else if(value < 0){
+
+    diff.style.color =
+      "#d32f2f";
+
+  }
+  else{
+
+    diff.style.color =
+      "#666";
+
+  }
+
+}
+
+// =========================
+// 時間帯別売上グラフ
+// =========================
+
+function renderHourlyChart(
+  today,
+  yesterday
+){
+
+  const canvas =
+    document.getElementById(
+      "hourlyChart"
+    );
+
+  if(!canvas){
+
+    return;
+
+  }
+
+  const ctx =
+    canvas.getContext("2d");
+
+  if(hourlyChart){
+
+    hourlyChart.destroy();
+
+  }
+
+  hourlyChart =
+    new Chart(
+
+      ctx,
+
+      {
+
+        type:"bar",
+
+        data:{
+
+          labels:[
+            "11時",
+            "12時",
+            "13時",
+            "14時",
+            "15時"
+          ],
+
+          datasets:[
+
+            {
+
+              label:"今日",
+
+              data:[
+
+                today["11"] || 0,
+                today["12"] || 0,
+                today["13"] || 0,
+                today["14"] || 0,
+                today["15"] || 0
+
+              ]
+
+            },
+
+            {
+
+              label:"昨日",
+
+              data:[
+
+                yesterday["11"] || 0,
+                yesterday["12"] || 0,
+                yesterday["13"] || 0,
+                yesterday["14"] || 0,
+                yesterday["15"] || 0
+
+              ]
+
+            }
+
+          ]
+
+        },
+
+        options:{
+
+          responsive:true,
+
+          maintainAspectRatio:false,
+
+          plugins:{
+
+            legend:{
+
+              position:"bottom"
+
+            }
+
+          },
+
+          scales:{
+
+            y:{
+
+              beginAtZero:true
+
+            }
+
+          }
+
+        }
+
+      }
+
+    );
+
+}
+
 
 // =========================
 // 人気商品TOP5
 // =========================
 
-function updateTopProducts(
+function renderTopProducts(
   products
 ){
 
-  const tbody =
+  const list =
     document.getElementById(
-      "topProductsTable"
+      "topProducts"
     );
 
-  if(!tbody){
+  if(!list){
 
     return;
 
   }
 
-  tbody.innerHTML = "";
+  list.innerHTML = "";
 
-  if(
-    !Array.isArray(products) ||
-    products.length === 0
-  ){
+  (products || []).forEach(
 
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5">
-          データがありません
-        </td>
-      </tr>
-    `;
-
-    return;
-
-  }
-
-  products.forEach(
     (item,index)=>{
 
-      tbody.innerHTML += `
-        <tr>
+      const li =
+        document.createElement(
+          "li"
+        );
 
-          <td>
+      li.innerHTML =
 
-            ${index + 1}
+        `<strong>${index+1}位</strong>
+         ${item.name}
+         <br>
+         <small>
+         ${item.qty}個　
+         ¥${Number(item.sales).toLocaleString()}
+         </small>`;
 
-          </td>
+      list.appendChild(li);
 
-          <td>
+    }
 
-            ${escapeHtml(
-              item.name
-            )}
+  );
 
-          </td>
+}
 
-          <td>
 
-            ${escapeHtml(
-              item.category || "その他"
-            )}
+// =========================
+// カテゴリ売上
+// =========================
 
-          </td>
+function renderCategorySales(
+  categories
+){
 
-          <td>
+  const list =
+    document.getElementById(
+      "categorySales"
+    );
 
-            ${Number(
-              item.qty || 0
-            ).toLocaleString()}個
+  if(!list){
 
-          </td>
+    return;
 
-          <td>
+  }
 
-            ${formatYen(
-              item.sales || 0
-            )}
+  list.innerHTML = "";
 
-          </td>
+  (categories || []).forEach(
 
-        </tr>
-      `;
+    item=>{
+
+      const li =
+        document.createElement(
+          "li"
+        );
+
+      li.innerHTML =
+
+        `${item.category}
+
+        <span>
+
+        ¥${Number(item.amount).toLocaleString()}
+
+        </span>`;
+
+      list.appendChild(
+        li
+      );
 
     }
 
@@ -252,217 +503,211 @@ function updateTopProducts(
 }
 
 // =========================
-// カテゴリ別売上
+// 天気取得
 // =========================
 
-function updateCategorySales(
-  categories
-){
+async function loadWeather(){
 
-  const tbody =
+  const weatherText =
     document.getElementById(
-      "categorySalesTable"
+      "weatherText"
     );
 
-  if(!tbody){
-
-    return;
-
-  }
-
-  tbody.innerHTML = "";
+  const weatherTemp =
+    document.getElementById(
+      "weatherTemp"
+    );
 
   if(
-    !Array.isArray(categories) ||
-    categories.length === 0
+    !weatherText ||
+    !weatherTemp
   ){
 
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4">
-          データがありません
-        </td>
-      </tr>
-    `;
-
     return;
 
   }
 
-  const totalSales =
-    categories.reduce(
-      (sum,item)=>
-        sum +
-        Number(item.amount || 0),
-      0
-    );
+  try{
 
-  categories.forEach(item=>{
+    // =========================
+    // Open-Meteo
+    // 緯度経度は店舗所在地へ変更可
+    // =========================
 
-    const amount =
-      Number(
-        item.amount || 0
+    const response =
+      await fetch(
+
+        "https://api.open-meteo.com/v1/forecast?latitude=34.6618&longitude=133.9350&current=temperature_2m,weather_code"
+
       );
 
-    const ratio =
-      totalSales > 0
-      ? amount / totalSales * 100
-      : 0;
+    if(!response.ok){
 
-    tbody.innerHTML += `
-      <tr>
+      throw new Error(
+        "天気取得失敗"
+      );
 
-        <td>
+    }
 
-          ${escapeHtml(
-            item.category
-          )}
+    const data =
+      await response.json();
 
-        </td>
+    const current =
+      data.current || {};
 
-        <td>
+    weatherText.innerText =
+      weatherName(
+        current.weather_code
+      );
 
-          ${formatYen(
-            amount
-          )}
+    weatherTemp.innerText =
+      Number(
+        current.temperature_2m || 0
+      ).toFixed(1)
+      + "℃";
 
-        </td>
-
-        <td>
-
-          ${ratio.toFixed(1)}%
-
-        </td>
-
-        <td>
-
-          <div class="ratio-bar">
-
-            <div
-              class="ratio-fill"
-              style="width:${ratio.toFixed(1)}%;"
-            ></div>
-
-          </div>
-
-        </td>
-
-      </tr>
-    `;
-
-  });
-
-}
-
-// =========================
-// 共通関数
-// =========================
-
-// 値表示
-function setValue(
-  id,
-  value
-){
-
-  const el =
-    document.getElementById(id);
-
-  if(!el){
-    return;
   }
 
-  el.innerText =
-    value ?? 0;
+  catch(error){
+
+    console.error(error);
+
+    weatherText.innerText =
+      "取得失敗";
+
+    weatherTemp.innerText =
+      "--℃";
+
+  }
 
 }
 
+
+// =========================
+// 天気コード変換
+// =========================
+
+function weatherName(code){
+
+  switch(Number(code)){
+
+    case 0:
+      return "☀ 快晴";
+
+    case 1:
+    case 2:
+      return "🌤 晴れ";
+
+    case 3:
+      return "☁ 曇り";
+
+    case 45:
+    case 48:
+      return "🌫 霧";
+
+    case 51:
+    case 53:
+    case 55:
+      return "🌦 小雨";
+
+    case 61:
+    case 63:
+    case 65:
+      return "🌧 雨";
+
+    case 71:
+    case 73:
+    case 75:
+      return "❄ 雪";
+
+    case 80:
+    case 81:
+    case 82:
+      return "🌦 にわか雨";
+
+    case 95:
+    case 96:
+    case 99:
+      return "⛈ 雷雨";
+
+    default:
+      return "－";
+
+  }
+
+}
+
+// =========================
 // 金額表示
-function setYen(
-  id,
-  value
-){
-
-  const el =
-    document.getElementById(id);
-
-  if(!el){
-    return;
-  }
-
-  el.innerText =
-    formatYen(value);
-
-}
-
-// =========================
-// 金額フォーマット
 // =========================
 
-function formatYen(
-  value
-){
+function formatYen(value){
 
-  return (
-    "¥" +
+  return "¥" +
+
     Number(
       value || 0
-    ).toLocaleString()
-  );
+    ).toLocaleString();
 
 }
 
+
 // =========================
-// HTMLエスケープ
+// 件数表示
 // =========================
 
-function escapeHtml(
-  value
-){
+function formatCount(value){
 
-  return String(
-    value ?? ""
-  )
-
-  .replace(
-    /&/g,
-    "&amp;"
-  )
-
-  .replace(
-    /</g,
-    "&lt;"
-  )
-
-  .replace(
-    />/g,
-    "&gt;"
-  )
-
-  .replace(
-    /"/g,
-    "&quot;"
-  )
-
-  .replace(
-    /'/g,
-    "&#039;"
-  );
+  return Number(
+    value || 0
+  ).toLocaleString();
 
 }
+
 
 // =========================
 // パーセント表示
 // =========================
 
-function formatPercent(
-  value
-){
+function formatPercent(value){
 
-  return (
-    Number(
-      value || 0
-    ).toFixed(1)
-    + "%"
-  );
+  return Number(
+    value || 0
+  ).toFixed(1) + "%";
 
 }
+
+
+// =========================
+// グラフ更新
+// =========================
+
+function reloadDashboard(){
+
+  loadDashboard();
+
+}
+
+
+// =========================
+// 自動更新（5分）
+// =========================
+
+setInterval(
+
+  reloadDashboard,
+
+  1000 * 60 * 5
+
+);
+
+
+// =========================
+// 読み込み完了
+// =========================
+
+console.log(
+
+  "Dashboard Ver.3 Loaded"
+
+);
