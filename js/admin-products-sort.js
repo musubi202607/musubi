@@ -18,6 +18,39 @@ window.addEventListener(
   "DOMContentLoaded",
   async function(){
 
+    // 戻り先設定
+    const from =
+      new URLSearchParams(
+        location.search
+      ).get("from");
+
+    const backLink =
+      document.getElementById(
+        "backLink"
+      );
+
+    if(backLink){
+
+      if(from === "kitchen"){
+
+        backLink.href =
+          "kitchen-index.html";
+
+        backLink.innerText =
+          "← キッチンカーへ戻る";
+
+      }else{
+
+        backLink.href =
+          "admin.html";
+
+        backLink.innerText =
+          "← 管理画面へ戻る";
+
+      }
+
+    }
+
     await loadProducts();
 
   }
