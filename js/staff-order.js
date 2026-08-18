@@ -13,6 +13,13 @@ let cart = [];
 
 
 // =========================
+// 二重送信防止
+// =========================
+
+let isSubmitting = false;
+
+
+// =========================
 // 初期化
 // =========================
 
@@ -36,37 +43,50 @@ async function loadProducts(){
         API_URL + "/api/products"
       );
 
+
     const data =
       await response.json();
 
+
     products = data
-  .filter(item =>
-    item.id &&
-    item.status === "販売中" &&
-    item.staff === "○" &&
-    (
-      item.type === "onigiri" ||
-      item.type === "drink"
-    )
-  )
-  .sort((a, b) => Number(a.sort || 9999) - Number(b.sort || 9999));
+      .filter(item =>
+        item.id &&
+        item.status === "販売中" &&
+        item.staff === "○" &&
+        (
+          item.type === "onigiri" ||
+          item.type === "drink"
+        )
+      )
+      .sort(
+        (a,b) =>
+          Number(a.sort || 9999) -
+          Number(b.sort || 9999)
+      );
+
+
     renderProducts();
 
     updateTotal();
+
 
   }catch(err){
 
     console.error(err);
 
-    alert("商品取得に失敗しました");
+    alert(
+      "商品取得に失敗しました"
+    );
 
   }
 
 }
 
+
 // =========================
 // 商品表示
 // =========================
+
 function renderProducts(){
 
   const list =
@@ -74,61 +94,75 @@ function renderProducts(){
       "productList"
     );
 
+
   let html = "";
 
-  // -------------------------
-  // おにぎり
-  // -------------------------
 
- const onigiri =
-   products.filter(p =>
-     p.type === "onigiri"
-   );
+  // =========================
+  // おにぎり
+  // =========================
+
+  const onigiri =
+    products.filter(
+      p => p.type === "onigiri"
+    );
+
 
   if(onigiri.length){
 
     html += `
+
       <div class="category-title">
 
         🍙 おにぎり
 
       </div>
+
     `;
 
-    onigiri.forEach(item => {
 
-      html += createProductCard(item);
+    onigiri.forEach(item=>{
+
+      html +=
+        createProductCard(item);
 
     });
 
   }
 
-  // -------------------------
+
+  // =========================
   // ドリンク
-  // -------------------------
+  // =========================
 
   const drinks =
-    products.filter(p =>
-      p.type === "drink"
+    products.filter(
+      p => p.type === "drink"
     );
+
 
   if(drinks.length){
 
     html += `
+
       <div class="category-title">
 
         🥤 ドリンク
 
       </div>
+
     `;
 
-    drinks.forEach(item => {
 
-      html += createProductCard(item);
+    drinks.forEach(item=>{
+
+      html +=
+        createProductCard(item);
 
     });
 
   }
+
 
   list.innerHTML = html;
 
@@ -137,6 +171,7 @@ function renderProducts(){
 // =========================
 // 商品カード
 // =========================
+
 function createProductCard(item){
 
   return `
@@ -153,11 +188,13 @@ function createProductCard(item){
 
   </div>
 
+
   <div class="staff-product-price">
 
     ${Number(item.price).toLocaleString()}円
 
   </div>
+
 
   <div class="qty-area">
 
@@ -170,6 +207,7 @@ function createProductCard(item){
 
     </button>
 
+
     <div
       class="qty-number qty-zero"
       id="qty_${item.id}"
@@ -178,6 +216,7 @@ function createProductCard(item){
       0
 
     </div>
+
 
     <button
       class="qty-btn"
@@ -188,7 +227,9 @@ function createProductCard(item){
 
     </button>
 
+
   </div>
+
 
 </div>
 
@@ -196,15 +237,22 @@ function createProductCard(item){
 
 }
 
+
 // =========================
 // 数量変更
 // =========================
+
 function changeQty(id, diff){
 
+
   let item =
-    cart.find(x => x.id === id);
+    cart.find(
+      x => x.id === id
+    );
+
 
   if(!item){
+
 
     if(diff < 0){
 
@@ -212,26 +260,38 @@ function changeQty(id, diff){
 
     }
 
+
     const product =
-      products.find(x => x.id === id);
+      products.find(
+        x => x.id === id
+      );
+
 
     item = {
 
-      id: product.id,
+      id:
+        product.id,
 
-      name: product.name,
+      name:
+        product.name,
 
-      price: Number(product.price),
+      price:
+        Number(product.price),
 
-      qty: 0
+      qty:
+        0
 
     };
 
+
     cart.push(item);
+
 
   }
 
+
   item.qty += diff;
+
 
   if(item.qty < 0){
 
@@ -239,65 +299,91 @@ function changeQty(id, diff){
 
   }
 
+
   cart =
-    cart.filter(x => x.qty > 0);
+    cart.filter(
+      x => x.qty > 0
+    );
+
+
 
   const qtyLabel =
     document.getElementById(
       "qty_" + id
     );
 
+
   const card =
     document.getElementById(
       "card_" + id
     );
 
+
+
   qtyLabel.textContent =
     item.qty;
-    
+
+
+
   qtyLabel.classList.remove(
-  "qty-pop"
+    "qty-pop"
   );
 
-  // 再描画させる
+
   void qtyLabel.offsetWidth;
+
 
   qtyLabel.classList.add(
     "qty-pop"
   );
 
+
+
   if(item.qty === 0){
+
 
     qtyLabel.classList.add(
       "qty-zero"
     );
 
+
     card.classList.remove(
       "selected"
     );
 
+
   }else{
+
 
     qtyLabel.classList.remove(
       "qty-zero"
     );
 
+
     card.classList.add(
       "selected"
     );
 
+
   }
+
 
   updateTotal();
 
+
 }
+
 
 // =========================
 // 商品カードクリック
 // =========================
+
 function cardClick(event,id){
 
-  // ボタンを押した時は何もしない
+
+  // ＋－ボタン押下時は
+  // カードクリック処理をしない
+
   if(
     event.target.closest("button")
   ){
@@ -306,40 +392,57 @@ function cardClick(event,id){
 
   }
 
-  changeQty(id,1);
+
+  changeQty(
+    id,
+    1
+  );
+
 
 }
 
 // =========================
 // 合計更新
 // =========================
+
 function updateTotal(){
 
   let total = 0;
 
   let count = 0;
 
+
   cart.forEach(item=>{
+
 
     total +=
       item.price * item.qty;
 
+
     count +=
       item.qty;
 
+
   });
+
+
 
   document.getElementById(
     "totalPrice"
   ).textContent =
     total.toLocaleString();
 
+
+
   document.getElementById(
     "totalCount"
   ).textContent =
     count + "点";
 
+
 }
+
+
 
 // =========================
 // 注文登録
@@ -348,31 +451,14 @@ function updateTotal(){
 async function submitStaffOrder(){
 
 
+  // =========================
+  // 二重送信防止
+  // =========================
 
-  const items = cart.map(item => ({
+  if(isSubmitting){
 
-  productId: item.id,
-
-  name: item.name,
-
-  price: item.price,
-
-  quantity: item.qty,
-
-  amount: item.price * item.qty
-
-}));
-
-
-
-
-
-  if(
-    items.length === 0
-  ){
-
-    alert(
-      "商品を選択してください"
+    console.log(
+      "注文処理中"
     );
 
     return;
@@ -380,6 +466,52 @@ async function submitStaffOrder(){
   }
 
 
+  const items =
+    cart.map(item => ({
+
+
+      productId:
+        item.id,
+
+
+      name:
+        item.name,
+
+
+      price:
+        item.price,
+
+
+      quantity:
+        item.qty,
+
+
+      amount:
+        item.price * item.qty
+
+
+    }));
+
+
+
+
+
+  if(items.length === 0){
+
+
+    alert(
+      "商品を選択してください"
+    );
+
+
+    return;
+
+
+  }
+
+
+
+  isSubmitting = true;
 
 
 
@@ -391,21 +523,28 @@ async function submitStaffOrder(){
         "customerName"
       ).value,
 
+
     note:
       document.getElementById(
         "note"
       ).value,
+
 
     unpaid:
       document.getElementById(
         "unpaidCheck"
       ).checked,
 
+
     items
+
 
   };
 
+
+
   try{
+
 
     const res =
       await fetch(
@@ -414,51 +553,80 @@ async function submitStaffOrder(){
         "/api/staff-order",
 
         {
+
           method:"POST",
 
+
           headers:{
+
 
             "Content-Type":
               "application/json"
 
+
           },
+
 
           body:
             JSON.stringify(body)
+
 
         }
 
       );
 
+
+
     const result =
       await res.json();
 
-    if(
-      result.success
-    ){
 
-    showComplete(
-      result.orderNo
-    );
+
+    if(result.success){
+
+
+      showComplete(
+        result.orderNo
+      );
+
 
     }else{
 
+
       alert(
+
         result.message ||
         "登録失敗"
+
       );
+
 
     }
 
+
+
   }catch(e){
 
+
     console.error(e);
+
 
     alert(
       "通信エラー"
     );
 
+
   }
+  finally{
+
+
+    // 必ず解除
+
+    isSubmitting = false;
+
+
+  }
+
 
 }
 
@@ -468,18 +636,21 @@ async function submitStaffOrder(){
 
 function showComplete(orderNo){
 
+
   document.getElementById(
     "completeOrderNo"
   ).textContent =
     orderNo;
+
+
 
   document.getElementById(
     "completeModal"
   ).style.display =
     "flex";
 
-}
 
+}
 
 
 // =========================
@@ -488,6 +659,7 @@ function showComplete(orderNo){
 
 function resetOrder(){
 
+
   document.getElementById(
     "completeModal"
   ).style.display =
@@ -495,26 +667,55 @@ function resetOrder(){
 
 
 
+  // カート初期化
+
   cart = [];
 
-products.forEach(item => {
 
-  const qty =
-    document.getElementById(
-      "qty_" + item.id
-    );
 
-  qty.textContent = 0;
+  products.forEach(item => {
 
-  qty.classList.add("qty-zero");
 
-  document
-    .getElementById(
-      "card_" + item.id
-    )
-    .classList.remove("selected");
+    const qty =
+      document.getElementById(
+        "qty_" + item.id
+      );
 
-});
+
+    if(qty){
+
+
+      qty.textContent =
+        0;
+
+
+      qty.classList.add(
+        "qty-zero"
+      );
+
+
+    }
+
+
+
+    const card =
+      document.getElementById(
+        "card_" + item.id
+      );
+
+
+    if(card){
+
+
+      card.classList.remove(
+        "selected"
+      );
+
+
+    }
+
+
+  });
 
 
 
@@ -524,10 +725,20 @@ products.forEach(item => {
 
   document.getElementById(
     "customerName"
-  ).value="";
+  ).value = "";
+
+
 
   document.getElementById(
     "note"
-  ).value="";
+  ).value = "";
+
+
+
+  document.getElementById(
+    "unpaidCheck"
+  ).checked = false;
+
 
 }
+
