@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+領収書登録
+</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>
+領収書登録
+</h1>
+
+</header>
+
+
+
+<main>
+
+
+<section class="receipt-register">
+
+
+<!-- =========================
+事業区分
+========================= -->
+
+<div class="form-group">
+
+<label>
+事業区分
+</label>
+
+
+<select id="business-type">
+
+<option value="店舗">
+店舗
+</option>
+
+
+<option value="キッチンカー">
+キッチンカー
+</option>
+
+
+</select>
+
+</div>
+
+
+
+
+
+<!-- =========================
+勘定科目
+========================= -->
+
+<div class="form-group">
+
+<label>
+勘定科目
+</label>
+
+
+<select id="category">
+
+
+<option value="食材">
+食材
+</option>
+
+
+<option value="飲料">
+飲料
+</option>
+
+
+<option value="消耗品">
+消耗品
+</option>
+
+
+<option value="備品">
+備品
+</option>
+
+
+<option value="燃料">
+燃料
+</option>
+
+
+<option value="車両">
+車両
+</option>
+
+
+<option value="広告宣伝費">
+広告宣伝費
+</option>
+
+
+<option value="通信費">
+通信費
+</option>
+
+
+<option value="水道光熱費">
+水道光熱費
+</option>
+
+
+<option value="外注費">
+外注費
+</option>
+
+
+<option value="雑費">
+雑費
+</option>
+
+
+</select>
+
+</div>
+
+
+
+
+
+<!-- =========================
+領収書撮影
+========================= -->
+
+<div class="form-group">
+
+
+<label>
+領収書撮影
+</label>
+
+
+<input
+ id="receipt-image"
+ type="file"
+ accept="image/*"
+ capture="environment"
+>
+
+
+</div>
+
+
+
+
+
+<!-- =========================
+画像プレビュー
+========================= -->
+
+<div>
+
+<img
+id="image-preview"
+style="
+display:none;
+max-width:300px;
+"
+>
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+OCR結果
+========================= -->
+
+<section
+id="ocr-result"
+style="display:none;"
+>
+
+
+<h2>
+OCR結果
+</h2>
+
+
+<div>
+
+<label>
+取引先
+</label>
+
+<input
+id="supplier"
+>
+
+</div>
+
+
+
+<div>
+
+<label>
+取引日
+</label>
+
+<input
+id="trade-date"
+type="date"
+>
+
+</div>
+
+
+
+<div>
+
+<label>
+金額
+</label>
+
+<input
+id="amount"
+type="number"
+>
+
+</div>
+
+
+
+<div>
+
+<label>
+税額
+</label>
+
+<input
+id="tax"
+type="number"
+>
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+<!-- =========================
+保存
+========================= -->
+
+
+<button
+id="save-expense"
+>
+
+保存する
+
+</button>
+
+
+
+</section>
+
+
+
+</main>
+
+
+
+
+<script src="js/config.js"></script>
+
+<script src="js/receipt-register.js"></script>
+
+
+
+</body>
+
+</html>
