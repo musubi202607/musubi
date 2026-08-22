@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+会計管理
+</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>
+会計管理
+</h1>
+
+<button onclick="history.back()">
+戻る
+</button>
+
+</header>
+
+
+
+<main>
+
+
+<!-- =========================
+月別集計
+========================= -->
+
+<section class="accounting-summary">
+
+
+<h2>
+今月の経費
+</h2>
+
+
+<div id="expense-total">
+
+0円
+
+</div>
+
+
+<div id="expense-category-list">
+
+</div>
+
+
+</section>
+
+
+
+
+<!-- =========================
+操作
+========================= -->
+
+<section class="accounting-actions">
+
+
+<button id="csv-btn">
+
+CSV出力
+
+</button>
+
+
+</section>
+
+
+
+
+
+<!-- =========================
+経費一覧
+========================= -->
+
+<section>
+
+
+<h2>
+経費一覧
+</h2>
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+日付
+</th>
+
+<th>
+取引先
+</th>
+
+<th>
+科目
+</th>
+
+<th>
+金額
+</th>
+
+<th>
+区分
+</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="expense-list">
+
+
+</tbody>
+
+
+</table>
+
+
+</section>
+
+
+
+
+
+<!-- =========================
+詳細表示
+========================= -->
+
+<section id="expense-detail"
+style="display:none;">
+
+
+<h2>
+領収書詳細
+</h2>
+
+
+<div id="detail-area">
+
+
+</div>
+
+
+</section>
+
+
+
+</main>
+
+
+
+<script src="js/config.js"></script>
+
+<script src="js/accounting.js"></script>
+
+
+</body>
+
+</html>
