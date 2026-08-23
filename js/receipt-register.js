@@ -222,7 +222,7 @@ async function uploadReceiptImage(){
 
 
   const url =
-    `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/image/upload`;
+  `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`;
 
 
 
