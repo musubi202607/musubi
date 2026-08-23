@@ -596,3 +596,42 @@ async function saveExpense(){
 
 
 }
+
+// =========================
+// Cloudinaryテスト
+// =========================
+
+async function testReceiptUpload(){
+
+  try{
+
+    const result =
+      await uploadReceiptImage();
+
+
+    console.log(
+      "UPLOAD OK",
+      result
+    );
+
+
+    alert(
+      "アップロード成功"
+    );
+
+
+  }
+  catch(error){
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      "アップロード失敗"
+    );
+
+  }
+
+}
