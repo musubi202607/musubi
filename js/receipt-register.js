@@ -216,7 +216,7 @@ async function uploadReceiptImage(){
 
   formData.append(
     "public_id",
-    `musubi/expenses/${fileName}`
+    fileName
   );
 
 
