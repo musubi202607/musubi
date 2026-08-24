@@ -20,6 +20,7 @@ const EXPENSE_CLOUDINARY = {
 
 
 
+
 // =========================
 // 状態保持
 // =========================
@@ -32,6 +33,8 @@ let ocrData = null;
 
 
 
+
+
 // =========================
 // 初期処理
 // =========================
@@ -41,13 +44,78 @@ document.addEventListener(
   () => {
 
 
+    // =========================
+    // カメラ撮影
+    // =========================
+
+    const cameraButton =
+      document.getElementById(
+        "camera-button"
+      );
+
+
+    const cameraInput =
+      document.getElementById(
+        "receipt-camera"
+      );
+
+
+    if(
+      cameraButton &&
+      cameraInput
+    ){
+
+      cameraButton.addEventListener(
+        "click",
+        () => {
+
+          cameraInput.click();
+
+        }
+      );
+
+
+      cameraInput.addEventListener(
+        "change",
+        handleImageSelect
+      );
+
+    }
+
+
+
+
+
+    // =========================
+    // ファイル選択
+    // =========================
+
+    const fileButton =
+      document.getElementById(
+        "file-button"
+      );
+
+
     const imageInput =
       document.getElementById(
         "receipt-image"
       );
 
 
-    if(imageInput){
+    if(
+      fileButton &&
+      imageInput
+    ){
+
+      fileButton.addEventListener(
+        "click",
+        () => {
+
+          imageInput.click();
+
+        }
+      );
+
 
       imageInput.addEventListener(
         "change",
@@ -57,6 +125,12 @@ document.addEventListener(
     }
 
 
+
+
+
+    // =========================
+    // 保存ボタン
+    // =========================
 
     const saveBtn =
       document.getElementById(
@@ -80,6 +154,9 @@ document.addEventListener(
 
 
 
+
+
+
 // =========================
 // 画像選択
 // =========================
@@ -91,6 +168,7 @@ function handleImageSelect(event){
     event.target.files[0];
 
 
+
   if(!file){
 
     return;
@@ -98,8 +176,23 @@ function handleImageSelect(event){
   }
 
 
+
   receiptFile =
     file;
+
+
+
+  // 新しい画像の場合
+  // OCR再実行
+
+  receiptImageUrl =
+    "";
+
+
+
+  ocrData =
+    null;
+
 
 
   showPreview(
@@ -108,6 +201,8 @@ function handleImageSelect(event){
 
 
 }
+
+
 
 
 
@@ -146,6 +241,7 @@ function showPreview(file){
 
       preview.src =
         e.target.result;
+
 
 
       preview.style.display =
@@ -210,6 +306,7 @@ async function uploadReceiptImage(){
 
 
   const fileName =
+
     `receipt_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
 
 
@@ -222,13 +319,17 @@ async function uploadReceiptImage(){
 
 
   const url =
+
     `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`;
 
 
 
   const response =
+
     await fetch(
+
       url,
+
       {
 
         method:
@@ -238,12 +339,15 @@ async function uploadReceiptImage(){
           formData
 
       }
+
     );
 
 
 
   const data =
+
     await response.json();
+
 
 
 
@@ -257,18 +361,25 @@ async function uploadReceiptImage(){
 
 
 
+
   return {
 
+
     url:
+
       data.secure_url,
 
+
     publicId:
+
       data.public_id
+
 
   };
 
 
 }
+
 
 // =========================
 // OCR実行
@@ -278,6 +389,7 @@ async function executeOCR(imageUrl){
 
 
   const response =
+
     await fetch(
 
       `${API_URL}/api/ocr`,
@@ -285,20 +397,25 @@ async function executeOCR(imageUrl){
       {
 
         method:
+
           "POST",
+
 
         headers:{
 
           "Content-Type":
+
             "application/json"
 
         },
 
 
         body:
+
           JSON.stringify({
 
             imageUrl:
+
               imageUrl
 
           })
@@ -309,34 +426,48 @@ async function executeOCR(imageUrl){
 
 
 
+
+
   const result =
+
     await response.json();
+
+
 
 
 
   if(!result.success){
 
     throw new Error(
+
       result.message ||
+
       "OCR失敗"
+
     );
 
   }
 
 
 
+
+
   ocrData =
+
     result.data;
 
 
 
+
+
   displayOCRResult(
+
     ocrData
+
   );
 
 
 }
-
 
 
 
@@ -351,19 +482,27 @@ async function executeOCR(imageUrl){
 function displayOCRResult(data){
 
 
+
   const area =
 
     document.getElementById(
+
       "ocr-result"
+
     );
+
 
 
   if(area){
 
     area.style.display =
+
       "block";
 
   }
+
+
+
 
 
 
@@ -375,16 +514,21 @@ function displayOCRResult(data){
   const supplier =
 
     document.getElementById(
+
       "supplier"
+
     );
+
 
 
   if(supplier){
 
     supplier.value =
+
       data.supplier || "";
 
   }
+
 
 
 
@@ -397,16 +541,21 @@ function displayOCRResult(data){
   const tradeDate =
 
     document.getElementById(
+
       "trade-date"
+
     );
+
 
 
   if(tradeDate){
 
     tradeDate.value =
+
       data.tradeDate || "";
 
   }
+
 
 
 
@@ -419,16 +568,21 @@ function displayOCRResult(data){
   const amount =
 
     document.getElementById(
+
       "amount"
+
     );
+
 
 
   if(amount){
 
     amount.value =
+
       data.amount || "";
 
   }
+
 
 
 
@@ -441,16 +595,21 @@ function displayOCRResult(data){
   const tax =
 
     document.getElementById(
+
       "tax"
+
     );
+
 
 
   if(tax){
 
     tax.value =
+
       data.tax || "";
 
   }
+
 
 
 
@@ -463,38 +622,29 @@ function displayOCRResult(data){
   const category =
 
     document.getElementById(
+
       "category"
+
     );
+
 
 
   if(category){
 
-    category.value =
-      data.category || "";
+
+    // OCR取得時のみ設定
+
+    if(data.category){
+
+      category.value =
+
+        data.category;
+
+    }
+
 
   }
 
-
-
-
-
-  // =========================
-  // 支払方法
-  // =========================
-
-  const paymentMethod =
-
-    document.getElementById(
-      "payment-method"
-    );
-
-
-  if(paymentMethod){
-
-    paymentMethod.value =
-      data.paymentMethod || "";
-
-  }
 
 
 
@@ -507,16 +657,21 @@ function displayOCRResult(data){
   const taxRate =
 
     document.getElementById(
+
       "tax-rate"
+
     );
+
 
 
   if(taxRate){
 
     taxRate.value =
+
       data.taxRate || "";
 
   }
+
 
 
 
@@ -529,19 +684,56 @@ function displayOCRResult(data){
   const invoiceNo =
 
     document.getElementById(
+
       "invoice-no"
+
     );
+
 
 
   if(invoiceNo){
 
     invoiceNo.value =
+
       data.invoiceNo || "";
 
   }
 
 
+
+
+
+
+  // =========================
+  // 支払方法
+  // =========================
+
+  const paymentMethod =
+
+    document.getElementById(
+
+      "payment-method"
+
+    );
+
+
+
+  if(paymentMethod){
+
+
+    paymentMethod.value =
+
+      data.paymentMethod || "";
+
+
+  }
+
+
+
+
+
 }
+
 
 // =========================
 // 経費保存
@@ -554,45 +746,70 @@ async function saveExpense(){
 
 
     // =========================
-    // 保存前 必須チェック
+    // 入力取得
     // =========================
 
     const getValue = (id) => {
 
       const el =
+
         document.getElementById(id);
 
+
       return el
+
         ?
+
         el.value.trim()
+
         :
+
         "";
 
     };
 
 
 
+
+
     const businessType =
+
       getValue(
         "business-type"
       );
 
 
+
     const category =
+
       getValue(
         "category"
       );
 
 
+
     const amount =
+
       Number(
+
         getValue(
           "amount"
         )
+
         ||
+
         0
+
       );
 
+
+
+
+
+
+    // =========================
+    // 保存前チェック
+    // =========================
 
 
     if(!businessType){
@@ -633,6 +850,7 @@ async function saveExpense(){
 
 
 
+
     // =========================
     // 画像アップロード + OCR
     // =========================
@@ -640,16 +858,24 @@ async function saveExpense(){
     if(!receiptImageUrl){
 
 
+
       const upload =
+
         await uploadReceiptImage();
 
 
+
       receiptImageUrl =
+
         upload.url;
 
 
+
+
       await executeOCR(
+
         receiptImageUrl
+
       );
 
 
@@ -659,8 +885,9 @@ async function saveExpense(){
 
 
 
+
     // =========================
-    // 保存データ作成
+    // 保存データ
     // =========================
 
     const data = {
@@ -709,11 +936,15 @@ async function saveExpense(){
 
 
         Number(
+
           getValue(
             "tax"
           )
+
           ||
+
           0
+
         ),
 
 
@@ -721,22 +952,36 @@ async function saveExpense(){
       taxRate:
 
 
-        ocrData
-        ?
-        ocrData.taxRate || ""
-        :
-        "",
+        getValue(
+          "tax-rate"
+        )
+        ||
+        (
+          ocrData
+          ?
+          ocrData.taxRate || ""
+          :
+          ""
+        ),
+
 
 
 
       invoiceNo:
 
 
-        ocrData
-        ?
-        ocrData.invoiceNo || ""
-        :
-        "",
+        getValue(
+          "invoice-no"
+        )
+        ||
+        (
+          ocrData
+          ?
+          ocrData.invoiceNo || ""
+          :
+          ""
+        ),
+
 
 
 
@@ -749,6 +994,7 @@ async function saveExpense(){
 
 
 
+
       imageUrl:
 
 
@@ -756,14 +1002,21 @@ async function saveExpense(){
 
 
 
+
       ocrText:
 
 
         ocrData
+
         ?
+
         ocrData.ocrText || ""
+
         :
+
         "",
+
+
 
 
 
@@ -775,14 +1028,24 @@ async function saveExpense(){
 
 
         document.getElementById(
+
           "learn-vendor"
+
         )
+
         ?
+
         document.getElementById(
+
           "learn-vendor"
+
         ).checked
+
         :
+
         false,
+
+
 
 
 
@@ -792,7 +1055,11 @@ async function saveExpense(){
         "staff"
 
 
+
     };
+
+
+
 
 
 
@@ -803,6 +1070,7 @@ async function saveExpense(){
     // =========================
 
     const response =
+
 
       await fetch(
 
@@ -815,6 +1083,7 @@ async function saveExpense(){
             "POST",
 
 
+
           headers:{
 
             "Content-Type":
@@ -824,15 +1093,21 @@ async function saveExpense(){
           },
 
 
+
           body:
 
             JSON.stringify(
+
               data
+
             )
 
         }
 
       );
+
+
+
 
 
 
@@ -846,11 +1121,20 @@ async function saveExpense(){
 
 
 
+
+
+
     if(!result.success){
 
+
       throw new Error(
-        result.message
+
+        result.message ||
+
+        "保存失敗"
+
       );
+
 
     }
 
@@ -858,8 +1142,13 @@ async function saveExpense(){
 
 
 
+
+
+
     alert(
+
       "登録しました"
+
     );
 
 
@@ -868,25 +1157,40 @@ async function saveExpense(){
 
 
 
+
+
   }
+
   catch(error){
 
 
+
     console.error(
+
       "saveExpense error",
+
       error
+
     );
+
 
 
     alert(
+
       "保存に失敗しました"
+
     );
+
 
 
   }
 
 
 }
+
+
+
+
 
 // =========================
 // Cloudinaryテスト
@@ -899,36 +1203,48 @@ async function testReceiptUpload(){
 
 
     const result =
+
       await uploadReceiptImage();
 
 
 
 
     console.log(
+
       "UPLOAD OK",
+
       result
+
     );
 
 
 
+
     alert(
+
       "アップロード成功"
+
     );
 
 
 
   }
+
   catch(error){
 
 
     console.error(
+
       error
+
     );
 
 
 
     alert(
+
       "アップロード失敗"
+
     );
 
 
