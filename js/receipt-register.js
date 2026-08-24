@@ -352,6 +352,7 @@ function displayOCRResult(data){
 
 
   const area =
+
     document.getElementById(
       "ocr-result"
     );
@@ -367,8 +368,12 @@ function displayOCRResult(data){
 
 
 
+  // =========================
+  // 取引先
+  // =========================
 
   const supplier =
+
     document.getElementById(
       "supplier"
     );
@@ -385,8 +390,12 @@ function displayOCRResult(data){
 
 
 
+  // =========================
+  // 取引日
+  // =========================
 
   const tradeDate =
+
     document.getElementById(
       "trade-date"
     );
@@ -403,9 +412,12 @@ function displayOCRResult(data){
 
 
 
-
+  // =========================
+  // 金額
+  // =========================
 
   const amount =
+
     document.getElementById(
       "amount"
     );
@@ -422,9 +434,12 @@ function displayOCRResult(data){
 
 
 
-
+  // =========================
+  // 税額
+  // =========================
 
   const tax =
+
     document.getElementById(
       "tax"
     );
@@ -441,17 +456,21 @@ function displayOCRResult(data){
 
 
 
+  // =========================
+  // 勘定科目
+  // =========================
 
-  const invoiceNo =
+  const category =
+
     document.getElementById(
-      "invoice-no"
+      "category"
     );
 
 
-  if(invoiceNo){
+  if(category){
 
-    invoiceNo.value =
-      data.invoiceNo || "";
+    category.value =
+      data.category || "";
 
   }
 
@@ -459,9 +478,34 @@ function displayOCRResult(data){
 
 
 
+  // =========================
+  // 支払方法
+  // =========================
 
+  const paymentMethod =
+
+    document.getElementById(
+      "payment-method"
+    );
+
+
+  if(paymentMethod){
+
+    paymentMethod.value =
+      data.paymentMethod || "";
+
+  }
+
+
+
+
+
+  // =========================
+  // 税率
+  // =========================
 
   const taxRate =
+
     document.getElementById(
       "tax-rate"
     );
@@ -476,14 +520,28 @@ function displayOCRResult(data){
 
 
 
+
+
+  // =========================
+  // インボイス番号
+  // =========================
+
+  const invoiceNo =
+
+    document.getElementById(
+      "invoice-no"
+    );
+
+
+  if(invoiceNo){
+
+    invoiceNo.value =
+      data.invoiceNo || "";
+
+  }
+
+
 }
-
-
-
-
-
-
-
 
 // =========================
 // 経費保存
