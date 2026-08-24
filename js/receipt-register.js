@@ -1,6 +1,7 @@
 // =========================
 // 領収書登録
 // receipt-register.js
+// 修正版 1/3
 // =========================
 
 
@@ -79,7 +80,6 @@ document.addEventListener(
 
 
 
-
 // =========================
 // 画像選択
 // =========================
@@ -108,9 +108,6 @@ function handleImageSelect(event){
 
 
 }
-
-
-
 
 
 
@@ -166,9 +163,6 @@ function showPreview(file){
 
 
 
-
-
-
 // =========================
 // Cloudinaryアップロード
 // =========================
@@ -197,6 +191,7 @@ async function uploadReceiptImage(){
   );
 
 
+
   formData.append(
     "upload_preset",
     EXPENSE_CLOUDINARY.uploadPreset
@@ -222,7 +217,7 @@ async function uploadReceiptImage(){
 
 
   const url =
-  `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`;
+    `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`;
 
 
 
@@ -269,12 +264,6 @@ async function uploadReceiptImage(){
 
 
 }
-
-
-
-
-
-
 
 // =========================
 // OCR実行
@@ -323,7 +312,8 @@ async function executeOCR(imageUrl){
   if(!result.success){
 
     throw new Error(
-      result.message
+      result.message ||
+      "OCR失敗"
     );
 
   }
@@ -341,10 +331,6 @@ async function executeOCR(imageUrl){
 
 
 }
-
-
-
-
 
 
 
@@ -370,38 +356,70 @@ function displayOCRResult(data){
 
 
 
-  document.getElementById(
-    "supplier"
-  ).value =
-    data.supplier || "";
+  const supplier =
+    document.getElementById(
+      "supplier"
+    );
+
+
+  if(supplier){
+
+    supplier.value =
+      data.supplier || "";
+
+  }
 
 
 
-  document.getElementById(
-    "trade-date"
-  ).value =
-    data.tradeDate || "";
+
+  const tradeDate =
+    document.getElementById(
+      "trade-date"
+    );
+
+
+  if(tradeDate){
+
+    tradeDate.value =
+      data.tradeDate || "";
+
+  }
 
 
 
-  document.getElementById(
-    "amount"
-  ).value =
-    data.amount || "";
+
+  const amount =
+    document.getElementById(
+      "amount"
+    );
+
+
+  if(amount){
+
+    amount.value =
+      data.amount || "";
+
+  }
 
 
 
-  document.getElementById(
-    "tax"
-  ).value =
-    data.tax || "";
+
+  const tax =
+    document.getElementById(
+      "tax"
+    );
+
+
+  if(tax){
+
+    tax.value =
+      data.tax || "";
+
+  }
+
 
 
 }
-
-
-
-
 
 
 
@@ -415,7 +433,10 @@ async function saveExpense(){
   try{
 
 
-    // まだ画像アップロードしていない場合
+    // =========================
+    // Cloudinary登録
+    // =========================
+
     if(!receiptImageUrl){
 
 
@@ -437,8 +458,12 @@ async function saveExpense(){
 
 
 
+    // =========================
+    // 保存データ作成
+    // =========================
 
     const data = {
+
 
 
       businessType:
@@ -493,6 +518,40 @@ async function saveExpense(){
 
 
 
+      rate:
+
+        ocrData
+        ?
+        ocrData.taxRate
+        :
+        "",
+
+
+
+      invoiceNo:
+
+        ocrData
+        ?
+        ocrData.invoiceNo
+        :
+        "",
+
+
+
+      paymentMethod:
+
+        document.getElementById(
+          "payment-method"
+        )
+        ?
+        document.getElementById(
+          "payment-method"
+        ).value
+        :
+        "",
+
+
+
       imageUrl:
 
         receiptImageUrl,
@@ -507,30 +566,21 @@ async function saveExpense(){
         :
         "",
 
-     paymentMethod:
 
-  document.getElementById(
-    "payment-method"
-  )
-  ?
-  document.getElementById(
-    "payment-method"
-  ).value
-  :
-  "",
-
-
-registeredBy:
-
-  "staff"
 
       registeredBy:
 
         "staff"
 
+
     };
 
 
+
+    console.log(
+      "SAVE EXPENSE DATA",
+      data
+    );
 
 
 
@@ -562,8 +612,6 @@ registeredBy:
         }
 
       );
-
-
 
 
 
@@ -618,16 +666,20 @@ registeredBy:
 
 async function testReceiptUpload(){
 
+
   try{
+
 
     const result =
       await uploadReceiptImage();
+
 
 
     console.log(
       "UPLOAD OK",
       result
     );
+
 
 
     alert(
@@ -638,15 +690,81 @@ async function testReceiptUpload(){
   }
   catch(error){
 
+
     console.error(
+      "UPLOAD ERROR",
       error
     );
+
 
 
     alert(
       "アップロード失敗"
     );
 
+
   }
+
+
+}
+
+
+
+// =========================
+// OCR手動テスト
+// =========================
+
+async function testOCR(){
+
+
+  try{
+
+
+    if(!receiptImageUrl){
+
+
+      const upload =
+        await uploadReceiptImage();
+
+
+      receiptImageUrl =
+        upload.url;
+
+
+    }
+
+
+
+    console.log(
+      "OCR IMAGE URL",
+      receiptImageUrl
+    );
+
+
+
+    await executeOCR(
+      receiptImageUrl
+    );
+
+
+
+    console.log(
+      "OCR RESULT",
+      ocrData
+    );
+
+
+  }
+  catch(error){
+
+
+    console.error(
+      "OCR ERROR",
+      error
+    );
+
+
+  }
+
 
 }
