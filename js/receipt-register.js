@@ -597,11 +597,6 @@ async function executeReceiptOCR(){
 }
 
 
-
-
-
-
-
 // =========================
 // OCR API
 // =========================
@@ -689,19 +684,263 @@ async function executeOCR(imageUrl){
 
   ocrData =
 
-    result.data;
+  result.data;
+
+
+
+// =========================
+// OCR結果表示
+// =========================
+
+displayOCRResult(
+
+  ocrData
+
+);
+
+
+
+// =========================
+// 取引先マスタ補完
+// =========================
+
+await applyVendorMaster(
+  ocrData.supplier
+);
+
+
+}
+
+// =========================
+// 取引先マスタ補完
+// =========================
+
+async function applyVendorMaster(supplier){
+
+
+  if(!supplier){
+
+    return;
+
+  }
+
+
+
+  try{
+
+
+    const response =
+
+      await fetch(
+
+        `${API_URL}/api/vendor-master`,
+
+        {
+
+
+          method:
+
+            "POST",
+
+
+
+          headers:{
+
+
+            "Content-Type":
+
+              "application/json"
+
+
+          },
+
+
+
+          body:
+
+            JSON.stringify({
+
+              supplier:
+
+                supplier
+
+            })
+
+
+        }
+
+      );
+
+
+
+
+    const result =
+
+      await response.json();
+
+
+
+
+
+    if(
+
+      !result.success ||
+
+      !result.data
+
+    ){
+
+      return;
+
+    }
+
+
+
+
+    const master =
+
+      result.data;
+
+
+
+
+
+    // =========================
+    // 勘定科目
+    // =========================
+
+    const category =
+
+      document.getElementById(
+        "category"
+      );
+
+
+    if(
+
+      category &&
+
+      master.category
+
+    ){
+
+      category.value =
+
+        master.category;
+
+    }
 
 
 
 
 
 
+    // =========================
+    // 支払方法
+    // =========================
 
-  displayOCRResult(
+    const paymentMethod =
 
-    ocrData
+      document.getElementById(
+        "payment-method"
+      );
 
-  );
+
+
+    if(
+
+      paymentMethod &&
+
+      master.paymentMethod
+
+    ){
+
+      paymentMethod.value =
+
+        master.paymentMethod;
+
+    }
+
+
+
+
+
+
+    // =========================
+    // 税率
+    // =========================
+
+    const taxRate =
+
+      document.getElementById(
+        "tax-rate"
+      );
+
+
+
+    if(
+
+      taxRate &&
+
+      master.taxRate
+
+    ){
+
+      taxRate.value =
+
+        master.taxRate;
+
+    }
+
+
+
+
+
+
+    // =========================
+    // インボイス番号
+    // =========================
+
+    const invoiceNo =
+
+      document.getElementById(
+        "invoice-no"
+      );
+
+
+
+    if(
+
+      invoiceNo &&
+
+      master.invoiceNo
+
+    ){
+
+      invoiceNo.value =
+
+        master.invoiceNo;
+
+    }
+
+
+
+  }
+
+
+  catch(error){
+
+
+    console.error(
+
+      "vendor master error",
+
+      error
+
+    );
+
+
+  }
 
 
 }
