@@ -684,20 +684,7 @@ async function executeOCR(imageUrl){
 
   ocrData =
 
-  result.data;
-
-
-
-// =========================
-// OCR結果表示
-// =========================
-
-displayOCRResult(
-
-  ocrData
-
-);
-
+result.data;
 
 
 // =========================
@@ -706,6 +693,15 @@ displayOCRResult(
 
 await applyVendorMaster(
   ocrData.supplier
+);
+
+
+// =========================
+// OCR結果表示
+// =========================
+
+displayOCRResult(
+  ocrData
 );
 
 
@@ -879,18 +875,33 @@ async function applyVendorMaster(supplier){
 
 
     if(
+  taxRate &&
+  master.taxRate
+){
 
-      taxRate &&
 
-      master.taxRate
+  let rate = master.taxRate;
 
-    ){
 
-      taxRate.value =
+  if(rate === 0.1){
 
-        master.taxRate;
+    rate = "10%";
 
-    }
+  }
+
+
+  if(rate === 0.08){
+
+    rate = "8%";
+
+  }
+
+
+  taxRate.value =
+    rate;
+
+
+}
 
 
 
