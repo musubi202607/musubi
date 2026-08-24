@@ -657,7 +657,22 @@ async function saveExpense(){
         ocrData.taxRate || ""
         :
         "",
+      
+      // =========================
+      // 取引先学習フラグ
+      // =========================
 
+      learnVendor:
+
+        document.getElementById(
+          "learn-vendor"
+        )
+        ?
+        document.getElementById(
+          "learn-vendor"
+        ).checked
+        :
+        false,
 
 
       paymentMethod:
