@@ -20,6 +20,7 @@ const EXPENSE_CLOUDINARY = {
 
 
 
+
 // =========================
 // 状態保持
 // =========================
@@ -52,7 +53,6 @@ document.addEventListener(
       );
 
 
-
     if(imageInput){
 
       imageInput.addEventListener(
@@ -76,7 +76,6 @@ document.addEventListener(
       );
 
 
-
     if(cameraInput){
 
       cameraInput.addEventListener(
@@ -93,13 +92,11 @@ document.addEventListener(
 
 
 
-
     const cameraButton =
 
       document.getElementById(
         "camera-button"
       );
-
 
 
     if(cameraButton){
@@ -128,14 +125,11 @@ document.addEventListener(
 
 
 
-
-
     const fileButton =
 
       document.getElementById(
         "file-button"
       );
-
 
 
     if(fileButton){
@@ -164,15 +158,11 @@ document.addEventListener(
 
 
 
-
-
-
     const ocrButton =
 
       document.getElementById(
         "ocr-button"
       );
-
 
 
     if(ocrButton){
@@ -191,14 +181,11 @@ document.addEventListener(
 
 
 
-
-
     const saveButton =
 
       document.getElementById(
         "save-expense"
       );
-
 
 
     if(saveButton){
@@ -214,10 +201,14 @@ document.addEventListener(
     }
 
 
-
   }
 
 );
+
+
+
+
+
 
 // =========================
 // 画像選択
@@ -229,7 +220,6 @@ function handleImageSelect(event){
   const file =
 
     event.target.files[0];
-
 
 
   if(!file){
@@ -246,23 +236,16 @@ function handleImageSelect(event){
 
 
 
-  // OCR結果リセット
-
   receiptImageUrl = "";
 
   ocrData = null;
 
 
 
-  showPreview(
-
-    file
-
-  );
+  showPreview(file);
 
 
 }
-
 
 
 
@@ -283,7 +266,6 @@ function showPreview(file){
     );
 
 
-
   if(!preview){
 
     return;
@@ -292,11 +274,9 @@ function showPreview(file){
 
 
 
-
   const reader =
 
     new FileReader();
-
 
 
 
@@ -310,7 +290,6 @@ function showPreview(file){
         e.target.result;
 
 
-
       preview.style.display =
 
         "block";
@@ -320,16 +299,10 @@ function showPreview(file){
 
 
 
-
-  reader.readAsDataURL(
-
-    file
-
-  );
+  reader.readAsDataURL(file);
 
 
 }
-
 
 
 
@@ -343,21 +316,13 @@ function showPreview(file){
 async function uploadReceiptImage(){
 
 
-
   if(!receiptFile){
 
-
     throw new Error(
-
       "画像を選択してください"
-
     );
 
-
   }
-
-
-
 
 
 
@@ -367,29 +332,17 @@ async function uploadReceiptImage(){
 
 
 
-
-
   formData.append(
-
     "file",
-
     receiptFile
-
   );
-
-
 
 
 
   formData.append(
-
     "upload_preset",
-
     EXPENSE_CLOUDINARY.uploadPreset
-
   );
-
-
 
 
 
@@ -399,37 +352,16 @@ async function uploadReceiptImage(){
 
 
 
-
-
   const fileName =
 
     `receipt_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
 
 
 
-
-
   formData.append(
-
     "public_id",
-
     fileName
-
   );
-
-
-
-
-
-
-
-  const url =
-
-    `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`;
-
-
-
-
 
 
 
@@ -437,7 +369,7 @@ async function uploadReceiptImage(){
 
     await fetch(
 
-      url,
+      `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`,
 
       {
 
@@ -455,55 +387,35 @@ async function uploadReceiptImage(){
 
 
 
-
-
-
-
   const data =
 
     await response.json();
 
 
 
-
-
-
-
   if(!data.secure_url){
 
-
     throw new Error(
-
       "Cloudinaryアップロード失敗"
-
     );
-
 
   }
 
 
 
-
-
-
   return {
 
-
     url:
-
       data.secure_url,
 
 
     publicId:
-
       data.public_id
-
 
   };
 
 
 }
-
 
 
 
@@ -517,13 +429,10 @@ async function uploadReceiptImage(){
 async function executeReceiptOCR(){
 
 
-
   try{
 
 
-
     if(!receiptImageUrl){
-
 
 
       const upload =
@@ -531,19 +440,12 @@ async function executeReceiptOCR(){
         await uploadReceiptImage();
 
 
-
-
       receiptImageUrl =
 
         upload.url;
 
 
-
     }
-
-
-
-
 
 
 
@@ -555,10 +457,6 @@ async function executeReceiptOCR(){
 
 
 
-
-
-
-
     alert(
 
       "OCR解析が完了しました。内容を確認してください。"
@@ -566,12 +464,9 @@ async function executeReceiptOCR(){
     );
 
 
-
   }
 
-
   catch(error){
-
 
 
     console.error(
@@ -581,7 +476,6 @@ async function executeReceiptOCR(){
       error
 
     );
-
 
 
     alert(
@@ -596,13 +490,11 @@ async function executeReceiptOCR(){
 
 }
 
-
 // =========================
 // OCR API
 // =========================
 
 async function executeOCR(imageUrl){
-
 
 
   const response =
@@ -613,23 +505,18 @@ async function executeOCR(imageUrl){
 
       {
 
-
         method:
 
           "POST",
 
 
-
         headers:{
-
 
           "Content-Type":
 
             "application/json"
 
-
         },
-
 
 
         body:
@@ -649,15 +536,9 @@ async function executeOCR(imageUrl){
 
 
 
-
-
-
   const result =
 
     await response.json();
-
-
-
 
 
 
@@ -680,45 +561,130 @@ async function executeOCR(imageUrl){
 
 
 
-
-
   ocrData =
 
-result.data;
+    result.data;
 
 
-// =========================
-// 取引先マスタ補完
-// =========================
-
-await applyVendorMaster(
-  ocrData.supplier
-);
 
 
-// =========================
-// OCR結果表示
-// =========================
 
-displayOCRResult(
-  ocrData
-);
+  // =========================
+  // 取引先マスタ取得
+  // =========================
+
+  const vendor =
+
+    await getVendorMaster(
+
+      ocrData.supplier
+
+    );
+
+
+
+
+
+  if(vendor){
+
+
+
+    ocrData = {
+
+
+      ...ocrData,
+
+
+
+      category:
+
+        vendor.category ||
+
+        ocrData.category,
+
+
+
+      paymentMethod:
+
+        vendor.paymentMethod ||
+
+        ocrData.paymentMethod,
+
+
+
+      taxRate:
+
+        convertTaxRate(
+
+          vendor.taxRate ||
+
+          ocrData.taxRate
+
+        ),
+
+
+
+      invoiceNo:
+
+        vendor.invoiceNo ||
+
+        ocrData.invoiceNo
+
+
+
+    };
+
+
+  }
+
+  else {
+
+
+    ocrData.taxRate =
+
+      convertTaxRate(
+
+        ocrData.taxRate
+
+      );
+
+
+  }
+
+
+
+
+
+  displayOCRResult(
+
+    ocrData
+
+  );
 
 
 }
 
+
+
+
+
+
+
 // =========================
-// 取引先マスタ補完
+// 取引先マスタ取得
 // =========================
 
-async function applyVendorMaster(supplier){
+async function getVendorMaster(supplier){
 
 
   if(!supplier){
 
-    return;
+
+    return null;
+
 
   }
+
 
 
 
@@ -786,43 +752,9 @@ async function applyVendorMaster(supplier){
 
     ){
 
-      return;
 
-    }
+      return null;
 
-
-
-
-    const master =
-
-      result.data;
-
-
-
-
-
-    // =========================
-    // 勘定科目
-    // =========================
-
-    const category =
-
-      document.getElementById(
-        "category"
-      );
-
-
-    if(
-
-      category &&
-
-      master.category
-
-    ){
-
-      category.value =
-
-        master.category;
 
     }
 
@@ -830,114 +762,11 @@ async function applyVendorMaster(supplier){
 
 
 
-
-    // =========================
-    // 支払方法
-    // =========================
-
-    const paymentMethod =
-
-      document.getElementById(
-        "payment-method"
-      );
-
-
-
-    if(
-
-      paymentMethod &&
-
-      master.paymentMethod
-
-    ){
-
-      paymentMethod.value =
-
-        master.paymentMethod;
-
-    }
-
-
-
-
-
-
-    // =========================
-    // 税率
-    // =========================
-
-    const taxRate =
-
-      document.getElementById(
-        "tax-rate"
-      );
-
-
-
-    if(
-  taxRate &&
-  master.taxRate
-){
-
-
-  let rate = master.taxRate;
-
-
-  if(rate === 0.1){
-
-    rate = "10%";
-
-  }
-
-
-  if(rate === 0.08){
-
-    rate = "8%";
-
-  }
-
-
-  taxRate.value =
-    rate;
-
-
-}
-
-
-
-
-
-
-    // =========================
-    // インボイス番号
-    // =========================
-
-    const invoiceNo =
-
-      document.getElementById(
-        "invoice-no"
-      );
-
-
-
-    if(
-
-      invoiceNo &&
-
-      master.invoiceNo
-
-    ){
-
-      invoiceNo.value =
-
-        master.invoiceNo;
-
-    }
+    return result.data;
 
 
 
   }
-
 
   catch(error){
 
@@ -951,10 +780,73 @@ async function applyVendorMaster(supplier){
     );
 
 
+    return null;
+
+
   }
 
 
 }
+
+
+
+
+
+
+
+
+// =========================
+// 税率変換
+// =========================
+
+function convertTaxRate(rate){
+
+
+
+  if(
+
+    rate === 0.1 ||
+
+    rate === "0.1"
+
+  ){
+
+
+    return "10%";
+
+
+  }
+
+
+
+
+  if(
+
+    rate === 0.08 ||
+
+    rate === "0.08"
+
+  ){
+
+
+    return "8%";
+
+
+  }
+
+
+
+
+  return rate || "";
+
+}
+
+
+
+
+
+
+
 
 // =========================
 // OCR結果表示
@@ -966,20 +858,22 @@ function displayOCRResult(data){
   const area =
 
     document.getElementById(
+
       "ocr-result"
+
     );
 
 
 
   if(area){
 
+
     area.style.display =
 
       "block";
 
+
   }
-
-
 
 
 
@@ -988,18 +882,22 @@ function displayOCRResult(data){
   const supplier =
 
     document.getElementById(
+
       "supplier"
+
     );
 
 
+
   if(supplier){
+
 
     supplier.value =
 
       data.supplier || "";
 
-  }
 
+  }
 
 
 
@@ -1009,18 +907,22 @@ function displayOCRResult(data){
   const tradeDate =
 
     document.getElementById(
+
       "trade-date"
+
     );
 
 
+
   if(tradeDate){
+
 
     tradeDate.value =
 
       data.tradeDate || "";
 
-  }
 
+  }
 
 
 
@@ -1030,18 +932,22 @@ function displayOCRResult(data){
   const amount =
 
     document.getElementById(
+
       "amount"
+
     );
 
 
+
   if(amount){
+
 
     amount.value =
 
       data.amount || "";
 
-  }
 
+  }
 
 
 
@@ -1051,18 +957,22 @@ function displayOCRResult(data){
   const tax =
 
     document.getElementById(
+
       "tax"
+
     );
 
 
+
   if(tax){
+
 
     tax.value =
 
       data.tax || "";
 
-  }
 
+  }
 
 
 
@@ -1072,11 +982,20 @@ function displayOCRResult(data){
   const category =
 
     document.getElementById(
+
       "category"
+
     );
 
 
-  if(category && data.category){
+
+  if(
+
+    category &&
+
+    data.category
+
+  ){
 
 
     category.value =
@@ -1091,15 +1010,23 @@ function displayOCRResult(data){
 
 
 
-
   const paymentMethod =
 
     document.getElementById(
+
       "payment-method"
+
     );
 
 
-  if(paymentMethod && data.paymentMethod){
+
+  if(
+
+    paymentMethod &&
+
+    data.paymentMethod
+
+  ){
 
 
     paymentMethod.value =
@@ -1114,20 +1041,32 @@ function displayOCRResult(data){
 
 
 
-
   const taxRate =
 
     document.getElementById(
+
       "tax-rate"
+
     );
 
 
-  if(taxRate && data.taxRate){
+
+  if(
+
+    taxRate &&
+
+    data.taxRate
+
+  ){
 
 
     taxRate.value =
 
-      data.taxRate;
+      convertTaxRate(
+
+        data.taxRate
+
+      );
 
 
   }
@@ -1137,15 +1076,23 @@ function displayOCRResult(data){
 
 
 
-
   const invoiceNo =
 
     document.getElementById(
+
       "invoice-no"
+
     );
 
 
-  if(invoiceNo && data.invoiceNo){
+
+  if(
+
+    invoiceNo &&
+
+    data.invoiceNo
+
+  ){
 
 
     invoiceNo.value =
@@ -1158,12 +1105,6 @@ function displayOCRResult(data){
 
 }
 
-
-
-
-
-
-
 // =========================
 // 経費登録
 // =========================
@@ -1171,12 +1112,12 @@ function displayOCRResult(data){
 async function saveExpense(){
 
 
-
   try{
 
 
-
-
+    // =========================
+    // 値取得
+    // =========================
 
     const getValue = (id) => {
 
@@ -1197,9 +1138,8 @@ async function saveExpense(){
 
         "";
 
+
     };
-
-
 
 
 
@@ -1242,7 +1182,7 @@ async function saveExpense(){
 
 
     // =========================
-    // 登録前チェック
+    // 保存前チェック
     // =========================
 
 
@@ -1260,8 +1200,6 @@ async function saveExpense(){
 
 
     }
-
-
 
 
 
@@ -1286,8 +1224,6 @@ async function saveExpense(){
 
 
 
-
-
     if(!category){
 
 
@@ -1302,8 +1238,6 @@ async function saveExpense(){
 
 
     }
-
-
 
 
 
@@ -1330,26 +1264,29 @@ async function saveExpense(){
 
 
 
+    // =========================
+    // 保存データ作成
+    // =========================
 
     const data = {
 
 
-
       businessType:
+
 
         businessType,
 
 
 
-
       category:
+
 
         category,
 
 
 
-
       supplier:
+
 
         getValue(
           "supplier"
@@ -1357,8 +1294,8 @@ async function saveExpense(){
 
 
 
-
       date:
+
 
         getValue(
           "trade-date"
@@ -1366,15 +1303,15 @@ async function saveExpense(){
 
 
 
-
       amount:
+
 
         amount,
 
 
 
-
       tax:
+
 
         Number(
 
@@ -1390,9 +1327,8 @@ async function saveExpense(){
 
 
 
-
-
       taxRate:
+
 
         getValue(
           "tax-rate"
@@ -1400,9 +1336,8 @@ async function saveExpense(){
 
 
 
-
-
       invoiceNo:
+
 
         getValue(
           "invoice-no"
@@ -1410,9 +1345,8 @@ async function saveExpense(){
 
 
 
-
-
       paymentMethod:
+
 
         getValue(
           "payment-method"
@@ -1420,21 +1354,17 @@ async function saveExpense(){
 
 
 
-
-
       imageUrl:
+
 
         receiptImageUrl,
 
 
 
-
-
       ocrText:
 
+
         ocrData.ocrText || "",
-
-
 
 
 
@@ -1457,12 +1387,10 @@ async function saveExpense(){
 
 
 
-
-
       registeredBy:
 
-        "staff"
 
+        "staff"
 
 
     };
@@ -1473,8 +1401,17 @@ async function saveExpense(){
 
 
 
+    // =========================
+    // API送信
+    // Worker
+    //  ↓
+    // GAS doPost
+    // mode: saveExpense
+    // =========================
+
 
     const response =
+
 
       await fetch(
 
@@ -1503,11 +1440,17 @@ async function saveExpense(){
 
           body:
 
-            JSON.stringify(
+            JSON.stringify({
 
-              data
+              mode:
 
-            )
+                "saveExpense",
+
+
+              ...data
+
+
+            })
 
 
         }
@@ -1520,11 +1463,9 @@ async function saveExpense(){
 
 
 
-
     const result =
 
       await response.json();
-
 
 
 
@@ -1552,6 +1493,7 @@ async function saveExpense(){
 
 
 
+
     alert(
 
       "登録しました"
@@ -1566,8 +1508,8 @@ async function saveExpense(){
 
 
 
-
   }
+
 
   catch(error){
 
@@ -1594,6 +1536,7 @@ async function saveExpense(){
 
 
 }
+
 
 
 
@@ -1639,7 +1582,6 @@ async function testReceiptUpload(){
   }
 
   catch(error){
-
 
 
     console.error(
