@@ -554,6 +554,86 @@ async function saveExpense(){
 
 
     // =========================
+    // 保存前 必須チェック
+    // =========================
+
+    const getValue = (id) => {
+
+      const el =
+        document.getElementById(id);
+
+      return el
+        ?
+        el.value.trim()
+        :
+        "";
+
+    };
+
+
+
+    const businessType =
+      getValue(
+        "business-type"
+      );
+
+
+    const category =
+      getValue(
+        "category"
+      );
+
+
+    const amount =
+      Number(
+        getValue(
+          "amount"
+        )
+        ||
+        0
+      );
+
+
+
+    if(!businessType){
+
+      alert(
+        "事業区分を入力してください"
+      );
+
+      return;
+
+    }
+
+
+
+    if(!category){
+
+      alert(
+        "勘定科目を入力してください"
+      );
+
+      return;
+
+    }
+
+
+
+    if(!amount){
+
+      alert(
+        "金額を入力してください"
+      );
+
+      return;
+
+    }
+
+
+
+
+
+    // =========================
     // 画像アップロード + OCR
     // =========================
 
@@ -578,46 +658,30 @@ async function saveExpense(){
 
 
 
+
     // =========================
-    // 入力値取得
+    // 保存データ作成
     // =========================
-
-    const getValue = (id) => {
-
-      const el =
-        document.getElementById(id);
-
-
-      return el
-        ?
-        el.value
-        :
-        "";
-
-    };
-
-
 
     const data = {
 
 
       businessType:
 
-        getValue(
-          "business-type"
-        ),
+
+        businessType,
 
 
 
       category:
 
-        getValue(
-          "category"
-        ),
+
+        category,
 
 
 
       supplier:
+
 
         getValue(
           "supplier"
@@ -627,6 +691,7 @@ async function saveExpense(){
 
       date:
 
+
         getValue(
           "trade-date"
         ),
@@ -635,17 +700,13 @@ async function saveExpense(){
 
       amount:
 
-        Number(
-          getValue(
-            "amount"
-          )
-          ||
-          0
-        ),
+
+        amount,
 
 
 
       tax:
+
 
         Number(
           getValue(
@@ -659,6 +720,7 @@ async function saveExpense(){
 
       taxRate:
 
+
         ocrData
         ?
         ocrData.taxRate || ""
@@ -668,6 +730,7 @@ async function saveExpense(){
 
 
       invoiceNo:
+
 
         ocrData
         ?
@@ -679,6 +742,7 @@ async function saveExpense(){
 
       paymentMethod:
 
+
         getValue(
           "payment-method"
         ),
@@ -687,11 +751,13 @@ async function saveExpense(){
 
       imageUrl:
 
+
         receiptImageUrl,
 
 
 
       ocrText:
+
 
         ocrData
         ?
@@ -707,6 +773,7 @@ async function saveExpense(){
 
       learnVendor:
 
+
         document.getElementById(
           "learn-vendor"
         )
@@ -721,6 +788,7 @@ async function saveExpense(){
 
       registeredBy:
 
+
         "staff"
 
 
@@ -731,7 +799,7 @@ async function saveExpense(){
 
 
     // =========================
-    // 保存
+    // API保存
     // =========================
 
     const response =
