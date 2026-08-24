@@ -788,23 +788,6 @@ async function saveExpense(){
 
 
 
-    const amount =
-
-      Number(
-
-        getValue(
-          "amount"
-        )
-
-        ||
-
-        0
-
-      );
-
-
-
-
 
 
     // =========================
@@ -834,17 +817,6 @@ async function saveExpense(){
 
     }
 
-
-
-    if(!amount){
-
-      alert(
-        "金額を入力してください"
-      );
-
-      return;
-
-    }
 
 
 
@@ -880,6 +852,48 @@ async function saveExpense(){
 
 
     }
+
+
+
+
+
+
+
+    // =========================
+    // OCR後 金額確認
+    // =========================
+
+    const amount =
+
+      Number(
+
+        getValue(
+          "amount"
+        )
+
+        ||
+
+        0
+
+      );
+
+
+
+    if(!amount){
+
+
+      alert(
+
+        "OCRで金額を取得できませんでした。確認してください"
+
+      );
+
+
+      return;
+
+
+    }
+
 
 
 
@@ -949,20 +963,30 @@ async function saveExpense(){
 
 
 
+
       taxRate:
 
 
         getValue(
           "tax-rate"
         )
+
         ||
+
         (
+
           ocrData
+
           ?
+
           ocrData.taxRate || ""
+
           :
+
           ""
+
         ),
+
 
 
 
@@ -973,14 +997,24 @@ async function saveExpense(){
         getValue(
           "invoice-no"
         )
+
         ||
+
         (
+
           ocrData
+
           ?
+
           ocrData.invoiceNo || ""
+
           :
+
           ""
+
         ),
+
+
 
 
 
@@ -995,10 +1029,14 @@ async function saveExpense(){
 
 
 
+
+
       imageUrl:
 
 
         receiptImageUrl,
+
+
 
 
 
@@ -1015,6 +1053,7 @@ async function saveExpense(){
         :
 
         "",
+
 
 
 
@@ -1049,6 +1088,7 @@ async function saveExpense(){
 
 
 
+
       registeredBy:
 
 
@@ -1057,6 +1097,7 @@ async function saveExpense(){
 
 
     };
+
 
 
 
@@ -1086,9 +1127,11 @@ async function saveExpense(){
 
           headers:{
 
+
             "Content-Type":
 
               "application/json"
+
 
           },
 
@@ -1096,11 +1139,13 @@ async function saveExpense(){
 
           body:
 
+
             JSON.stringify(
 
               data
 
             )
+
 
         }
 
@@ -1112,11 +1157,9 @@ async function saveExpense(){
 
 
 
-
     const result =
 
       await response.json();
-
 
 
 
@@ -1137,7 +1180,6 @@ async function saveExpense(){
 
 
     }
-
 
 
 
@@ -1192,6 +1234,8 @@ async function saveExpense(){
 
 
 
+
+
 // =========================
 // Cloudinaryテスト
 // =========================
@@ -1203,6 +1247,7 @@ async function testReceiptUpload(){
 
 
     const result =
+
 
       await uploadReceiptImage();
 
