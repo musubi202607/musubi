@@ -1,5 +1,5 @@
 const CACHE_NAME =
-"musubi-kitchen-v4";
+"musubi-kitchen-v5";
 
 
 const CACHE_FILES = [
@@ -12,6 +12,8 @@ const CACHE_FILES = [
 
 "kitchen-sales.html",
 
+"receipt-register.html",
+
 "css/style.css",
 
 "js/config.js",
@@ -23,6 +25,8 @@ const CACHE_FILES = [
 "js/kitchen-unpaid.js",
 
 "js/kitchen-sales.js",
+
+"js/receipt-register.js",
 
 "kitchen-manifest.json"
 
