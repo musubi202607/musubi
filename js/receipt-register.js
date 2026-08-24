@@ -906,24 +906,30 @@ function displayOCRResult(data){
 
   const tradeDate =
 
-    document.getElementById(
-
-      "trade-date"
-
-    );
+  document.getElementById(
+    "trade-date"
+  );
 
 
-
-  if(tradeDate){
-
-
-    tradeDate.value =
-
-      data.tradeDate || "";
+if(tradeDate && data.tradeDate){
 
 
-  }
+  let date = data.tradeDate;
 
+
+  // yyyy/mm/dd → yyyy-mm-dd変換
+
+  date = date.replace(
+    /\//g,
+    "-"
+  );
+
+
+  tradeDate.value =
+    date;
+
+
+}
 
 
 
