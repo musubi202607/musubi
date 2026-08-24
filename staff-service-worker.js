@@ -1,4 +1,4 @@
-const CACHE_NAME = "musubi-staff-v4";
+const CACHE_NAME = "musubi-staff-v5";
 
 const FILES = [
   "staff.html",
@@ -6,12 +6,14 @@ const FILES = [
   "staff-bbq.html",
   "bbq-option.html",
   "payment-waiting.html",
+  "receipt-register.html",
   "css/style.css",
   "js/config.js",
   "js/staff-auth.js",
   "js/staff-order.js",
   "js/bbq.js",
-  "js/bbq-tablet.js"
+  "js/bbq-tablet.js",
+  "js/receipt-register.js"
 ];
 
 // =========================
