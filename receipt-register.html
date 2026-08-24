@@ -35,6 +35,7 @@
 <section class="receipt-register">
 
 
+
 <!-- =========================
 事業区分
 ========================= -->
@@ -78,6 +79,11 @@
 
 
 <select id="category">
+
+
+<option value="">
+選択してください
+</option>
 
 
 <option value="食材">
@@ -144,23 +150,66 @@
 
 
 <!-- =========================
-領収書撮影
+領収書画像
+カメラ / ファイル選択
 ========================= -->
 
 <div class="form-group">
 
 
 <label>
-領収書撮影
+領収書画像
 </label>
 
 
+<div>
+
+
 <input
- id="receipt-image"
- type="file"
- accept="image/*"
- capture="environment"
+id="receipt-camera"
+type="file"
+accept="image/*"
+capture="environment"
+style="display:none;"
 >
+
+
+<button
+type="button"
+id="camera-button"
+>
+
+📷 カメラで撮影
+
+</button>
+
+
+</div>
+
+
+
+<div>
+
+
+<input
+id="receipt-image"
+type="file"
+accept="image/*"
+style="display:none;"
+>
+
+
+<button
+type="button"
+id="file-button"
+>
+
+📁 画像を選択
+
+</button>
+
+
+</div>
 
 
 </div>
@@ -173,7 +222,8 @@
 画像プレビュー
 ========================= -->
 
-<div>
+<div class="image-preview-area">
+
 
 <img
 id="image-preview"
@@ -183,15 +233,12 @@ max-width:300px;
 "
 >
 
+
 </div>
 
 
-
-
-
-
 <!-- =========================
-OCR結果
+OCR結果確認
 ========================= -->
 
 <section
@@ -201,29 +248,43 @@ style="display:none;"
 
 
 <h2>
-OCR結果
+OCR結果確認
 </h2>
 
 
-<div>
+
+<!-- =========================
+取引先
+========================= -->
+
+<div class="form-group">
 
 <label>
 取引先
 </label>
 
+
 <input
 id="supplier"
+type="text"
 >
 
 </div>
 
 
 
-<div>
+
+
+<!-- =========================
+取引日
+========================= -->
+
+<div class="form-group">
 
 <label>
 取引日
 </label>
+
 
 <input
 id="trade-date"
@@ -234,11 +295,18 @@ type="date"
 
 
 
-<div>
+
+
+<!-- =========================
+税込金額
+========================= -->
+
+<div class="form-group">
 
 <label>
-金額
+税込金額
 </label>
+
 
 <input
 id="amount"
@@ -249,11 +317,18 @@ type="number"
 
 
 
-<div>
+
+
+<!-- =========================
+税額
+========================= -->
+
+<div class="form-group">
 
 <label>
 税額
 </label>
+
 
 <input
 id="tax"
@@ -264,7 +339,131 @@ type="number"
 
 
 
+
+
+<!-- =========================
+税率
+========================= -->
+
+<div class="form-group">
+
+<label>
+税率
+</label>
+
+
+<input
+id="tax-rate"
+type="text"
+placeholder="10%"
+>
+
+</div>
+
+
+
+
+
+<!-- =========================
+インボイス番号
+========================= -->
+
+<div class="form-group">
+
+<label>
+インボイス番号
+</label>
+
+
+<input
+id="invoice-no"
+type="text"
+>
+
+</div>
+
+
+
+
+
+<!-- =========================
+支払方法
+========================= -->
+
+<div class="form-group">
+
+<label>
+支払方法
+</label>
+
+
+<select id="payment-method">
+
+
+<option value="">
+選択してください
+</option>
+
+
+<option value="現金">
+現金
+</option>
+
+
+<option value="クレジットカード">
+クレジットカード
+</option>
+
+
+<option value="電子マネー">
+電子マネー
+</option>
+
+
+<option value="振込">
+振込
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
 </section>
+
+
+
+
+
+<!-- =========================
+取引先学習
+========================= -->
+
+
+<div class="form-group">
+
+
+<label>
+
+
+<input
+type="checkbox"
+id="learn-vendor"
+checked
+>
+
+
+この取引先を学習する
+
+
+</label>
+
+
+</div>
 
 
 
@@ -276,28 +475,21 @@ type="number"
 ========================= -->
 
 
+<div class="form-group">
+
+
 <button
 id="save-expense"
+type="button"
 >
 
 保存する
 
 </button>
 
-<div class="form-group">
-
-  <label>
-    <input
-      type="checkbox"
-      id="learn-vendor"
-      checked
-    >
-
-    この取引先を学習する
-
-  </label>
 
 </div>
+
 
 
 </section>
@@ -305,6 +497,7 @@ id="save-expense"
 
 
 </main>
+
 
 
 
