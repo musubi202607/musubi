@@ -600,7 +600,13 @@ async function saveExpense(){
 
         document.getElementById(
           "category"
-        ).value,
+        )
+        ?
+        document.getElementById(
+          "category"
+        ).value
+        :
+        "",
 
 
 
