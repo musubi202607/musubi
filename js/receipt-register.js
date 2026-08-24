@@ -554,7 +554,7 @@ async function saveExpense(){
 
 
     // =========================
-    // Cloudinaryアップロード
+    // 画像アップロード + OCR
     // =========================
 
     if(!receiptImageUrl){
@@ -564,10 +564,8 @@ async function saveExpense(){
         await uploadReceiptImage();
 
 
-
       receiptImageUrl =
         upload.url;
-
 
 
       await executeOCR(
@@ -580,58 +578,69 @@ async function saveExpense(){
 
 
 
+    // =========================
+    // 入力値取得
+    // =========================
 
-    // =========================
-    // 保存データ
-    // =========================
+    const getValue = (id) => {
+
+      const el =
+        document.getElementById(id);
+
+
+      return el
+        ?
+        el.value
+        :
+        "";
+
+    };
+
+
 
     const data = {
 
 
       businessType:
 
-        document.getElementById(
+        getValue(
           "business-type"
-        ).value,
+        ),
 
 
 
       category:
 
-        document.getElementById(
+        getValue(
           "category"
-        )
-        ?
-        document.getElementById(
-          "category"
-        ).value
-        :
-        "",
+        ),
 
 
 
       supplier:
 
-        document.getElementById(
+        getValue(
           "supplier"
-        ).value,
+        ),
 
 
 
       date:
 
-        document.getElementById(
+        getValue(
           "trade-date"
-        ).value,
+        ),
 
 
 
       amount:
 
         Number(
-          document.getElementById(
+          getValue(
             "amount"
-          ).value
+          )
+          ||
+          0
         ),
 
 
@@ -639,10 +648,22 @@ async function saveExpense(){
       tax:
 
         Number(
-          document.getElementById(
+          getValue(
             "tax"
-          ).value
+          )
+          ||
+          0
         ),
+
+
+
+      taxRate:
+
+        ocrData
+        ?
+        ocrData.taxRate || ""
+        :
+        "",
 
 
 
@@ -656,42 +677,11 @@ async function saveExpense(){
 
 
 
-      rate:
-
-        ocrData
-        ?
-        ocrData.taxRate || ""
-        :
-        "",
-      
-      // =========================
-      // 取引先学習フラグ
-      // =========================
-
-      learnVendor:
-
-        document.getElementById(
-          "learn-vendor"
-        )
-        ?
-        document.getElementById(
-          "learn-vendor"
-        ).checked
-        :
-        false,
-
-
       paymentMethod:
 
-        document.getElementById(
+        getValue(
           "payment-method"
-        )
-        ?
-        document.getElementById(
-          "payment-method"
-        ).value
-        :
-        "",
+        ),
 
 
 
@@ -711,6 +701,24 @@ async function saveExpense(){
 
 
 
+      // =========================
+      // 取引先学習
+      // =========================
+
+      learnVendor:
+
+        document.getElementById(
+          "learn-vendor"
+        )
+        ?
+        document.getElementById(
+          "learn-vendor"
+        ).checked
+        :
+        false,
+
+
+
       registeredBy:
 
         "staff"
@@ -718,11 +726,16 @@ async function saveExpense(){
 
     };
 
-// =========================
-// API送信
-// =========================
+
+
+
+
+    // =========================
+    // 保存
+    // =========================
 
     const response =
+
       await fetch(
 
         `${API_URL}/api/expenses`,
@@ -730,12 +743,14 @@ async function saveExpense(){
         {
 
           method:
+
             "POST",
 
 
           headers:{
 
             "Content-Type":
+
               "application/json"
 
           },
@@ -755,8 +770,8 @@ async function saveExpense(){
 
 
 
-
     const result =
+
       await response.json();
 
 
@@ -766,8 +781,7 @@ async function saveExpense(){
     if(!result.success){
 
       throw new Error(
-        result.message ||
-        "経費登録失敗"
+        result.message
       );
 
     }
@@ -786,7 +800,6 @@ async function saveExpense(){
 
 
 
-
   }
   catch(error){
 
@@ -795,7 +808,6 @@ async function saveExpense(){
       "saveExpense error",
       error
     );
-
 
 
     alert(
@@ -807,13 +819,6 @@ async function saveExpense(){
 
 
 }
-
-
-
-
-
-
-
 
 // =========================
 // Cloudinaryテスト
