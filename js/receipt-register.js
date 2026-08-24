@@ -507,7 +507,22 @@ async function saveExpense(){
         :
         "",
 
+     paymentMethod:
 
+  document.getElementById(
+    "payment-method"
+  )
+  ?
+  document.getElementById(
+    "payment-method"
+  ).value
+  :
+  "",
+
+
+registeredBy:
+
+  "staff"
 
       registeredBy:
 
