@@ -566,14 +566,18 @@ async function loadProducts(){
 
 
   const onigiri =
-  products.filter(
-
-    p =>
-      p.type === "onigiri" &&
-      p.status === "販売中" &&
-      p.store === "○"
-
-  );
+  products
+    .filter(
+      p =>
+        p.type === "onigiri" &&
+        p.status === "販売中" &&
+        p.store === "○"
+    )
+    .sort(
+      (a,b)=>
+        Number(a.sort || 9999) -
+        Number(b.sort || 9999)
+    );
 
 
   const grid =
