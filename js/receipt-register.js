@@ -1,6 +1,7 @@
 // =========================
 // 領収書登録
 // receipt-register.js
+// 修正版 1/3
 // =========================
 
 
@@ -10,13 +11,14 @@
 
 const EXPENSE_CLOUDINARY = {
 
-  cloudName:
-    "i5pbmztl",
+    cloudName:
+        "i5pbmztl",
 
-  uploadPreset:
-    "expenses_upload"
+    uploadPreset:
+        "expenses_upload"
 
 };
+
 
 
 
@@ -41,167 +43,161 @@ let ocrData = null;
 
 document.addEventListener(
 
-  "DOMContentLoaded",
+    "DOMContentLoaded",
 
-  () => {
-
-
-    const imageInput =
-
-      document.getElementById(
-        "receipt-image"
-      );
+    () => {
 
 
-    if(imageInput){
-
-      imageInput.addEventListener(
-
-        "change",
-
-        handleImageSelect
-
-      );
-
-    }
+        const imageInput =
+            document.getElementById(
+                "receipt-image"
+            );
 
 
+        if(imageInput){
 
+            imageInput.addEventListener(
 
+                "change",
 
-    const cameraInput =
+                handleImageSelect
 
-      document.getElementById(
-        "receipt-camera"
-      );
-
-
-    if(cameraInput){
-
-      cameraInput.addEventListener(
-
-        "change",
-
-        handleImageSelect
-
-      );
-
-    }
-
-
-
-
-
-    const cameraButton =
-
-      document.getElementById(
-        "camera-button"
-      );
-
-
-    if(cameraButton){
-
-      cameraButton.addEventListener(
-
-        "click",
-
-        () => {
-
-
-          document
-            .getElementById(
-              "receipt-camera"
-            )
-            .click();
-
+            );
 
         }
 
-      );
-
-    }
 
 
 
 
-
-    const fileButton =
-
-      document.getElementById(
-        "file-button"
-      );
+        const cameraInput =
+            document.getElementById(
+                "receipt-camera"
+            );
 
 
-    if(fileButton){
+        if(cameraInput){
 
-      fileButton.addEventListener(
+            cameraInput.addEventListener(
 
-        "click",
+                "change",
 
-        () => {
+                handleImageSelect
 
-
-          document
-            .getElementById(
-              "receipt-image"
-            )
-            .click();
-
+            );
 
         }
 
-      );
+
+
+
+
+        const cameraButton =
+            document.getElementById(
+                "camera-button"
+            );
+
+
+        if(cameraButton){
+
+            cameraButton.addEventListener(
+
+                "click",
+
+                () => {
+
+
+                    document
+                        .getElementById(
+                            "receipt-camera"
+                        )
+                        .click();
+
+
+                }
+
+            );
+
+        }
+
+
+
+
+
+        const fileButton =
+            document.getElementById(
+                "file-button"
+            );
+
+
+        if(fileButton){
+
+            fileButton.addEventListener(
+
+                "click",
+
+                () => {
+
+
+                    document
+                        .getElementById(
+                            "receipt-image"
+                        )
+                        .click();
+
+
+                }
+
+            );
+
+        }
+
+
+
+
+
+        const ocrButton =
+            document.getElementById(
+                "ocr-button"
+            );
+
+
+        if(ocrButton){
+
+            ocrButton.addEventListener(
+
+                "click",
+
+                executeReceiptOCR
+
+            );
+
+        }
+
+
+
+
+
+        const saveButton =
+            document.getElementById(
+                "save-expense"
+            );
+
+
+        if(saveButton){
+
+            saveButton.addEventListener(
+
+                "click",
+
+                saveExpense
+
+            );
+
+        }
+
 
     }
-
-
-
-
-
-    const ocrButton =
-
-      document.getElementById(
-        "ocr-button"
-      );
-
-
-    if(ocrButton){
-
-      ocrButton.addEventListener(
-
-        "click",
-
-        executeReceiptOCR
-
-      );
-
-    }
-
-
-
-
-
-    const saveButton =
-
-      document.getElementById(
-        "save-expense"
-      );
-
-
-    if(saveButton){
-
-      saveButton.addEventListener(
-
-        "click",
-
-        saveExpense
-
-      );
-
-    }
-
-
-  }
 
 );
 
@@ -210,42 +206,338 @@ document.addEventListener(
 
 
 
+
+
 // =========================
 // 画像選択
+// iPhone / Android対応
 // =========================
 
-function handleImageSelect(event){
+async function handleImageSelect(event){
 
 
-  const file =
-
-    event.target.files[0];
-
-
-  if(!file){
-
-    return;
-
-  }
+    const file =
+        event.target.files[0];
 
 
+    if(!file){
 
-  receiptFile =
+        return;
 
-    file;
+    }
 
 
 
-  receiptImageUrl = "";
-
-  ocrData = null;
+    try{
 
 
+        receiptFile =
+            await compressImage(
+                file
+            );
 
-  showPreview(file);
+
+        receiptImageUrl = "";
+
+        ocrData = null;
+
+
+
+        showPreview(
+            receiptFile
+        );
+
+
+        console.log(
+
+            "Compressed Image:",
+
+            receiptFile
+
+        );
+
+
+    }
+
+    catch(error){
+
+
+        console.error(
+
+            "Image Convert Error",
+
+            error
+
+        );
+
+
+        alert(
+
+            "画像処理に失敗しました"
+
+        );
+
+
+    }
 
 
 }
+
+
+
+
+
+
+
+
+// =========================
+// 画像圧縮・JPEG変換
+// iPhone HEIC対策
+// =========================
+
+function compressImage(file){
+
+
+    return new Promise(
+
+        (resolve,reject)=>{
+
+
+            const reader =
+                new FileReader();
+
+
+
+            reader.onload = function(e){
+
+
+                const img =
+                    new Image();
+
+
+
+                img.onload = function(){
+
+
+
+                    const canvas =
+                        document.createElement(
+                            "canvas"
+                        );
+
+
+
+                    const maxWidth =
+                        1600;
+
+
+
+                    let width =
+                        img.width;
+
+
+                    let height =
+                        img.height;
+
+
+
+
+                    if(width > maxWidth){
+
+
+
+                        height =
+                            height *
+                            (
+                                maxWidth /
+                                width
+                            );
+
+
+
+                        width =
+                            maxWidth;
+
+
+                    }
+
+
+
+
+
+
+                    canvas.width =
+                        width;
+
+
+
+                    canvas.height =
+                        height;
+
+
+
+
+
+
+                    const ctx =
+                        canvas.getContext(
+                            "2d"
+                        );
+
+
+
+                    ctx.drawImage(
+
+                        img,
+
+                        0,
+
+                        0,
+
+                        width,
+
+                        height
+
+                    );
+
+
+
+
+
+
+
+                    canvas.toBlob(
+
+
+                        blob => {
+
+
+                            if(!blob){
+
+
+                                reject(
+
+                                    new Error(
+                                        "画像変換失敗"
+                                    )
+
+                                );
+
+
+                                return;
+
+
+                            }
+
+
+
+
+                            const newFile =
+                                new File(
+
+                                    [
+
+                                        blob
+
+                                    ],
+
+
+                                    "receipt.jpg",
+
+
+                                    {
+
+                                        type:
+                                            "image/jpeg"
+
+                                    }
+
+                                );
+
+
+
+                            resolve(
+
+                                newFile
+
+                            );
+
+
+
+                        },
+
+
+                        "image/jpeg",
+
+                        0.85
+
+
+                    );
+
+
+
+
+
+                };
+
+
+
+
+
+                img.onerror = function(){
+
+
+                    reject(
+
+                        new Error(
+                            "画像読込失敗"
+                        )
+
+                    );
+
+
+                };
+
+
+
+                img.src =
+                    e.target.result;
+
+
+
+            };
+
+
+
+
+            reader.onerror = function(){
+
+
+                reject(
+
+                    new Error(
+                        "ファイル読込失敗"
+                    )
+
+                );
+
+
+            };
+
+
+
+            reader.readAsDataURL(file);
+
+
+
+        }
+
+    );
+
+
+}
+
+
 
 
 
@@ -259,47 +551,52 @@ function handleImageSelect(event){
 function showPreview(file){
 
 
-  const preview =
-
-    document.getElementById(
-      "image-preview"
-    );
-
-
-  if(!preview){
-
-    return;
-
-  }
+    const preview =
+        document.getElementById(
+            "image-preview"
+        );
 
 
 
-  const reader =
+    if(!preview){
 
-    new FileReader();
+        return;
 
-
-
-  reader.onload =
-
-    function(e){
-
-
-      preview.src =
-
-        e.target.result;
-
-
-      preview.style.display =
-
-        "block";
-
-
-    };
+    }
 
 
 
-  reader.readAsDataURL(file);
+
+    const reader =
+        new FileReader();
+
+
+
+
+
+    reader.onload =
+        function(e){
+
+
+
+            preview.src =
+                e.target.result;
+
+
+
+            preview.style.display =
+                "block";
+
+
+
+        };
+
+
+
+
+
+    reader.readAsDataURL(file);
+
 
 
 }
@@ -316,111 +613,196 @@ function showPreview(file){
 async function uploadReceiptImage(){
 
 
-  if(!receiptFile){
-
-    throw new Error(
-      "画像を選択してください"
-    );
-
-  }
+    if(!receiptFile){
 
 
+        throw new Error(
 
-  const formData =
+            "画像を選択してください"
 
-    new FormData();
+        );
+
+
+    }
 
 
 
-  formData.append(
-    "file",
-    receiptFile
-  );
 
 
 
-  formData.append(
-    "upload_preset",
-    EXPENSE_CLOUDINARY.uploadPreset
-  );
+    const formData =
+        new FormData();
 
 
 
-  const now =
-
-    new Date();
 
 
+    formData.append(
 
-  const fileName =
+        "file",
 
-    `receipt_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
-
-
-
-  formData.append(
-    "public_id",
-    fileName
-  );
-
-
-
-  const response =
-
-    await fetch(
-
-      `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`,
-
-      {
-
-        method:
-
-          "POST",
-
-        body:
-
-          formData
-
-      }
+        receiptFile
 
     );
 
 
 
-  const data =
-
-    await response.json();
 
 
+    formData.append(
 
-  if(!data.secure_url){
+        "upload_preset",
 
-    throw new Error(
-      "Cloudinaryアップロード失敗"
+        EXPENSE_CLOUDINARY.uploadPreset
+
     );
 
-  }
 
 
 
-  return {
 
-    url:
-      data.secure_url,
+    const now =
+        new Date();
 
 
-    publicId:
-      data.public_id
 
-  };
+
+
+    const fileName =
+
+        `receipt_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
+
+
+
+
+
+    formData.append(
+
+        "public_id",
+
+        fileName
+
+    );
+
+
+
+
+
+    const response =
+        await fetch(
+
+
+            `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`,
+
+
+            {
+
+                method:
+
+                    "POST",
+
+
+                body:
+
+                    formData
+
+
+            }
+
+
+        );
+
+
+
+
+
+    const text =
+        await response.text();
+
+
+
+
+
+    console.log(
+
+        "Cloudinary Response:",
+
+        text
+
+    );
+
+
+
+
+
+    let data;
+
+
+
+    try{
+
+
+        data =
+            JSON.parse(
+                text
+            );
+
+
+    }
+
+    catch(e){
+
+
+        throw new Error(
+
+            "Cloudinary応答エラー"
+
+        );
+
+
+    }
+
+
+
+
+
+
+    if(!data.secure_url){
+
+
+        throw new Error(
+
+            "Cloudinaryアップロード失敗"
+
+        );
+
+
+    }
+
+
+
+
+
+    return {
+
+
+        url:
+
+            data.secure_url,
+
+
+
+        publicId:
+
+            data.public_id
+
+
+
+    };
+
 
 
 }
-
-
-
-
-
 
 // =========================
 // OCR実行ボタン
@@ -429,66 +811,92 @@ async function uploadReceiptImage(){
 async function executeReceiptOCR(){
 
 
-  try{
+    try{
 
 
-    if(!receiptImageUrl){
+        if(!receiptImageUrl){
 
 
-      const upload =
 
-        await uploadReceiptImage();
+            const upload =
+                await uploadReceiptImage();
 
 
-      receiptImageUrl =
 
-        upload.url;
+            receiptImageUrl =
+                upload.url;
+
+
+
+            console.log(
+
+                "Receipt Image URL:",
+
+                receiptImageUrl
+
+            );
+
+
+        }
+
+
+
+
+
+
+        await executeOCR(
+
+            receiptImageUrl
+
+        );
+
+
+
+
+
+        alert(
+
+            "OCR解析が完了しました。内容を確認してください。"
+
+        );
+
+
+
+    }
+
+    catch(error){
+
+
+
+        console.error(
+
+            "OCR error",
+
+            error
+
+        );
+
+
+
+        alert(
+
+            "OCRに失敗しました"
+
+        );
+
 
 
     }
 
 
-
-    await executeOCR(
-
-      receiptImageUrl
-
-    );
-
-
-
-    alert(
-
-      "OCR解析が完了しました。内容を確認してください。"
-
-    );
-
-
-  }
-
-  catch(error){
-
-
-    console.error(
-
-      "OCR error",
-
-      error
-
-    );
-
-
-    alert(
-
-      "OCRに失敗しました"
-
-    );
-
-
-  }
-
-
 }
+
+
+
+
+
+
+
 
 // =========================
 // OCR API
@@ -497,87 +905,72 @@ async function executeReceiptOCR(){
 async function executeOCR(imageUrl){
 
 
-  const response =
 
-    await fetch(
-
-      `${API_URL}/api/ocr`,
-
-      {
-
-        method:
-
-          "POST",
+    const response =
+        await fetch(
 
 
-        headers:{
-
-          "Content-Type":
-
-            "application/json"
-
-        },
+            `${API_URL}/api/ocr`,
 
 
-        body:
-
-          JSON.stringify({
-
-            imageUrl:
-
-              imageUrl
-
-          })
+            {
 
 
-      }
+                method:
 
-    );
+                    "POST",
 
 
 
-  const result =
-
-    await response.json();
+                headers:{
 
 
+                    "Content-Type":
+
+                        "application/json"
 
 
-  if(!result.success){
+                },
 
 
-    throw new Error(
 
-      result.message ||
-
-      "OCR失敗"
-
-    );
+                body:
 
 
-  }
+                    JSON.stringify({
+
+
+                        imageUrl:
+
+                            imageUrl
+
+
+                    })
+
+
+
+            }
+
+
+        );
 
 
 
 
 
-  ocrData =
 
-    result.data;
-
-
+    const text =
+        await response.text();
 
 
 
-  // =========================
-  // 取引先マスタ取得
-  // =========================
 
-  const vendor =
 
-    await getVendorMaster(
+    console.log(
 
-      ocrData.supplier
+        "OCR Response:",
+
+        text
 
     );
 
@@ -585,84 +978,176 @@ async function executeOCR(imageUrl){
 
 
 
-  if(vendor){
-
-
-
-    ocrData = {
-
-
-      ...ocrData,
-
-
-
-      category:
-
-        vendor.category ||
-
-        ocrData.category,
-
-
-
-      paymentMethod:
-
-        vendor.paymentMethod ||
-
-        ocrData.paymentMethod,
-
-
-
-      taxRate:
-
-        convertTaxRate(
-
-          vendor.taxRate ||
-
-          ocrData.taxRate
-
-        ),
-
-
-
-      invoiceNo:
-
-        vendor.invoiceNo ||
-
-        ocrData.invoiceNo
-
-
-
-    };
-
-
-  }
-
-  else {
-
-
-    ocrData.taxRate =
-
-      convertTaxRate(
-
-        ocrData.taxRate
-
-      );
-
-
-  }
+    let result;
 
 
 
 
 
-  displayOCRResult(
+    try{
 
-    ocrData
 
-  );
+        result =
+            JSON.parse(
+                text
+            );
+
+
+    }
+
+    catch(error){
+
+
+        throw new Error(
+
+            "OCR APIがJSONを返していません"
+
+        );
+
+
+    }
+
+
+
+
+
+
+    if(!result.success){
+
+
+
+        throw new Error(
+
+            result.message ||
+
+            "OCR失敗"
+
+        );
+
+
+    }
+
+
+
+
+
+
+    ocrData =
+
+        result.data;
+
+
+
+
+
+
+    // =========================
+    // 取引先マスタ取得
+    // =========================
+
+    const vendor =
+
+        await getVendorMaster(
+
+            ocrData.supplier
+
+        );
+
+
+
+
+
+
+    if(vendor){
+
+
+
+        ocrData = {
+
+
+            ...ocrData,
+
+
+
+            category:
+
+
+                vendor.category ||
+
+                ocrData.category,
+
+
+
+            paymentMethod:
+
+
+                vendor.paymentMethod ||
+
+                ocrData.paymentMethod,
+
+
+
+            taxRate:
+
+
+                convertTaxRate(
+
+                    vendor.taxRate ||
+
+                    ocrData.taxRate
+
+                ),
+
+
+
+            invoiceNo:
+
+
+                vendor.invoiceNo ||
+
+                ocrData.invoiceNo
+
+
+
+        };
+
+
+
+    }
+
+    else{
+
+
+
+        ocrData.taxRate =
+
+
+            convertTaxRate(
+
+                ocrData.taxRate
+
+            );
+
+
+
+    }
+
+
+
+
+
+
+    displayOCRResult(
+
+        ocrData
+
+    );
+
 
 
 }
+
+
 
 
 
@@ -677,83 +1162,10 @@ async function executeOCR(imageUrl){
 async function getVendorMaster(supplier){
 
 
-  if(!supplier){
+    if(!supplier){
 
 
-    return null;
-
-
-  }
-
-
-
-
-  try{
-
-
-    const response =
-
-      await fetch(
-
-        `${API_URL}/api/vendor-master`,
-
-        {
-
-
-          method:
-
-            "POST",
-
-
-
-          headers:{
-
-
-            "Content-Type":
-
-              "application/json"
-
-
-          },
-
-
-
-          body:
-
-            JSON.stringify({
-
-              supplier:
-
-                supplier
-
-            })
-
-
-        }
-
-      );
-
-
-
-
-    const result =
-
-      await response.json();
-
-
-
-
-
-    if(
-
-      !result.success ||
-
-      !result.data
-
-    ){
-
-
-      return null;
+        return null;
 
 
     }
@@ -762,31 +1174,154 @@ async function getVendorMaster(supplier){
 
 
 
-    return result.data;
+
+    try{
 
 
 
-  }
+        const response =
 
-  catch(error){
-
-
-    console.error(
-
-      "vendor master error",
-
-      error
-
-    );
+            await fetch(
 
 
-    return null;
+                `${API_URL}/api/vendor-master`,
 
 
-  }
+                {
+
+
+                    method:
+
+                        "POST",
+
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                            "application/json"
+
+
+                    },
+
+
+
+                    body:
+
+
+                        JSON.stringify({
+
+
+                            supplier:
+
+                                supplier
+
+
+                        })
+
+
+
+                }
+
+
+            );
+
+
+
+
+
+
+        const text =
+
+            await response.text();
+
+
+
+
+
+        console.log(
+
+            "Vendor Master Response:",
+
+            text
+
+        );
+
+
+
+
+
+        const result =
+
+            JSON.parse(
+
+                text
+
+            );
+
+
+
+
+
+
+        if(
+
+
+            !result.success ||
+
+            !result.data
+
+
+        ){
+
+
+            return null;
+
+
+        }
+
+
+
+
+
+
+        return result.data;
+
+
+
+
+
+    }
+
+    catch(error){
+
+
+
+        console.error(
+
+
+            "vendor master error",
+
+
+            error
+
+
+        );
+
+
+
+        return null;
+
+
+
+    }
+
 
 
 }
+
 
 
 
@@ -803,43 +1338,54 @@ function convertTaxRate(rate){
 
 
 
-  if(
-
-    rate === 0.1 ||
-
-    rate === "0.1"
-
-  ){
+    if(
 
 
-    return "10%";
+        rate === 0.1 ||
+
+        rate === "0.1"
 
 
-  }
+    ){
 
 
+        return "10%";
 
 
-  if(
-
-    rate === 0.08 ||
-
-    rate === "0.08"
-
-  ){
-
-
-    return "8%";
-
-
-  }
+    }
 
 
 
 
-  return rate || "";
+
+
+
+    if(
+
+
+        rate === 0.08 ||
+
+        rate === "0.08"
+
+
+    ){
+
+
+        return "8%";
+
+
+    }
+
+
+
+
+
+    return rate || "";
+
+
 
 }
+
 
 
 
@@ -855,258 +1401,290 @@ function convertTaxRate(rate){
 function displayOCRResult(data){
 
 
-  const area =
 
-    document.getElementById(
+    const area =
 
-      "ocr-result"
+        document.getElementById(
 
-    );
+            "ocr-result"
 
+        );
 
 
-  if(area){
 
+    if(area){
 
-    area.style.display =
 
-      "block";
+        area.style.display =
 
+            "block";
 
-  }
 
+    }
 
 
 
 
-  const supplier =
 
-    document.getElementById(
 
-      "supplier"
 
-    );
 
 
+    const supplier =
 
-  if(supplier){
+        document.getElementById(
 
+            "supplier"
 
-    supplier.value =
+        );
 
-      data.supplier || "";
 
 
-  }
+    if(supplier){
 
 
 
+        supplier.value =
 
+            data.supplier || "";
 
 
-  const tradeDate =
 
-  document.getElementById(
-    "trade-date"
-  );
+    }
 
 
-if(tradeDate && data.tradeDate){
 
 
-  let date = data.tradeDate;
 
 
-  // yyyy/mm/dd → yyyy-mm-dd変換
 
-  date = date.replace(
-    /\//g,
-    "-"
-  );
 
 
-  tradeDate.value =
-    date;
+    const tradeDate =
 
+        document.getElementById(
 
-}
+            "trade-date"
 
+        );
 
 
 
 
-  const amount =
+    if(tradeDate && data.tradeDate){
 
-    document.getElementById(
 
-      "amount"
 
-    );
+        let date =
 
+            data.tradeDate;
 
 
-  if(amount){
 
+        date =
 
-    amount.value =
+            date.replace(
 
-      data.amount || "";
+                /\//g,
 
+                "-"
 
-  }
+            );
 
 
 
+        tradeDate.value =
 
+            date;
 
 
-  const tax =
 
-    document.getElementById(
+    }
 
-      "tax"
 
-    );
 
 
 
-  if(tax){
 
 
-    tax.value =
 
-      data.tax || "";
 
+    const amount =
 
-  }
+        document.getElementById(
 
+            "amount"
 
+        );
 
 
 
+    if(amount){
 
-  const category =
 
-    document.getElementById(
 
-      "category"
+        amount.value =
 
-    );
+            data.amount || "";
 
 
 
-  if(
+    }
 
-    category &&
 
-    data.category
 
-  ){
 
 
-    category.value =
 
-      data.category;
 
 
-  }
 
+    const tax =
 
+        document.getElementById(
 
+            "tax"
 
+        );
 
 
-  const paymentMethod =
 
-    document.getElementById(
+    if(tax){
 
-      "payment-method"
 
-    );
 
+        tax.value =
 
+            data.tax || "";
 
-  if(
 
-    paymentMethod &&
 
-    data.paymentMethod
+    }
 
-  ){
 
 
-    paymentMethod.value =
 
-      data.paymentMethod;
 
 
-  }
 
 
 
+    const category =
 
+        document.getElementById(
 
+            "category"
 
-  const taxRate =
+        );
 
-    document.getElementById(
 
-      "tax-rate"
 
-    );
+    if(category && data.category){
 
 
 
-  if(
+        category.value =
 
-    taxRate &&
+            data.category;
 
-    data.taxRate
 
-  ){
 
+    }
 
-    taxRate.value =
 
-      convertTaxRate(
 
-        data.taxRate
 
-      );
 
 
-  }
 
 
 
+    const paymentMethod =
 
+        document.getElementById(
 
+            "payment-method"
 
-  const invoiceNo =
+        );
 
-    document.getElementById(
 
-      "invoice-no"
 
-    );
+    if(paymentMethod && data.paymentMethod){
 
 
 
-  if(
+        paymentMethod.value =
 
-    invoiceNo &&
+            data.paymentMethod;
 
-    data.invoiceNo
 
-  ){
 
+    }
 
-    invoiceNo.value =
 
-      data.invoiceNo;
 
 
-  }
+
+
+
+
+
+    const taxRate =
+
+        document.getElementById(
+
+            "tax-rate"
+
+        );
+
+
+
+    if(taxRate && data.taxRate){
+
+
+
+        taxRate.value =
+
+            convertTaxRate(
+
+                data.taxRate
+
+            );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const invoiceNo =
+
+        document.getElementById(
+
+            "invoice-no"
+
+        );
+
+
+
+    if(invoiceNo && data.invoiceNo){
+
+
+
+        invoiceNo.value =
+
+            data.invoiceNo;
+
+
+
+    }
+
 
 
 }
@@ -1118,350 +1696,129 @@ if(tradeDate && data.tradeDate){
 async function saveExpense(){
 
 
-  try{
+    try{
 
 
-    // =========================
-    // 値取得
-    // =========================
+        // =========================
+        // 値取得
+        // =========================
 
-    const getValue = (id) => {
+        const getValue = (id) => {
 
 
-      const el =
+            const el =
 
-        document.getElementById(id);
+                document.getElementById(id);
 
 
 
-      return el
+            return el
 
-        ?
+                ?
 
-        el.value.trim()
+                el.value.trim()
 
-        :
+                :
 
-        "";
+                "";
 
 
-    };
+        };
 
 
 
 
 
-    const businessType =
 
-      getValue(
-        "business-type"
-      );
+        const businessType =
 
+            getValue(
 
+                "business-type"
 
-    const category =
+            );
 
-      getValue(
-        "category"
-      );
 
 
 
-    const amount =
 
-      Number(
+        const category =
 
-        getValue(
-          "amount"
-        )
+            getValue(
 
-        ||
+                "category"
 
-        0
+            );
 
-      );
 
 
 
 
+        const amount =
 
+            Number(
 
+                getValue(
 
-    // =========================
-    // 保存前チェック
-    // =========================
+                    "amount"
 
+                )
 
-    if(!ocrData){
+                ||
 
+                0
 
-      alert(
+            );
 
-        "先にOCR解析してください"
 
-      );
 
 
-      return;
 
 
-    }
 
 
+        // =========================
+        // 保存前チェック
+        // =========================
 
 
+        if(!ocrData){
 
-    if(!businessType){
 
 
-      alert(
+            alert(
 
-        "事業区分を入力してください"
+                "先にOCR解析してください"
 
-      );
+            );
 
 
-      return;
-
-
-    }
-
-
-
-
-
-    if(!category){
-
-
-      alert(
-
-        "勘定科目を入力してください"
-
-      );
-
-
-      return;
-
-
-    }
-
-
-
-
-
-    if(!amount){
-
-
-      alert(
-
-        "金額を入力してください"
-
-      );
-
-
-      return;
-
-
-    }
-
-
-
-
-
-
-
-    // =========================
-    // 保存データ作成
-    // =========================
-
-    const data = {
-
-
-      businessType:
-
-
-        businessType,
-
-
-
-      category:
-
-
-        category,
-
-
-
-      supplier:
-
-
-        getValue(
-          "supplier"
-        ),
-
-
-
-      date:
-
-
-        getValue(
-          "trade-date"
-        ),
-
-
-
-      amount:
-
-
-        amount,
-
-
-
-      tax:
-
-
-        Number(
-
-          getValue(
-            "tax"
-          )
-
-          ||
-
-          0
-
-        ),
-
-
-
-      taxRate:
-
-
-        getValue(
-          "tax-rate"
-        ),
-
-
-
-      invoiceNo:
-
-
-        getValue(
-          "invoice-no"
-        ),
-
-
-
-      paymentMethod:
-
-
-        getValue(
-          "payment-method"
-        ),
-
-
-
-      imageUrl:
-
-
-        receiptImageUrl,
-
-
-
-      ocrText:
-
-
-        ocrData.ocrText || "",
-
-
-
-      learnVendor:
-
-
-        document.getElementById(
-          "learn-vendor"
-        )
-
-        ?
-
-        document.getElementById(
-          "learn-vendor"
-        ).checked
-
-        :
-
-        false,
-
-
-
-      registeredBy:
-
-
-        "staff"
-
-
-    };
-
-
-
-
-
-
-
-    // =========================
-    // API送信
-    // Worker
-    //  ↓
-    // GAS doPost
-    // mode: saveExpense
-    // =========================
-
-
-    const response =
-
-
-      await fetch(
-
-        `${API_URL}/api/expenses`,
-
-        {
-
-
-          method:
-
-            "POST",
-
-
-
-          headers:{
-
-
-            "Content-Type":
-
-              "application/json"
-
-
-          },
-
-
-
-          body:
-
-            JSON.stringify({
-
-              mode:
-
-                "saveExpense",
-
-
-              ...data
-
-
-            })
+            return;
 
 
         }
 
-      );
+
+
+
+
+
+
+        if(!businessType){
+
+
+
+            alert(
+
+                "事業区分を入力してください"
+
+            );
+
+
+            return;
+
+
+        }
 
 
 
@@ -1469,76 +1826,448 @@ async function saveExpense(){
 
 
 
-    const result =
-
-      await response.json();
+        if(!category){
 
 
 
+            alert(
+
+                "勘定科目を入力してください"
+
+            );
+
+
+            return;
+
+
+        }
 
 
 
 
-    if(!result.success){
 
 
-      throw new Error(
 
-        result.message ||
+        if(!amount){
 
-        "保存失敗"
 
-      );
+
+            alert(
+
+                "金額を入力してください"
+
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+
+        // =========================
+        // 保存データ作成
+        // =========================
+
+        const data = {
+
+
+
+            businessType:
+
+
+                businessType,
+
+
+
+
+
+            category:
+
+
+                category,
+
+
+
+
+
+            supplier:
+
+
+                getValue(
+
+                    "supplier"
+
+                ),
+
+
+
+
+
+            date:
+
+
+                getValue(
+
+                    "trade-date"
+
+                ),
+
+
+
+
+
+            amount:
+
+
+                amount,
+
+
+
+
+
+            tax:
+
+
+                Number(
+
+                    getValue(
+
+                        "tax"
+
+                    )
+
+                    ||
+
+                    0
+
+                ),
+
+
+
+
+
+            taxRate:
+
+
+                getValue(
+
+                    "tax-rate"
+
+                ),
+
+
+
+
+
+            invoiceNo:
+
+
+                getValue(
+
+                    "invoice-no"
+
+                ),
+
+
+
+
+
+            paymentMethod:
+
+
+                getValue(
+
+                    "payment-method"
+
+                ),
+
+
+
+
+
+            imageUrl:
+
+
+                receiptImageUrl,
+
+
+
+
+
+            ocrText:
+
+
+                ocrData.ocrText || "",
+
+
+
+
+
+            learnVendor:
+
+
+                document.getElementById(
+
+                    "learn-vendor"
+
+                )
+
+                ?
+
+                document.getElementById(
+
+                    "learn-vendor"
+
+                ).checked
+
+                :
+
+                false,
+
+
+
+
+
+            registeredBy:
+
+
+                "staff"
+
+
+
+
+        };
+
+
+
+
+
+
+
+
+
+        // =========================
+        // 保存API
+        // Worker
+        // ↓
+        // GAS
+        // mode: saveExpense
+        // =========================
+
+        const response =
+
+
+            await fetch(
+
+
+                `${API_URL}/api/expenses`,
+
+
+                {
+
+
+
+                    method:
+
+
+                        "POST",
+
+
+
+
+
+                    headers:{
+
+
+
+                        "Content-Type":
+
+                            "application/json"
+
+
+
+                    },
+
+
+
+
+
+                    body:
+
+
+                        JSON.stringify({
+
+
+
+                            mode:
+
+
+                                "saveExpense",
+
+
+
+
+
+                            ...data
+
+
+
+
+
+                        })
+
+
+
+                }
+
+
+            );
+
+
+
+
+
+
+
+
+
+        const text =
+
+            await response.text();
+
+
+
+
+
+        console.log(
+
+            "Expense Save Response:",
+
+            text
+
+        );
+
+
+
+
+
+        let result;
+
+
+
+
+
+        try{
+
+
+            result =
+
+                JSON.parse(
+
+                    text
+
+                );
+
+
+        }
+
+        catch(error){
+
+
+
+            throw new Error(
+
+                "保存APIがJSONを返していません"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        if(!result.success){
+
+
+
+            throw new Error(
+
+
+
+                result.message ||
+
+                "保存失敗"
+
+
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+
+        alert(
+
+            "登録しました"
+
+        );
+
+
+
+
+
+        location.reload();
+
+
+
+
 
 
     }
 
+    catch(error){
 
 
 
+        console.error(
+
+            "saveExpense error",
+
+            error
+
+        );
 
 
 
+        alert(
 
-    alert(
+            "保存に失敗しました"
 
-      "登録しました"
-
-    );
-
-
-
-    location.reload();
+        );
 
 
 
-
-
-  }
-
-
-  catch(error){
-
-
-
-    console.error(
-
-      "saveExpense error",
-
-      error
-
-    );
-
-
-
-    alert(
-
-      "保存に失敗しました"
-
-    );
-
-
-  }
+    }
 
 
 }
@@ -1557,55 +2286,62 @@ async function saveExpense(){
 async function testReceiptUpload(){
 
 
-  try{
+    try{
 
 
-    const result =
+        const result =
 
-      await uploadReceiptImage();
-
-
-
-
-    console.log(
-
-      "UPLOAD OK",
-
-      result
-
-    );
+            await uploadReceiptImage();
 
 
 
-    alert(
-
-      "アップロード成功"
-
-    );
 
 
+        console.log(
 
-  }
+            "UPLOAD OK",
 
-  catch(error){
+            result
 
-
-    console.error(
-
-      error
-
-    );
+        );
 
 
 
-    alert(
-
-      "アップロード失敗"
-
-    );
 
 
-  }
+        alert(
+
+            "アップロード成功"
+
+        );
+
+
+
+
+
+    }
+
+    catch(error){
+
+
+
+        console.error(
+
+            error
+
+        );
+
+
+
+        alert(
+
+            "アップロード失敗"
+
+        );
+
+
+
+    }
 
 
 }
