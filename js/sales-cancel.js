@@ -5,63 +5,92 @@
 let currentOrder = null;
 
 
+
 // =========================
 // 初期表示
 // =========================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    const now = new Date();
+
+    const now =
+        new Date();
+
 
     const today =
         new Date(
-            now.getTime() -
+            now.getTime()
+            -
             now.getTimezoneOffset() * 60000
         )
         .toISOString()
         .slice(0,10);
 
 
-    document.getElementById("startDate").value =
+
+    document.getElementById(
+        "startDate"
+    ).value =
         today;
 
 
-    document.getElementById("endDate").value =
+
+    document.getElementById(
+        "endDate"
+    ).value =
         today;
+
 
 
     loadOrders();
+
 
 });
 
 
 
+
+
 // =========================
-// 一覧取得
+// 売上一覧取得
 // =========================
 async function loadOrders(){
 
 
     const startDate =
-        document.getElementById("startDate").value;
+        document.getElementById(
+            "startDate"
+        ).value;
+
 
 
     const endDate =
-        document.getElementById("endDate").value;
+        document.getElementById(
+            "endDate"
+        ).value;
+
 
 
     const orderList =
-        document.getElementById("orderList");
+        document.getElementById(
+            "orderList"
+        );
+
 
 
     orderList.innerHTML =
         "読込中...";
 
 
+
     try{
 
 
         const token =
-            localStorage.getItem("adminToken");
+            localStorage.getItem(
+                "adminToken"
+            );
 
 
 
@@ -86,12 +115,16 @@ async function loadOrders(){
 
                     },
 
+
                     body:
+
                         JSON.stringify({
 
-                            startDate:startDate,
+                            startDate:
+                                startDate,
 
-                            endDate:endDate
+                            endDate:
+                                endDate
 
                         })
 
@@ -104,14 +137,9 @@ async function loadOrders(){
         if(!res.ok){
 
 
-            const errorText =
-                await res.text();
-
-
             console.error(
-                "Sales List Error:",
-                res.status,
-                errorText
+                "Sales List Error",
+                res.status
             );
 
 
@@ -120,6 +148,7 @@ async function loadOrders(){
 
 
             return;
+
 
         }
 
@@ -137,36 +166,43 @@ async function loadOrders(){
 
 
 
-        // =========================
-        // 配列取得
-        // =========================
         let list = [];
 
 
 
-        if(Array.isArray(data)){
+        if(
+            Array.isArray(data)
+        ){
 
-            list = data;
-
-        }
-        else if(Array.isArray(data.orders)){
-
-            list = data.orders;
+            list =
+                data;
 
         }
-        else if(Array.isArray(data.data)){
+        else if(
+            Array.isArray(data.orders)
+        ){
 
-            list = data.data;
+            list =
+                data.orders;
+
+        }
+        else if(
+            Array.isArray(data.data)
+        ){
+
+            list =
+                data.data;
 
         }
 
 
 
-        if(!Array.isArray(list)){
-
+        if(
+            !Array.isArray(list)
+        ){
 
             console.error(
-                "Invalid sales list:",
+                "Invalid data",
                 data
             );
 
@@ -191,24 +227,25 @@ async function loadOrders(){
         // =========================
         // 受付中
         // =========================
-        // キャンセル・取消以外を表示
-        // =========================
         const activeList =
-            list.filter(item => {
+            list.filter(item=>{
 
 
                 return (
 
-                    item.type === "onigiri" ||
+                    item.type === "onigiri"
+                    ||
                     item.type === "kitchen"
 
                 )
                 &&
                 (
-                    item.status !== "キャンセル" &&
+                    item.status !== "キャンセル"
+                    &&
                     item.status !== "取消"
 
                 );
+
 
             });
 
@@ -220,203 +257,44 @@ async function loadOrders(){
         // 取消済
         // =========================
         const canceledList =
-            list.filter(item => {
+            list.filter(item=>{
 
 
                 return (
 
-                    item.type === "onigiri" ||
+                    item.type === "onigiri"
+                    ||
                     item.type === "kitchen"
 
                 )
                 &&
                 (
-                    item.status === "キャンセル" ||
+
+                    item.status === "キャンセル"
+                    ||
                     item.status === "取消"
 
                 );
+
 
             });
 
 
 
-
-
         console.log(
-            "受付中:",
+            "受付中",
             activeList
         );
 
 
         console.log(
-            "取消済:",
+            "取消済",
             canceledList
         );
 
 
-
-
-
-        // =========================
-        // HTML生成
-        // =========================
-        let html = "";
-
-
-
         // =========================
         // 受付中
-        // =========================
-        html += `
-
-<h3>
-受付中
-</h3>
-
-`;
-
-
-
-        if(activeList.length === 0){
-
-
-            html += `
-
-<p>
-対象データなし
-</p>
-
-`;
-
-        }
-        else{
-
-
-            activeList.forEach(item=>{
-
-
-                html += createOrderCard(
-                    item,
-                    true
-                );
-
-
-            });
-
-
-        }
-
-
-
-
-
-        html += `
-
-<hr>
-
-`;
-
-
-
-
-
-        // =========================
-        // 取消済
-        // =========================
-        html += `
-
-<h3>
-取消済
-</h3>
-
-`;
-
-
-
-        if(canceledList.length === 0){
-
-
-            html += `
-
-<p>
-対象データなし
-</p>
-
-`;
-
-        }
-        else{
-
-
-            canceledList.forEach(item=>{
-
-
-                html += createOrderCard(
-                    item,
-                    false
-                );
-
-
-            });
-
-
-        }
-
-
-
-        orderList.innerHTML =
-            html;
-
-
-
-    }
-    catch(err){
-
-
-        console.error(
-            "Sales List Exception:",
-            err
-        );
-
-
-        orderList.innerHTML =
-            "通信エラー";
-
-
-    }
-
-
-}
-
-        // =========================
-        // 取消済
-        // =========================
-        const canceledList =
-            list.filter(item => {
-
-                return (
-                    item.type === "onigiri" ||
-                    item.type === "kitchen"
-                )
-                &&
-                (
-                    item.status === "キャンセル" ||
-                    item.status === "取消"
-                );
-
-            });
-
-
-
-        // =========================
-        // HTML生成
-        // =========================
-        let html = "";
-
-
-
-        // =========================
-        // 上段：受付中
         // =========================
         html += `
 
@@ -429,7 +307,6 @@ async function loadOrders(){
 `;
 
 
-
         if(activeList.length === 0){
 
             html += `
@@ -445,21 +322,18 @@ async function loadOrders(){
         }
         else{
 
-
             activeList.forEach(item=>{
 
                 html += createOrderCard(item);
 
             });
 
-
         }
 
 
 
-
         // =========================
-        // 下段：取消済
+        // 取消済
         // =========================
         html += `
 
@@ -472,9 +346,7 @@ async function loadOrders(){
 `;
 
 
-
         if(canceledList.length === 0){
-
 
             html += `
 
@@ -489,13 +361,11 @@ async function loadOrders(){
         }
         else{
 
-
             canceledList.forEach(item=>{
 
                 html += createOrderCard(item);
 
             });
-
 
         }
 
@@ -505,10 +375,8 @@ async function loadOrders(){
             html;
 
 
-
     }
     catch(err){
-
 
         console.error(
             "Sales List Exception:",
@@ -524,7 +392,6 @@ async function loadOrders(){
 
 
 }
-
 
 
 
@@ -605,7 +472,6 @@ ${item.customerName || ""}
 </div>
 
 
-
 </div>
 
 
@@ -633,7 +499,6 @@ ${item.payment || ""}
 `;
 
 }
-
 
 
 
@@ -706,16 +571,25 @@ async function showDetail(
                 await res.text();
 
 
+
             console.error(
+
                 "Detail Error:",
+
                 res.status,
+
                 errorText
+
             );
 
 
+
             throw new Error(
+
                 "HTTP " +
+
                 res.status
+
             );
 
 
@@ -729,8 +603,11 @@ async function showDetail(
 
 
         console.log(
+
             "Order Detail:",
+
             data
+
         );
 
 
@@ -744,6 +621,7 @@ async function showDetail(
 <p>
 
 注文番号：
+
 ${no}
 
 </p>
@@ -769,7 +647,9 @@ ${no}
 
 ${item.name}
 
-×${item.qty}
+×
+
+${item.qty}
 
 </span>
 
@@ -778,7 +658,9 @@ ${item.name}
 <span>
 
 ¥${Number(
-    item.amount || 0
+
+item.amount || 0
+
 ).toLocaleString()}
 
 </span>
@@ -805,7 +687,9 @@ ${item.name}
 合計
 
 ¥${Number(
-    data.total || 0
+
+data.total || 0
+
 ).toLocaleString()}
 
 </h2>
@@ -815,14 +699,17 @@ ${item.name}
 <p>
 
 会計状態：
+
 ${data.payment || ""}
 
 </p>
 
 
+
 <p>
 
 状態：
+
 ${data.status || "受付中"}
 
 </p>
@@ -830,46 +717,67 @@ ${data.status || "受付中"}
 
 `;
 
+
+
         document.getElementById(
+
             "detailBody"
+
         ).innerHTML =
+
             html;
 
 
 
         document.getElementById(
+
             "detailCard"
+
         ).style.display =
+
             "block";
 
 
 
         const actionArea =
+
             document.getElementById(
+
                 "actionArea"
+
             );
 
 
 
         const btn =
+
             document.getElementById(
+
                 "actionBtn"
+
             );
 
 
 
         // =========================
-        // 取消済の場合
+        // 取消済
         // =========================
         if(
+
             data.status === "キャンセル" ||
+
             data.status === "取消"
+
         ){
 
+
             actionArea.style.display =
+
                 "none";
 
+
             return;
+
 
         }
 
@@ -879,22 +787,31 @@ ${data.status || "受付中"}
         // 取消可能
         // =========================
         actionArea.style.display =
+
             "block";
 
 
 
         if(
+
             data.payment === "未"
+
         ){
 
+
             btn.innerText =
+
                 "キャンセル";
+
 
         }
         else{
 
+
             btn.innerText =
+
                 "売上取消";
+
 
         }
 
@@ -904,13 +821,19 @@ ${data.status || "受付中"}
 
 
         console.error(
+
             "Detail Exception:",
+
             err
+
         );
 
 
+
         alert(
+
             "注文詳細の取得に失敗しました"
+
         );
 
 
@@ -919,15 +842,10 @@ ${data.status || "受付中"}
 
 }
 
-
-
-
-
 // =========================
 // キャンセル・取消実行
 // =========================
 async function executeAction(){
-
 
 
     if(!currentOrder){
@@ -1001,8 +919,8 @@ async function executeAction(){
                             orderNo:
                                 currentOrder.no
 
-                        })
 
+                        })
 
                 }
 
@@ -1019,14 +937,21 @@ async function executeAction(){
 
 
             console.error(
+
                 "Cancel Error:",
+
                 res.status,
+
                 errorText
+
             );
 
 
+
             alert(
+
                 "取消に失敗しました"
+
             );
 
 
@@ -1043,8 +968,11 @@ async function executeAction(){
 
 
         console.log(
+
             "Cancel Response:",
+
             data
+
         );
 
 
@@ -1055,8 +983,11 @@ async function executeAction(){
 
 
             alert(
+
                 data.message ||
+
                 "取消に失敗しました"
+
             );
 
 
@@ -1068,34 +999,45 @@ async function executeAction(){
 
 
         alert(
+
             action +
+
             "しました"
+
         );
 
 
 
         // 詳細閉じる
         document.getElementById(
+
             "detailCard"
+
         ).style.display =
+
             "none";
 
 
 
-        // ボタン非表示
+        // 操作ボタン非表示
         document.getElementById(
+
             "actionArea"
+
         ).style.display =
+
             "none";
 
 
 
         currentOrder =
+
             null;
 
 
 
-        // 再取得
+        // 一覧再取得
+
         loadOrders();
 
 
@@ -1105,14 +1047,22 @@ async function executeAction(){
 
 
         console.error(
+
             "Cancel Exception:",
+
             err
+
         );
 
 
         alert(
+
             "通信エラーが発生しました"
+
         );
 
 
- }
+    }
+
+
+}
