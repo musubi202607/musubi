@@ -721,14 +721,16 @@ async function loadSales() {
 // 総合 商品別
 // =========================
 
-displayProductSales(
-  "totalStoreProductSales",
-  storeProducts
-);
+const totalProducts =
+  mergeProducts(
+    storeProducts,
+    kitchenProducts
+  );
+
 
 displayProductSales(
-  "totalKitchenProductSales",
-  kitchenProducts
+  "analysisTable",
+  totalProducts
 );
 
 const totalProducts =
