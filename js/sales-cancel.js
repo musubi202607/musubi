@@ -181,8 +181,17 @@ async function loadOrders(){
 
 
 
+        console.log(
+            "Sales List:",
+            list
+        );
+
+
+
         // =========================
         // 受付中
+        // =========================
+        // キャンセル・取消以外を表示
         // =========================
         const activeList =
             list.filter(item => {
@@ -196,12 +205,13 @@ async function loadOrders(){
                 )
                 &&
                 (
-                    !item.status ||
-                    item.status === ""
+                    item.status !== "キャンセル" &&
+                    item.status !== "取消"
 
                 );
 
             });
+
 
 
 
@@ -226,8 +236,22 @@ async function loadOrders(){
 
                 );
 
-
             });
+
+
+
+
+
+        console.log(
+            "受付中:",
+            activeList
+        );
+
+
+        console.log(
+            "取消済:",
+            canceledList
+        );
 
 
 
@@ -240,6 +264,9 @@ async function loadOrders(){
 
 
 
+        // =========================
+        // 受付中
+        // =========================
         html += `
 
 <h3>
@@ -267,10 +294,12 @@ async function loadOrders(){
 
             activeList.forEach(item=>{
 
+
                 html += createOrderCard(
                     item,
                     true
                 );
+
 
             });
 
@@ -280,9 +309,21 @@ async function loadOrders(){
 
 
 
+
         html += `
 
 <hr>
+
+`;
+
+
+
+
+
+        // =========================
+        // 取消済
+        // =========================
+        html += `
 
 <h3>
 取消済
@@ -347,16 +388,150 @@ async function loadOrders(){
 
 }
 
+        // =========================
+        // 取消済
+        // =========================
+        const canceledList =
+            list.filter(item => {
+
+                return (
+                    item.type === "onigiri" ||
+                    item.type === "kitchen"
+                )
+                &&
+                (
+                    item.status === "キャンセル" ||
+                    item.status === "取消"
+                );
+
+            });
+
+
+
+        // =========================
+        // HTML生成
+        // =========================
+        let html = "";
+
+
+
+        // =========================
+        // 上段：受付中
+        // =========================
+        html += `
+
+<div class="section-title">
+
+受付中
+
+</div>
+
+`;
+
+
+
+        if(activeList.length === 0){
+
+            html += `
+
+<div class="empty-box">
+
+対象データなし
+
+</div>
+
+`;
+
+        }
+        else{
+
+
+            activeList.forEach(item=>{
+
+                html += createOrderCard(item);
+
+            });
+
+
+        }
+
+
+
+
+        // =========================
+        // 下段：取消済
+        // =========================
+        html += `
+
+<div class="section-title cancel-title">
+
+取消済
+
+</div>
+
+`;
+
+
+
+        if(canceledList.length === 0){
+
+
+            html += `
+
+<div class="empty-box">
+
+対象データなし
+
+</div>
+
+`;
+
+        }
+        else{
+
+
+            canceledList.forEach(item=>{
+
+                html += createOrderCard(item);
+
+            });
+
+
+        }
+
+
+
+        orderList.innerHTML =
+            html;
+
+
+
+    }
+    catch(err){
+
+
+        console.error(
+            "Sales List Exception:",
+            err
+        );
+
+
+        orderList.innerHTML =
+            "通信エラー";
+
+
+    }
+
+
+}
+
 
 
 
 // =========================
 // 注文カード生成
 // =========================
-function createOrderCard(
-    item,
-    canCancel
-){
+function createOrderCard(item){
 
 
     let icon =
@@ -374,8 +549,10 @@ function createOrderCard(
 
     const statusText =
         item.status
-        ? item.status
-        : "受付中";
+        ?
+        item.status
+        :
+        "受付中";
 
 
 
@@ -456,6 +633,9 @@ ${item.payment || ""}
 `;
 
 }
+
+
+
 
 // =========================
 // 明細表示
@@ -650,8 +830,6 @@ ${data.status || "受付中"}
 
 `;
 
-
-
         document.getElementById(
             "detailBody"
         ).innerHTML =
@@ -663,7 +841,6 @@ ${data.status || "受付中"}
             "detailCard"
         ).style.display =
             "block";
-
 
 
 
@@ -682,19 +859,15 @@ ${data.status || "受付中"}
 
 
         // =========================
-        // 取消済
+        // 取消済の場合
         // =========================
         if(
-
             data.status === "キャンセル" ||
             data.status === "取消"
-
         ){
-
 
             actionArea.style.display =
                 "none";
-
 
             return;
 
@@ -710,20 +883,18 @@ ${data.status || "受付中"}
 
 
 
-        if(data.payment === "未"){
-
+        if(
+            data.payment === "未"
+        ){
 
             btn.innerText =
                 "キャンセル";
 
-
         }
         else{
 
-
             btn.innerText =
                 "売上取消";
-
 
         }
 
@@ -752,9 +923,8 @@ ${data.status || "受付中"}
 
 
 
-
 // =========================
-// キャンセル・取消
+// キャンセル・取消実行
 // =========================
 async function executeAction(){
 
@@ -806,13 +976,10 @@ async function executeAction(){
 
                     method:"POST",
 
-
                     headers:{
-
 
                         "Content-Type":
                             "application/json",
-
 
                         "Authorization":
                             "Bearer " +
@@ -824,7 +991,6 @@ async function executeAction(){
 
 
                     body:
-
 
                         JSON.stringify({
 
@@ -883,7 +1049,9 @@ async function executeAction(){
 
 
 
-        if(!data.success){
+        if(
+            !data.success
+        ){
 
 
             alert(
@@ -893,6 +1061,7 @@ async function executeAction(){
 
 
             return;
+
 
         }
 
@@ -905,6 +1074,7 @@ async function executeAction(){
 
 
 
+        // 詳細閉じる
         document.getElementById(
             "detailCard"
         ).style.display =
@@ -912,6 +1082,7 @@ async function executeAction(){
 
 
 
+        // ボタン非表示
         document.getElementById(
             "actionArea"
         ).style.display =
@@ -924,6 +1095,7 @@ async function executeAction(){
 
 
 
+        // 再取得
         loadOrders();
 
 
