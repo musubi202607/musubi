@@ -5,7 +5,6 @@
 let currentOrder = null;
 
 
-
 // =========================
 // 初期表示
 // =========================
@@ -13,47 +12,43 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        const now =
+            new Date();
 
-    const now =
-        new Date();
 
-
-    const today =
-        new Date(
-            now.getTime()
-            -
-            now.getTimezoneOffset() * 60000
-        )
-        .toISOString()
-        .slice(0,10);
+        const today =
+            new Date(
+                now.getTime() -
+                now.getTimezoneOffset() * 60000
+            )
+            .toISOString()
+            .slice(0,10);
 
 
 
-    document.getElementById(
-        "startDate"
-    ).value =
-        today;
+        document.getElementById(
+            "startDate"
+        ).value =
+            today;
 
 
 
-    document.getElementById(
-        "endDate"
-    ).value =
-        today;
+        document.getElementById(
+            "endDate"
+        ).value =
+            today;
 
 
 
-    loadOrders();
+        loadOrders();
 
-
-});
-
-
+    }
+);
 
 
 
 // =========================
-// 売上一覧取得
+// 一覧取得
 // =========================
 async function loadOrders(){
 
@@ -120,11 +115,9 @@ async function loadOrders(){
 
                         JSON.stringify({
 
-                            startDate:
-                                startDate,
+                            startDate:startDate,
 
-                            endDate:
-                                endDate
+                            endDate:endDate
 
                         })
 
@@ -137,10 +130,21 @@ async function loadOrders(){
         if(!res.ok){
 
 
+            const errorText =
+                await res.text();
+
+
+
             console.error(
-                "Sales List Error",
-                res.status
+
+                "Sales List Error:",
+
+                res.status,
+
+                errorText
+
             );
+
 
 
             orderList.innerHTML =
@@ -160,51 +164,64 @@ async function loadOrders(){
 
 
         console.log(
+
             "Sales List Response:",
+
             data
+
         );
 
 
 
+        // =========================
+        // 配列取得
+        // =========================
         let list = [];
 
 
 
-        if(
-            Array.isArray(data)
-        ){
+        if(Array.isArray(data)){
+
 
             list =
                 data;
+
 
         }
         else if(
             Array.isArray(data.orders)
         ){
 
+
             list =
                 data.orders;
+
 
         }
         else if(
             Array.isArray(data.data)
         ){
 
+
             list =
                 data.data;
+
 
         }
 
 
 
-        if(
-            !Array.isArray(list)
-        ){
+        if(!Array.isArray(list)){
+
 
             console.error(
-                "Invalid data",
+
+                "Invalid sales list:",
+
                 data
+
             );
+
 
 
             orderList.innerHTML =
@@ -213,14 +230,8 @@ async function loadOrders(){
 
             return;
 
+
         }
-
-
-
-        console.log(
-            "Sales List:",
-            list
-        );
 
 
 
@@ -233,22 +244,18 @@ async function loadOrders(){
 
                 return (
 
-                    item.type === "onigiri"
-                    ||
+                    item.type === "onigiri" ||
+
                     item.type === "kitchen"
 
                 )
                 &&
-                (
-                    item.status !== "キャンセル"
-                    &&
-                    item.status !== "取消"
-
-                );
+                item.status !== "キャンセル"
+                &&
+                item.status !== "取消";
 
 
             });
-
 
 
 
@@ -262,16 +269,15 @@ async function loadOrders(){
 
                 return (
 
-                    item.type === "onigiri"
-                    ||
+                    item.type === "onigiri" ||
+
                     item.type === "kitchen"
 
                 )
                 &&
                 (
+                    item.status === "キャンセル" ||
 
-                    item.status === "キャンセル"
-                    ||
                     item.status === "取消"
 
                 );
@@ -293,8 +299,16 @@ async function loadOrders(){
         );
 
 
+
         // =========================
-        // 受付中
+        // HTML生成
+        // =========================
+        let html = "";
+
+
+
+        // =========================
+        // 上段：受付中
         // =========================
         html += `
 
@@ -307,7 +321,9 @@ async function loadOrders(){
 `;
 
 
+
         if(activeList.length === 0){
+
 
             html += `
 
@@ -322,18 +338,23 @@ async function loadOrders(){
         }
         else{
 
+
             activeList.forEach(item=>{
 
-                html += createOrderCard(item);
+
+                html +=
+                    createOrderCard(item);
+
 
             });
+
 
         }
 
 
 
         // =========================
-        // 取消済
+        // 下段：取消済
         // =========================
         html += `
 
@@ -346,7 +367,9 @@ async function loadOrders(){
 `;
 
 
+
         if(canceledList.length === 0){
+
 
             html += `
 
@@ -361,11 +384,16 @@ async function loadOrders(){
         }
         else{
 
+
             canceledList.forEach(item=>{
 
-                html += createOrderCard(item);
+
+                html +=
+                    createOrderCard(item);
+
 
             });
+
 
         }
 
@@ -375,12 +403,17 @@ async function loadOrders(){
             html;
 
 
+
     }
     catch(err){
 
+
         console.error(
+
             "Sales List Exception:",
+
             err
+
         );
 
 
@@ -392,8 +425,6 @@ async function loadOrders(){
 
 
 }
-
-
 
 // =========================
 // 注文カード生成
@@ -424,7 +455,6 @@ function createOrderCard(item){
 
 
     return `
-
 
 <div
 class="order-card"
@@ -503,7 +533,7 @@ ${item.payment || ""}
 
 
 // =========================
-// 明細表示
+// 注文詳細表示
 // =========================
 async function showDetail(
     type,
@@ -658,9 +688,7 @@ ${item.qty}
 <span>
 
 ¥${Number(
-
-item.amount || 0
-
+    item.amount || 0
 ).toLocaleString()}
 
 </span>
@@ -687,9 +715,7 @@ item.amount || 0
 合計
 
 ¥${Number(
-
-data.total || 0
-
+    data.total || 0
 ).toLocaleString()}
 
 </h2>
@@ -714,53 +740,40 @@ ${data.status || "受付中"}
 
 </p>
 
-
 `;
 
 
 
         document.getElementById(
-
             "detailBody"
-
         ).innerHTML =
-
             html;
 
 
 
         document.getElementById(
-
             "detailCard"
-
         ).style.display =
-
             "block";
 
 
 
         const actionArea =
-
             document.getElementById(
-
                 "actionArea"
-
             );
 
 
 
         const btn =
-
             document.getElementById(
-
                 "actionBtn"
-
             );
 
 
 
         // =========================
-        // 取消済
+        // 取消済の場合
         // =========================
         if(
 
@@ -772,7 +785,6 @@ ${data.status || "受付中"}
 
 
             actionArea.style.display =
-
                 "none";
 
 
@@ -787,20 +799,16 @@ ${data.status || "受付中"}
         // 取消可能
         // =========================
         actionArea.style.display =
-
             "block";
 
 
 
         if(
-
             data.payment === "未"
-
         ){
 
 
             btn.innerText =
-
                 "キャンセル";
 
 
@@ -809,7 +817,6 @@ ${data.status || "受付中"}
 
 
             btn.innerText =
-
                 "売上取消";
 
 
@@ -1010,34 +1017,26 @@ async function executeAction(){
 
         // 詳細閉じる
         document.getElementById(
-
             "detailCard"
-
         ).style.display =
-
             "none";
 
 
 
         // 操作ボタン非表示
         document.getElementById(
-
             "actionArea"
-
         ).style.display =
-
             "none";
 
 
 
         currentOrder =
-
             null;
 
 
 
         // 一覧再取得
-
         loadOrders();
 
 
@@ -1053,6 +1052,7 @@ async function executeAction(){
             err
 
         );
+
 
 
         alert(
