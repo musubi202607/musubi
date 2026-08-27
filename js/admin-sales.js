@@ -733,13 +733,6 @@ displayProductSales(
   totalProducts
 );
 
-const totalProducts =
-  mergeProducts(
-    storeProducts,
-    kitchenProducts
-  );
-
-
 // =========================
 // 商品分析データ保持
 // =========================
