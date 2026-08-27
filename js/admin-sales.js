@@ -521,7 +521,7 @@ async function loadSales() {
     // =========================
 
     displayProductSales(
-      "storeProductSales",
+      "storeAnalysisTable",
       storeProducts
     );
 
@@ -601,7 +601,7 @@ async function loadSales() {
     // =========================
 
     displayProductSales(
-      "kitchenProductSales",
+      "kitchenAnalysisTable",
       kitchenProducts
     );
 
@@ -987,7 +987,7 @@ async function loadStoreSales(
     }
 
     displayProductSales(
-      "storeProductSales",
+      "storeAnalysisTable",
       products
     );
 
@@ -1134,7 +1134,7 @@ async function loadKitchenSales(
     }
 
     displayProductSales(
-      "kitchenProductSales",
+      "kitchenAnalysisTable",
       products
     );
 
@@ -1365,7 +1365,7 @@ function displayKitchenProducts(
 ) {
 
   displayProductSales(
-    "kitchenProductSales",
+    "kitchenAnalysisTable",
     products
   );
 
