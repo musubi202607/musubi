@@ -11,13 +11,15 @@ content="width=device-width,initial-scale=1.0"
 >
 
 <title>
-売上取消
+売上取消一覧
 </title>
+
 
 <link
 rel="stylesheet"
 href="css/style.css"
 >
+
 
 <style>
 
@@ -30,6 +32,7 @@ margin-bottom:20px;
 
 }
 
+
 .search-card label{
 
 display:block;
@@ -37,6 +40,7 @@ margin-bottom:5px;
 font-weight:bold;
 
 }
+
 
 .search-card input{
 
@@ -47,6 +51,7 @@ box-sizing:border-box;
 
 }
 
+
 .search-btn{
 
 width:100%;
@@ -54,6 +59,8 @@ padding:14px;
 font-size:18px;
 
 }
+
+
 
 .order-card{
 
@@ -66,11 +73,14 @@ cursor:pointer;
 
 }
 
+
 .order-card:hover{
 
 background:#f8f8f8;
 
 }
+
+
 
 .order-top{
 
@@ -80,11 +90,7 @@ align-items:center;
 
 }
 
-.order-type{
 
-font-size:22px;
-
-}
 
 .order-no{
 
@@ -92,6 +98,8 @@ font-size:18px;
 font-weight:bold;
 
 }
+
+
 
 .order-total{
 
@@ -101,12 +109,16 @@ color:#e53935;
 
 }
 
+
+
 .order-paid{
 
 margin-top:8px;
 font-weight:bold;
 
 }
+
+
 
 .detail-card{
 
@@ -119,6 +131,8 @@ display:none;
 
 }
 
+
+
 .detail-item{
 
 display:flex;
@@ -126,6 +140,8 @@ justify-content:space-between;
 margin:8px 0;
 
 }
+
+
 
 .action-area{
 
@@ -140,6 +156,8 @@ display:none;
 
 }
 
+
+
 .action-btn{
 
 width:100%;
@@ -148,6 +166,8 @@ font-size:20px;
 
 }
 
+
+
 .cancel-btn{
 
 background:#d32f2f;
@@ -155,11 +175,37 @@ color:#fff;
 
 }
 
+
+
+/* =========================
+   状態見出し
+========================= */
+
+.status-title{
+
+margin-top:25px;
+margin-bottom:15px;
+
+}
+
+
+.status-line{
+
+border-bottom:2px solid #ddd;
+margin-bottom:15px;
+
+}
+
+
+
 </style>
+
 
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -167,7 +213,7 @@ color:#fff;
 
 <h1>
 
-売上取消
+売上取消一覧
 
 </h1>
 
@@ -175,7 +221,10 @@ color:#fff;
 
 </header>
 
+
+
 <main class="container">
+
 
 <a
 href="#"
@@ -187,7 +236,10 @@ class="back-btn"
 
 </a>
 
+
+
 <div class="search-card">
+
 
 <label>
 
@@ -195,10 +247,13 @@ class="back-btn"
 
 </label>
 
+
 <input
 type="date"
 id="startDate"
 >
+
+
 
 <label>
 
@@ -206,10 +261,13 @@ id="startDate"
 
 </label>
 
+
 <input
 type="date"
 id="endDate"
 >
+
+
 
 <button
 class="search-btn"
@@ -220,7 +278,13 @@ onclick="loadOrders()"
 
 </button>
 
+
+
 </div>
+
+
+
+
 
 <h2>
 
@@ -228,16 +292,23 @@ onclick="loadOrders()"
 
 </h2>
 
+
+
 <div id="orderList">
 
 読み込み中...
 
 </div>
 
+
+
+
+
 <div
 id="detailCard"
 class="detail-card"
 >
+
 
 <h2>
 
@@ -245,18 +316,27 @@ class="detail-card"
 
 </h2>
 
+
 <div id="detailBody">
 
 </div>
 
+
 </div>
 
+
+
 </main>
+
+
+
+
 
 <div
 id="actionArea"
 class="action-area"
 >
+
 
 <button
 id="actionBtn"
@@ -268,36 +348,62 @@ onclick="executeAction()"
 
 </button>
 
+
 </div>
 
+
+
+
+
 <script src="js/config.js"></script>
+
 <script src="js/admin-auth.js"></script>
+
 <script src="js/sales-cancel.js"></script>
 
+
+
+
+
 <script>
+
 
 const params =
 new URLSearchParams(location.search);
 
+
+
 const from =
 params.get("from");
+
+
 
 const backBtn =
 document.getElementById("backBtn");
 
+
+
 if(from==="kitchen"){
+
 
     backBtn.href =
     "kitchen-index.html";
 
+
 }else{
+
 
     backBtn.href =
     "staff.html";
 
+
 }
 
+
+
 </script>
+
+
 
 </body>
 
