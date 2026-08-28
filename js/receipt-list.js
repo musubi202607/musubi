@@ -440,3 +440,222 @@ document
   "click",
   exportReceiptCSV
 );
+
+// =========================
+// CSV出力共通
+// =========================
+
+function downloadCSV(data, filename){
+
+
+  const csv =
+    data
+      .map(row=>{
+
+        return row
+          .map(value=>{
+
+            if(
+              value === null ||
+              value === undefined
+            ){
+
+              return "";
+
+            }
+
+
+            return '"' +
+              String(value)
+              .replace(/"/g,'""')
+              +
+              '"';
+
+
+          })
+          .join(",");
+
+
+      })
+      .join("\n");
+
+
+
+  const blob =
+    new Blob(
+      [
+        "\uFEFF" + csv
+      ],
+      {
+        type:
+        "text/csv;charset=utf-8;"
+      }
+    );
+
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    filename;
+
+
+  link.click();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+
+}
+
+
+
+// =========================
+// 領収書CSV
+// =========================
+
+async function exportReceiptCSV(){
+
+
+  const year =
+    document.getElementById(
+      "search-year"
+    ).value;
+
+
+  const month =
+    document.getElementById(
+      "search-month"
+    ).value;
+
+
+
+  const response =
+    await fetch(
+
+      `${API_URL}/api/receipt-csv?year=${year}&month=${month}`
+
+    );
+
+
+
+  const result =
+    await response.json();
+
+
+
+  if(
+    !result.success
+  ){
+
+    alert(
+      "CSV出力失敗"
+    );
+
+    return;
+
+  }
+
+
+
+  downloadCSV(
+
+    result.data,
+
+    "領収書一覧.csv"
+
+  );
+
+
+}
+
+
+
+// =========================
+// 会計CSV
+// =========================
+
+async function exportAccountingCSV(){
+
+
+  const response =
+    await fetch(
+
+      `${API_URL}/api/accounting-csv`
+
+    );
+
+
+
+  const result =
+    await response.json();
+
+
+
+  if(
+    !result.success
+  ){
+
+    alert(
+      "CSV出力失敗"
+    );
+
+    return;
+
+  }
+
+
+
+  downloadCSV(
+
+    result.data,
+
+    "会計データ.csv"
+
+  );
+
+
+}
+
+
+
+// =========================
+// ボタン設定
+// =========================
+
+document
+.getElementById(
+  "receipt-csv-button"
+)
+.addEventListener(
+  "click",
+  exportReceiptCSV
+);
+
+
+
+document
+.getElementById(
+  "accounting-csv-button"
+)
+.addEventListener(
+  "click",
+  exportAccountingCSV
+);
