@@ -13,7 +13,8 @@ const FILES = [
   "js/staff-order.js",
   "js/bbq.js",
   "js/bbq-tablet.js",
-  "js/receipt-register.js"
+  "js/receipt-register.js",
+  "js/receipt-list.js"
 ];
 
 // =========================
