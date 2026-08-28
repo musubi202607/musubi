@@ -251,81 +251,44 @@ async function loadReceipts(){
 
 function displayReceipts(data){
 
-
-
   const area =
-
     document.getElementById(
       "receipt-list"
     );
 
-
-
-
-
   if(!area){
-
     return;
-
   }
-
-
-
-
 
   if(!data.length){
 
-
     area.innerHTML =
-
       "データがありません";
 
-
     return;
-
-
   }
-
-
-
-
-
 
   area.innerHTML = "";
 
-
-
-
-
-
-
   data.forEach(item=>{
 
-
-
     const div =
-
       document.createElement(
         "div"
       );
 
-
-
     div.className =
-
       "receipt-card";
 
-
-
-
+    const canceled =
+      item.check === "取消";
 
     div.innerHTML =
-
-
 
 `
 <div>
 <b>${item.date || ""}</b>
+${canceled ? '<span style="color:red;margin-left:10px;">【取消】</span>' : ""}
 </div>
 
 <div>
@@ -344,51 +307,36 @@ ${Number(item.amount || 0).toLocaleString()}円
 ${item.paymentMethod || ""}
 </div>
 
-<div>
+<div style="margin-top:10px;display:flex;gap:8px;">
 
 ${
 item.imageUrl
-
 ?
-
-`
-<a href="${item.imageUrl}" target="_blank">
-画像
-</a>
-`
-
+`<a href="${item.imageUrl}" target="_blank">画像</a>`
 :
-
 ""
+}
 
+${
+!canceled
+?
+`<button onclick="cancelReceipt('${item.no}')">
+取消
+</button>`
+:
+""
 }
 
 </div>
 `;
 
-
-
-
-
     area.appendChild(
       div
     );
 
-
-
   });
 
-
-
 }
-
-
-
-
-
-
-
-
 
 // =========================
 // CSV共通ダウンロード
