@@ -1,7 +1,8 @@
 // =========================
 // 領収書登録
 // receipt-register.js
-// 修正版 1/3
+// 修正版
+// 1/3
 // =========================
 
 
@@ -18,7 +19,6 @@ const EXPENSE_CLOUDINARY = {
         "expenses_upload"
 
 };
-
 
 
 
@@ -48,153 +48,96 @@ document.addEventListener(
     () => {
 
 
-        const imageInput =
-            document.getElementById(
-                "receipt-image"
-            );
+        const bindClick = (id, fn) => {
 
+            const el =
+                document.getElementById(id);
 
-        if(imageInput){
+            if(el){
 
-            imageInput.addEventListener(
+                el.addEventListener(
+                    "click",
+                    fn
+                );
 
-                "change",
+            }
 
-                handleImageSelect
+        };
 
-            );
 
-        }
 
+        const bindChange = (id, fn) => {
 
+            const el =
+                document.getElementById(id);
 
+            if(el){
 
+                el.addEventListener(
+                    "change",
+                    fn
+                );
 
-        const cameraInput =
-            document.getElementById(
-                "receipt-camera"
-            );
+            }
 
+        };
 
-        if(cameraInput){
 
-            cameraInput.addEventListener(
 
-                "change",
+        bindChange(
+            "receipt-image",
+            handleImageSelect
+        );
 
-                handleImageSelect
 
-            );
+        bindChange(
+            "receipt-camera",
+            handleImageSelect
+        );
 
-        }
 
 
+        bindClick(
+            "camera-button",
+            () => {
 
+                document
+                    .getElementById(
+                        "receipt-camera"
+                    )
+                    .click();
 
+            }
+        );
 
-        const cameraButton =
-            document.getElementById(
-                "camera-button"
-            );
 
 
-        if(cameraButton){
+        bindClick(
+            "file-button",
+            () => {
 
-            cameraButton.addEventListener(
+                document
+                    .getElementById(
+                        "receipt-image"
+                    )
+                    .click();
 
-                "click",
+            }
+        );
 
-                () => {
 
 
-                    document
-                        .getElementById(
-                            "receipt-camera"
-                        )
-                        .click();
+        bindClick(
+            "ocr-button",
+            executeReceiptOCR
+        );
 
 
-                }
 
-            );
-
-        }
-
-
-
-
-
-        const fileButton =
-            document.getElementById(
-                "file-button"
-            );
-
-
-        if(fileButton){
-
-            fileButton.addEventListener(
-
-                "click",
-
-                () => {
-
-
-                    document
-                        .getElementById(
-                            "receipt-image"
-                        )
-                        .click();
-
-
-                }
-
-            );
-
-        }
-
-
-
-
-
-        const ocrButton =
-            document.getElementById(
-                "ocr-button"
-            );
-
-
-        if(ocrButton){
-
-            ocrButton.addEventListener(
-
-                "click",
-
-                executeReceiptOCR
-
-            );
-
-        }
-
-
-
-
-
-        const saveButton =
-            document.getElementById(
-                "save-expense"
-            );
-
-
-        if(saveButton){
-
-            saveButton.addEventListener(
-
-                "click",
-
-                saveExpense
-
-            );
-
-        }
+        bindClick(
+            "save-expense",
+            saveExpense
+        );
 
 
     }
@@ -206,11 +149,9 @@ document.addEventListener(
 
 
 
-
-
 // =========================
 // 画像選択
-// iPhone / Android対応
+// HEIC対応
 // =========================
 
 async function handleImageSelect(event){
@@ -232,9 +173,11 @@ async function handleImageSelect(event){
 
 
         receiptFile =
+
             await compressImage(
                 file
             );
+
 
 
         receiptImageUrl = "";
@@ -248,9 +191,10 @@ async function handleImageSelect(event){
         );
 
 
+
         console.log(
 
-            "Compressed Image:",
+            "Compressed Image",
 
             receiptFile
 
@@ -272,9 +216,7 @@ async function handleImageSelect(event){
 
 
         alert(
-
             "画像処理に失敗しました"
-
         );
 
 
@@ -291,8 +233,8 @@ async function handleImageSelect(event){
 
 
 // =========================
-// 画像圧縮・JPEG変換
-// iPhone HEIC対策
+// 画像圧縮
+// JPEG変換
 // =========================
 
 function compressImage(file){
@@ -308,7 +250,7 @@ function compressImage(file){
 
 
 
-            reader.onload = function(e){
+            reader.onload = e => {
 
 
                 const img =
@@ -316,7 +258,7 @@ function compressImage(file){
 
 
 
-                img.onload = function(){
+                img.onload = () => {
 
 
 
@@ -341,18 +283,11 @@ function compressImage(file){
 
 
 
-
                     if(width > maxWidth){
 
 
-
-                        height =
-                            height *
-                            (
-                                maxWidth /
-                                width
-                            );
-
+                        height *=
+                            maxWidth / width;
 
 
                         width =
@@ -363,19 +298,12 @@ function compressImage(file){
 
 
 
-
-
-
                     canvas.width =
                         width;
 
 
-
                     canvas.height =
                         height;
-
-
-
 
 
 
@@ -404,8 +332,6 @@ function compressImage(file){
 
 
 
-
-
                     canvas.toBlob(
 
 
@@ -416,34 +342,24 @@ function compressImage(file){
 
 
                                 reject(
-
                                     new Error(
                                         "画像変換失敗"
                                     )
-
                                 );
 
-
                                 return;
-
 
                             }
 
 
 
+                            resolve(
 
-                            const newFile =
                                 new File(
 
-                                    [
-
-                                        blob
-
-                                    ],
-
+                                    [blob],
 
                                     "receipt.jpg",
-
 
                                     {
 
@@ -452,22 +368,16 @@ function compressImage(file){
 
                                     }
 
-                                );
-
-
-
-                            resolve(
-
-                                newFile
+                                )
 
                             );
-
 
 
                         },
 
 
                         "image/jpeg",
+
 
                         0.85
 
@@ -476,15 +386,11 @@ function compressImage(file){
 
 
 
-
-
                 };
 
 
 
-
-
-                img.onerror = function(){
+                img.onerror = () => {
 
 
                     reject(
@@ -509,8 +415,7 @@ function compressImage(file){
 
 
 
-
-            reader.onerror = function(){
+            reader.onerror = () => {
 
 
                 reject(
@@ -526,8 +431,9 @@ function compressImage(file){
 
 
 
-            reader.readAsDataURL(file);
-
+            reader.readAsDataURL(
+                file
+            );
 
 
         }
@@ -557,7 +463,6 @@ function showPreview(file){
         );
 
 
-
     if(!preview){
 
         return;
@@ -566,37 +471,29 @@ function showPreview(file){
 
 
 
-
     const reader =
         new FileReader();
 
 
 
+    reader.onload = e => {
 
 
-    reader.onload =
-        function(e){
+        preview.src =
+            e.target.result;
 
 
-
-            preview.src =
-                e.target.result;
-
+        preview.style.display =
+            "block";
 
 
-            preview.style.display =
-                "block";
-
-
-
-        };
+    };
 
 
 
-
-
-    reader.readAsDataURL(file);
-
+    reader.readAsDataURL(
+        file
+    );
 
 
 }
@@ -606,8 +503,11 @@ function showPreview(file){
 
 
 
+
+
 // =========================
 // Cloudinaryアップロード
+// 年月フォルダ保存
 // =========================
 
 async function uploadReceiptImage(){
@@ -624,7 +524,6 @@ async function uploadReceiptImage(){
 
 
     }
-
 
 
 
@@ -668,9 +567,31 @@ async function uploadReceiptImage(){
 
 
 
-    const fileName =
+    const year =
+        now.getFullYear();
 
-        `receipt_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
+
+    const month =
+        String(
+            now.getMonth()+1
+        )
+        .padStart(
+            2,
+            "0"
+        );
+
+
+
+
+
+    // =========================
+    // Cloudinaryフォルダ
+    // receipts/YYYY-MM/
+    // =========================
+
+    const publicId =
+
+        `receipts/${year}-${month}/receipt_${year}${month}${String(now.getDate()).padStart(2,"0")}_${Date.now()}`;
 
 
 
@@ -680,7 +601,7 @@ async function uploadReceiptImage(){
 
         "public_id",
 
-        fileName
+        publicId
 
     );
 
@@ -688,12 +609,12 @@ async function uploadReceiptImage(){
 
 
 
+
     const response =
+
         await fetch(
 
-
             `https://api.cloudinary.com/v1_1/${EXPENSE_CLOUDINARY.cloudName}/auto/upload`,
-
 
             {
 
@@ -709,15 +630,17 @@ async function uploadReceiptImage(){
 
             }
 
-
         );
 
 
 
 
 
+
     const text =
+
         await response.text();
+
 
 
 
@@ -725,7 +648,7 @@ async function uploadReceiptImage(){
 
     console.log(
 
-        "Cloudinary Response:",
+        "Cloudinary Response",
 
         text
 
@@ -735,8 +658,8 @@ async function uploadReceiptImage(){
 
 
 
-    let data;
 
+    let data;
 
 
     try{
@@ -767,6 +690,7 @@ async function uploadReceiptImage(){
 
 
 
+
     if(!data.secure_url){
 
 
@@ -778,6 +702,7 @@ async function uploadReceiptImage(){
 
 
     }
+
 
 
 
@@ -801,11 +726,17 @@ async function uploadReceiptImage(){
     };
 
 
-
 }
 
+
+
+
+
+
+
+
 // =========================
-// OCR実行ボタン
+// OCR実行
 // =========================
 
 async function executeReceiptOCR(){
@@ -817,20 +748,21 @@ async function executeReceiptOCR(){
         if(!receiptImageUrl){
 
 
-
             const upload =
+
                 await uploadReceiptImage();
 
 
 
             receiptImageUrl =
+
                 upload.url;
 
 
 
             console.log(
 
-                "Receipt Image URL:",
+                "Receipt Image URL",
 
                 receiptImageUrl
 
@@ -838,7 +770,6 @@ async function executeReceiptOCR(){
 
 
         }
-
 
 
 
@@ -861,11 +792,9 @@ async function executeReceiptOCR(){
         );
 
 
-
     }
 
     catch(error){
-
 
 
         console.error(
@@ -885,18 +814,10 @@ async function executeReceiptOCR(){
         );
 
 
-
     }
 
 
 }
-
-
-
-
-
-
-
 
 // =========================
 // OCR API
@@ -905,52 +826,40 @@ async function executeReceiptOCR(){
 async function executeOCR(imageUrl){
 
 
-
     const response =
-        await fetch(
 
+        await fetch(
 
             `${API_URL}/api/ocr`,
 
-
             {
-
 
                 method:
 
                     "POST",
 
 
-
                 headers:{
-
 
                     "Content-Type":
 
                         "application/json"
 
-
                 },
-
 
 
                 body:
 
-
                     JSON.stringify({
-
 
                         imageUrl:
 
                             imageUrl
 
-
                     })
 
 
-
             }
-
 
         );
 
@@ -958,8 +867,8 @@ async function executeOCR(imageUrl){
 
 
 
-
     const text =
+
         await response.text();
 
 
@@ -968,7 +877,7 @@ async function executeOCR(imageUrl){
 
     console.log(
 
-        "OCR Response:",
+        "OCR Response",
 
         text
 
@@ -978,42 +887,17 @@ async function executeOCR(imageUrl){
 
 
 
-    let result;
+    const result =
 
-
-
-
-
-    try{
-
-
-        result =
-            JSON.parse(
-                text
-            );
-
-
-    }
-
-    catch(error){
-
-
-        throw new Error(
-
-            "OCR APIがJSONを返していません"
-
+        parseJSON(
+            text
         );
-
-
-    }
-
 
 
 
 
 
     if(!result.success){
-
 
 
         throw new Error(
@@ -1040,9 +924,8 @@ async function executeOCR(imageUrl){
 
 
 
-
     // =========================
-    // 取引先マスタ取得
+    // 取引先マスタ補完
     // =========================
 
     const vendor =
@@ -1052,7 +935,6 @@ async function executeOCR(imageUrl){
             ocrData.supplier
 
         );
-
 
 
 
@@ -1071,7 +953,6 @@ async function executeOCR(imageUrl){
 
             category:
 
-
                 vendor.category ||
 
                 ocrData.category,
@@ -1080,7 +961,6 @@ async function executeOCR(imageUrl){
 
             paymentMethod:
 
-
                 vendor.paymentMethod ||
 
                 ocrData.paymentMethod,
@@ -1088,7 +968,6 @@ async function executeOCR(imageUrl){
 
 
             taxRate:
-
 
                 convertTaxRate(
 
@@ -1102,7 +981,6 @@ async function executeOCR(imageUrl){
 
             invoiceNo:
 
-
                 vendor.invoiceNo ||
 
                 ocrData.invoiceNo
@@ -1112,15 +990,12 @@ async function executeOCR(imageUrl){
         };
 
 
-
     }
 
     else{
 
 
-
         ocrData.taxRate =
-
 
             convertTaxRate(
 
@@ -1129,9 +1004,7 @@ async function executeOCR(imageUrl){
             );
 
 
-
     }
-
 
 
 
@@ -1144,9 +1017,46 @@ async function executeOCR(imageUrl){
     );
 
 
-
 }
 
+
+
+
+
+
+
+
+// =========================
+// JSON解析
+// =========================
+
+function parseJSON(text){
+
+
+    try{
+
+
+        return JSON.parse(
+            text
+        );
+
+
+    }
+
+    catch(error){
+
+
+        throw new Error(
+
+            "APIがJSONを返していません"
+
+        );
+
+
+    }
+
+
+}
 
 
 
@@ -1174,60 +1084,45 @@ async function getVendorMaster(supplier){
 
 
 
-
     try{
-
 
 
         const response =
 
             await fetch(
 
-
                 `${API_URL}/api/vendor-master`,
 
-
                 {
-
 
                     method:
 
                         "POST",
 
 
-
                     headers:{
-
 
                         "Content-Type":
 
                             "application/json"
 
-
                     },
-
 
 
                     body:
 
-
                         JSON.stringify({
-
 
                             supplier:
 
                                 supplier
 
-
                         })
-
 
 
                 }
 
-
             );
-
 
 
 
@@ -1243,7 +1138,7 @@ async function getVendorMaster(supplier){
 
         console.log(
 
-            "Vendor Master Response:",
+            "Vendor Master Response",
 
             text
 
@@ -1255,7 +1150,7 @@ async function getVendorMaster(supplier){
 
         const result =
 
-            JSON.parse(
+            parseJSON(
 
                 text
 
@@ -1265,14 +1160,11 @@ async function getVendorMaster(supplier){
 
 
 
-
         if(
-
 
             !result.success ||
 
             !result.data
-
 
         ){
 
@@ -1286,10 +1178,7 @@ async function getVendorMaster(supplier){
 
 
 
-
         return result.data;
-
-
 
 
 
@@ -1298,15 +1187,11 @@ async function getVendorMaster(supplier){
     catch(error){
 
 
-
         console.error(
-
 
             "vendor master error",
 
-
             error
-
 
         );
 
@@ -1315,13 +1200,10 @@ async function getVendorMaster(supplier){
         return null;
 
 
-
     }
 
 
-
 }
-
 
 
 
@@ -1337,14 +1219,11 @@ async function getVendorMaster(supplier){
 function convertTaxRate(rate){
 
 
-
     if(
-
 
         rate === 0.1 ||
 
         rate === "0.1"
-
 
     ){
 
@@ -1357,16 +1236,11 @@ function convertTaxRate(rate){
 
 
 
-
-
-
     if(
-
 
         rate === 0.08 ||
 
         rate === "0.08"
-
 
     ){
 
@@ -1383,9 +1257,7 @@ function convertTaxRate(rate){
     return rate || "";
 
 
-
 }
-
 
 
 
@@ -1399,7 +1271,6 @@ function convertTaxRate(rate){
 // =========================
 
 function displayOCRResult(data){
-
 
 
     const area =
@@ -1426,268 +1297,181 @@ function displayOCRResult(data){
 
 
 
+    setValue(
 
+        "supplier",
 
+        data.supplier
 
+    );
 
-    const supplier =
 
-        document.getElementById(
 
-            "supplier"
 
-        );
 
+    setValue(
 
+        "trade-date",
 
-    if(supplier){
+        formatDisplayDate(
 
+            data.tradeDate
 
+        )
 
-        supplier.value =
+    );
 
-            data.supplier || "";
 
 
 
-    }
 
+    setValue(
 
+        "amount",
 
+        data.amount
 
+    );
 
 
 
 
 
-    const tradeDate =
+    setValue(
 
-        document.getElementById(
+        "tax",
 
-            "trade-date"
+        data.tax
 
-        );
+    );
 
 
 
 
-    if(tradeDate && data.tradeDate){
 
+    setValue(
 
+        "category",
 
-        let date =
+        data.category
 
-            data.tradeDate;
+    );
 
 
 
-        date =
 
-            date.replace(
 
-                /\//g,
+    setValue(
 
-                "-"
+        "payment-method",
 
-            );
+        data.paymentMethod
 
+    );
 
 
-        tradeDate.value =
 
-            date;
 
 
+    setValue(
 
-    }
+        "tax-rate",
 
+        convertTaxRate(
 
+            data.taxRate
 
+        )
 
+    );
 
 
 
 
 
-    const amount =
+    setValue(
 
-        document.getElementById(
+        "invoice-no",
 
-            "amount"
+        data.invoiceNo
 
-        );
-
-
-
-    if(amount){
-
-
-
-        amount.value =
-
-            data.amount || "";
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const tax =
-
-        document.getElementById(
-
-            "tax"
-
-        );
-
-
-
-    if(tax){
-
-
-
-        tax.value =
-
-            data.tax || "";
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const category =
-
-        document.getElementById(
-
-            "category"
-
-        );
-
-
-
-    if(category && data.category){
-
-
-
-        category.value =
-
-            data.category;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const paymentMethod =
-
-        document.getElementById(
-
-            "payment-method"
-
-        );
-
-
-
-    if(paymentMethod && data.paymentMethod){
-
-
-
-        paymentMethod.value =
-
-            data.paymentMethod;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const taxRate =
-
-        document.getElementById(
-
-            "tax-rate"
-
-        );
-
-
-
-    if(taxRate && data.taxRate){
-
-
-
-        taxRate.value =
-
-            convertTaxRate(
-
-                data.taxRate
-
-            );
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    const invoiceNo =
-
-        document.getElementById(
-
-            "invoice-no"
-
-        );
-
-
-
-    if(invoiceNo && data.invoiceNo){
-
-
-
-        invoiceNo.value =
-
-            data.invoiceNo;
-
-
-
-    }
-
+    );
 
 
 }
+
+
+
+
+
+
+
+
+// =========================
+// 項目セット
+// =========================
+
+function setValue(id,value){
+
+
+    const el =
+
+        document.getElementById(
+            id
+        );
+
+
+
+    if(el && value !== undefined && value !== ""){
+
+
+        el.value =
+            value;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+// =========================
+// 日付表示変換
+// yyyy/mm/dd
+// ↓
+// yyyy-mm-dd
+// =========================
+
+function formatDisplayDate(date){
+
+
+    if(!date){
+
+        return "";
+
+    }
+
+
+
+    return date
+
+        .replace(
+
+            /\//g,
+
+            "-"
+
+        );
+
+
+}
+
 
 // =========================
 // 経費登録
@@ -1699,17 +1483,14 @@ async function saveExpense(){
     try{
 
 
-        // =========================
-        // 値取得
-        // =========================
-
-        const getValue = (id) => {
+        const getValue = id => {
 
 
             const el =
 
-                document.getElementById(id);
-
+                document.getElementById(
+                    id
+                );
 
 
             return el
@@ -1729,47 +1510,121 @@ async function saveExpense(){
 
 
 
-
-        const businessType =
-
-            getValue(
-
-                "business-type"
-
-            );
+        const data = {
 
 
-
-
-
-        const category =
-
-            getValue(
-
-                "category"
-
-            );
-
-
-
-
-
-        const amount =
-
-            Number(
+            businessType:
 
                 getValue(
+                    "business-type"
+                ),
 
-                    "amount"
 
+            category:
+
+                getValue(
+                    "category"
+                ),
+
+
+            supplier:
+
+                getValue(
+                    "supplier"
+                ),
+
+
+            date:
+
+                getValue(
+                    "trade-date"
+                ),
+
+
+            amount:
+
+                Number(
+
+                    getValue(
+                        "amount"
+                    )
+
+                    ||
+
+                    0
+
+                ),
+
+
+            tax:
+
+                Number(
+
+                    getValue(
+                        "tax"
+                    )
+
+                    ||
+
+                    0
+
+                ),
+
+
+            taxRate:
+
+                getValue(
+                    "tax-rate"
+                ),
+
+
+            invoiceNo:
+
+                getValue(
+                    "invoice-no"
+                ),
+
+
+            paymentMethod:
+
+                getValue(
+                    "payment-method"
+                ),
+
+
+            imageUrl:
+
+                receiptImageUrl,
+
+
+            ocrText:
+
+                ocrData?.ocrText || "",
+
+
+            learnVendor:
+
+                document.getElementById(
+                    "learn-vendor"
                 )
 
-                ||
+                ?
 
-                0
+                document.getElementById(
+                    "learn-vendor"
+                ).checked
 
-            );
+                :
 
+                false,
+
+
+            registeredBy:
+
+                "staff"
+
+
+        };
 
 
 
@@ -1778,12 +1633,11 @@ async function saveExpense(){
 
 
         // =========================
-        // 保存前チェック
+        // 入力チェック
         // =========================
 
 
         if(!ocrData){
-
 
 
             alert(
@@ -1800,12 +1654,7 @@ async function saveExpense(){
 
 
 
-
-
-
-
-        if(!businessType){
-
+        if(!data.businessType){
 
 
             alert(
@@ -1822,12 +1671,7 @@ async function saveExpense(){
 
 
 
-
-
-
-
-        if(!category){
-
+        if(!data.category){
 
 
             alert(
@@ -1844,12 +1688,7 @@ async function saveExpense(){
 
 
 
-
-
-
-
-        if(!amount){
-
+        if(!data.amount){
 
 
             alert(
@@ -1870,221 +1709,23 @@ async function saveExpense(){
 
 
 
-
-        // =========================
-        // 保存データ作成
-        // =========================
-
-        const data = {
-
-
-
-            businessType:
-
-
-                businessType,
-
-
-
-
-
-            category:
-
-
-                category,
-
-
-
-
-
-            supplier:
-
-
-                getValue(
-
-                    "supplier"
-
-                ),
-
-
-
-
-
-            date:
-
-
-                getValue(
-
-                    "trade-date"
-
-                ),
-
-
-
-
-
-            amount:
-
-
-                amount,
-
-
-
-
-
-            tax:
-
-
-                Number(
-
-                    getValue(
-
-                        "tax"
-
-                    )
-
-                    ||
-
-                    0
-
-                ),
-
-
-
-
-
-            taxRate:
-
-
-                getValue(
-
-                    "tax-rate"
-
-                ),
-
-
-
-
-
-            invoiceNo:
-
-
-                getValue(
-
-                    "invoice-no"
-
-                ),
-
-
-
-
-
-            paymentMethod:
-
-
-                getValue(
-
-                    "payment-method"
-
-                ),
-
-
-
-
-
-            imageUrl:
-
-
-                receiptImageUrl,
-
-
-
-
-
-            ocrText:
-
-
-                ocrData.ocrText || "",
-
-
-
-
-
-            learnVendor:
-
-
-                document.getElementById(
-
-                    "learn-vendor"
-
-                )
-
-                ?
-
-                document.getElementById(
-
-                    "learn-vendor"
-
-                ).checked
-
-                :
-
-                false,
-
-
-
-
-
-            registeredBy:
-
-
-                "staff"
-
-
-
-
-        };
-
-
-
-
-
-
-
-
-
-        // =========================
-        // 保存API
-        // Worker
-        // ↓
-        // GAS
-        // mode: saveExpense
-        // =========================
-
         const response =
 
 
             await fetch(
 
-
                 `${API_URL}/api/expenses`,
-
 
                 {
 
 
-
                     method:
-
 
                         "POST",
 
 
 
-
-
                     headers:{
-
 
 
                         "Content-Type":
@@ -2092,46 +1733,30 @@ async function saveExpense(){
                             "application/json"
 
 
-
                     },
-
-
 
 
 
                     body:
 
-
                         JSON.stringify({
-
 
 
                             mode:
 
-
                                 "saveExpense",
-
-
-
 
 
                             ...data
 
 
-
-
-
                         })
-
 
 
                 }
 
 
             );
-
-
-
 
 
 
@@ -2148,7 +1773,7 @@ async function saveExpense(){
 
         console.log(
 
-            "Expense Save Response:",
+            "Expense Save Response",
 
             text
 
@@ -2158,41 +1783,13 @@ async function saveExpense(){
 
 
 
-        let result;
+        const result =
 
+            parseJSON(
 
-
-
-
-        try{
-
-
-            result =
-
-                JSON.parse(
-
-                    text
-
-                );
-
-
-        }
-
-        catch(error){
-
-
-
-            throw new Error(
-
-                "保存APIがJSONを返していません"
+                text
 
             );
-
-
-        }
-
-
-
 
 
 
@@ -2202,23 +1799,16 @@ async function saveExpense(){
         if(!result.success){
 
 
-
             throw new Error(
-
-
 
                 result.message ||
 
                 "保存失敗"
 
-
-
             );
 
 
         }
-
-
 
 
 
@@ -2234,10 +1824,7 @@ async function saveExpense(){
 
 
 
-
-
         location.reload();
-
 
 
 
@@ -2266,7 +1853,6 @@ async function saveExpense(){
         );
 
 
-
     }
 
 
@@ -2280,7 +1866,7 @@ async function saveExpense(){
 
 
 // =========================
-// Cloudinaryテスト
+// Cloudinaryアップロード確認
 // =========================
 
 async function testReceiptUpload(){
@@ -2317,12 +1903,9 @@ async function testReceiptUpload(){
 
 
 
-
-
     }
 
     catch(error){
-
 
 
         console.error(
@@ -2338,7 +1921,6 @@ async function testReceiptUpload(){
             "アップロード失敗"
 
         );
-
 
 
     }
