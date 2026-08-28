@@ -299,3 +299,144 @@ div
 
 
 }
+
+// =========================
+// CSV出力
+// =========================
+
+async function exportReceiptCSV(){
+
+
+  const year =
+    document.getElementById(
+      "search-year"
+    ).value;
+
+
+  const month =
+    document.getElementById(
+      "search-month"
+    ).value;
+
+
+
+  const response =
+    await fetch(
+
+      `${API_URL}/api/receipt-csv?year=${year}&month=${month}`
+
+    );
+
+
+
+  const data =
+    await response.json();
+
+
+
+  if(
+    !data.success
+  ){
+
+    alert(
+      "CSV取得失敗"
+    );
+
+    return;
+
+  }
+
+
+
+  const csv =
+    data.data
+      .map(row=>{
+
+        return row
+          .map(value=>{
+
+            if(value === null ||
+               value === undefined){
+
+              return "";
+
+            }
+
+
+            return '"' +
+              String(value)
+              .replace(/"/g,'""')
+              +
+              '"';
+
+          })
+          .join(",");
+
+
+      })
+      .join("\n");
+
+
+
+  const bom =
+    "\uFEFF";
+
+
+  const blob =
+    new Blob(
+      [
+        bom + csv
+      ],
+      {
+        type:
+        "text/csv;charset=utf-8;"
+      }
+    );
+
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+
+  const a =
+    document.createElement(
+      "a"
+    );
+
+
+  a.href =
+    url;
+
+
+  a.download =
+    "領収書一覧.csv";
+
+
+  a.click();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+
+}
+
+
+
+// =========================
+// CSVボタン
+// =========================
+
+document
+.getElementById(
+  "csv-button"
+)
+.addEventListener(
+  "click",
+  exportReceiptCSV
+);
