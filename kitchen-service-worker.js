@@ -28,6 +28,8 @@ const CACHE_FILES = [
 
 "js/receipt-register.js",
 
+"js/receipt-list.js",
+
 "kitchen-manifest.json"
 
 ];
