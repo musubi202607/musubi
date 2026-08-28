@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
+
+<title>
+経費集計
+</title>
+
+<link
+rel="stylesheet"
+href="css/style.css"
+>
+
+<script src="js/config.js"></script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="container header-inner">
+
+<h1>
+経費集計
+</h1>
+
+</div>
+
+</header>
+
+
+
+<main class="container">
+
+
+<div class="shop-info-card">
+
+
+<a
+href="admin.html"
+style="
+display:inline-block;
+margin-bottom:15px;
+padding:10px 15px;
+background:#666;
+color:white;
+text-decoration:none;
+border-radius:8px;
+"
+>
+← 戻る
+</a>
+
+
+
+<h2>
+月別集計
+</h2>
+
+
+
+<div
+style="
+display:flex;
+gap:10px;
+margin-bottom:20px;
+"
+>
+
+
+<select id="search-year">
+
+</select>
+
+
+<select id="search-month">
+
+
+<option value="1">
+1月
+</option>
+
+<option value="2">
+2月
+</option>
+
+<option value="3">
+3月
+</option>
+
+<option value="4">
+4月
+</option>
+
+<option value="5">
+5月
+</option>
+
+<option value="6">
+6月
+</option>
+
+<option value="7">
+7月
+</option>
+
+<option value="8">
+8月
+</option>
+
+<option value="9">
+9月
+</option>
+
+<option value="10">
+10月
+</option>
+
+<option value="11">
+11月
+</option>
+
+<option value="12">
+12月
+</option>
+
+
+</select>
+
+
+<button id="search-button">
+表示
+</button>
+
+
+</div>
+
+
+
+
+<h2>
+集計結果
+</h2>
+
+
+<div id="expense-total">
+
+</div>
+
+
+<div id="expense-items">
+
+</div>
+
+
+
+</div>
+
+
+</main>
+
+
+
+<script src="js/admin-expense.js"></script>
+
+
+</body>
+
+</html>
