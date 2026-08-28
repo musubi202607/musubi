@@ -22,50 +22,63 @@ document.addEventListener(
 
 
 
-  for(
-    let y = now.getFullYear();
-    y >= 2025;
-    y--
-  ){
+  if(year){
 
 
-    const option =
-      document.createElement(
-        "option"
+    for(
+      let y = now.getFullYear();
+      y >= 2025;
+      y--
+    ){
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        y;
+
+
+      option.textContent =
+        y + "年";
+
+
+      year.appendChild(
+        option
       );
 
 
-    option.value =
-      y;
+    }
 
 
-    option.textContent =
-      y + "年";
 
-
-    year.appendChild(
-      option
-    );
+    year.value =
+      now.getFullYear();
 
 
   }
 
 
 
-  year.value =
-    now.getFullYear();
 
-
-
-
-  document
-    .getElementById(
+  const searchButton =
+    document.getElementById(
       "search-button"
-    )
-    .addEventListener(
+    );
+
+
+  if(searchButton){
+
+    searchButton.addEventListener(
       "click",
       loadReceipts
     );
+
+  }
+
 
 
 
@@ -84,6 +97,7 @@ document.addEventListener(
     );
 
   }
+
 
 
 
@@ -110,14 +124,17 @@ document.addEventListener(
   loadReceipts();
 
 
+
 });
 
 
 
 
 
+
+
 // =========================
-// 一覧取得
+// 領収書一覧取得
 // =========================
 
 async function loadReceipts(){
@@ -128,7 +145,7 @@ async function loadReceipts(){
     document.getElementById(
       "search-year"
     )
-    .value;
+    ?.value || "";
 
 
 
@@ -136,14 +153,7 @@ async function loadReceipts(){
     document.getElementById(
       "search-month"
     )
-    .value;
-
-
-
-
-  const url =
-
-    `${API_URL}/api/receipts?year=${year}&month=${month}`;
+    ?.value || "";
 
 
 
@@ -153,27 +163,44 @@ async function loadReceipts(){
 
 
     const response =
+
       await fetch(
-        url
+
+        `${API_URL}/api/receipts?year=${year}&month=${month}`
+
       );
 
 
 
+
+
     const result =
+
       await response.json();
 
 
 
+
+
     console.log(
+
       "Receipt List",
+
       result
+
     );
+
+
 
 
 
     displayReceipts(
+
       result.data || []
+
     );
+
+
 
 
 
@@ -182,17 +209,27 @@ async function loadReceipts(){
   catch(error){
 
 
+
     console.error(
+
+      "receipt list error",
+
       error
+
     );
 
 
+
     document
+
       .getElementById(
         "receipt-list"
       )
+
       .innerHTML =
+
       "取得失敗";
+
 
 
   }
@@ -207,8 +244,9 @@ async function loadReceipts(){
 
 
 
+
 // =========================
-// 表示
+// 領収書表示
 // =========================
 
 function displayReceipts(data){
@@ -216,9 +254,22 @@ function displayReceipts(data){
 
 
   const area =
+
     document.getElementById(
       "receipt-list"
     );
+
+
+
+
+
+  if(!area){
+
+    return;
+
+  }
+
+
 
 
 
@@ -226,6 +277,7 @@ function displayReceipts(data){
 
 
     area.innerHTML =
+
       "データがありません";
 
 
@@ -238,85 +290,94 @@ function displayReceipts(data){
 
 
 
+
   area.innerHTML = "";
 
 
 
 
 
-  data.forEach(
-    item=>{
 
 
-      const div =
-        document.createElement(
-          "div"
-        );
+  data.forEach(item=>{
 
 
 
-      div.className =
-        "receipt-card";
+    const div =
 
-
-
-      div.innerHTML =
-
-
-      `
-
-      <div>
-      <b>${item.date}</b>
-      </div>
-
-      <div>
-      ${item.supplier || ""}
-      </div>
-
-      <div>
-      ${item.category || ""}
-      </div>
-
-      <div>
-      ${Number(item.amount || 0).toLocaleString()}円
-      </div>
-
-      <div>
-      ${item.paymentMethod || ""}
-      </div>
-
-      <div>
-
-      ${
-        item.imageUrl
-
-        ?
-
-        `<a href="${item.imageUrl}" target="_blank">
-        画像
-        </a>`
-
-        :
-
-        ""
-
-      }
-
-      </div>
-
-      `;
-
-
-
-      area.appendChild(
-        div
+      document.createElement(
+        "div"
       );
 
 
 
-    }
+    div.className =
 
-  );
+      "receipt-card";
+
+
+
+
+
+    div.innerHTML =
+
+
+
+`
+<div>
+<b>${item.date || ""}</b>
+</div>
+
+<div>
+${item.supplier || ""}
+</div>
+
+<div>
+${item.category || ""}
+</div>
+
+<div>
+${Number(item.amount || 0).toLocaleString()}円
+</div>
+
+<div>
+${item.paymentMethod || ""}
+</div>
+
+<div>
+
+${
+item.imageUrl
+
+?
+
+`
+<a href="${item.imageUrl}" target="_blank">
+画像
+</a>
+`
+
+:
+
+""
+
+}
+
+</div>
+`;
+
+
+
+
+
+    area.appendChild(
+      div
+    );
+
+
+
+  });
+
 
 
 }
@@ -327,61 +388,65 @@ function displayReceipts(data){
 
 
 
+
+
 // =========================
-// CSV共通
+// CSV共通ダウンロード
 // =========================
 
 function downloadCSV(
+
   data,
+
   filename
+
 ){
 
 
 
   const csv =
 
-    data
-      .map(row=>{
+    data.map(row=>{
 
 
-        return row
-          .map(value=>{
+      return row.map(value=>{
 
 
-            if(
-              value === null ||
-              value === undefined
-            ){
+        if(
+          value === null ||
+          value === undefined
+        ){
 
-              return "";
+          return "";
 
-            }
-
-
-
-            return '"' +
-
-              String(value)
-              .replace(
-                /"/g,
-                '""'
-              )
-
-              +
-
-              '"';
+        }
 
 
 
-          })
+        return '"' +
 
-          .join(",");
+          String(value)
+          .replace(
+            /"/g,
+            '""'
+          )
+
+          +
+
+          '"';
 
 
 
       })
 
-      .join("\n");
+      .join(",");
+
+
+
+    })
+
+    .join("\n");
+
 
 
 
@@ -401,11 +466,14 @@ function downloadCSV(
       {
 
         type:
+
         "text/csv;charset=utf-8;"
 
       }
 
     );
+
+
 
 
 
@@ -430,6 +498,7 @@ function downloadCSV(
 
 
 
+
   link.href =
     url;
 
@@ -445,9 +514,11 @@ function downloadCSV(
 
 
 
+
   URL.revokeObjectURL(
     url
   );
+
 
 
 }
@@ -459,8 +530,9 @@ function downloadCSV(
 
 
 
+
 // =========================
-// 領収書CSV
+// 領収書CSV出力
 // =========================
 
 async function exportReceiptCSV(){
@@ -468,64 +540,94 @@ async function exportReceiptCSV(){
 
 
   const year =
+
     document.getElementById(
       "search-year"
     )
-    .value;
+    ?.value || "";
 
 
 
   const month =
+
     document.getElementById(
       "search-month"
     )
-    .value;
+    ?.value || "";
 
 
 
 
-  const response =
-    await fetch(
 
-      `${API_URL}/api/receipt-csv?year=${year}&month=${month}`
+  try{
+
+
+
+    const response =
+
+      await fetch(
+
+        `${API_URL}/api/receipt-csv?year=${year}&month=${month}`
+
+      );
+
+
+
+
+
+    const result =
+
+      await response.json();
+
+
+
+
+
+    if(!result.success){
+
+
+      alert(
+        "領収書CSV取得失敗"
+      );
+
+
+      return;
+
+
+    }
+
+
+
+
+
+    downloadCSV(
+
+      result.data,
+
+      "領収書一覧.csv"
 
     );
 
 
 
 
+  }
 
-  const result =
-    await response.json();
-
-
+  catch(error){
 
 
+    console.error(
+      error
+    );
 
-  if(
-    !result.success
-  ){
 
     alert(
       "領収書CSV出力失敗"
     );
 
 
-    return;
-
   }
 
-
-
-
-
-  downloadCSV(
-
-    result.data,
-
-    "領収書一覧.csv"
-
-  );
 
 
 }
@@ -537,18 +639,61 @@ async function exportReceiptCSV(){
 
 
 
+
 // =========================
-// 会計CSV
+// 会計CSV出力
 // =========================
 
 async function exportAccountingCSV(){
 
 
 
-  const response =
-    await fetch(
+  try{
 
-      `${API_URL}/api/accounting-csv`
+
+
+    const response =
+
+      await fetch(
+
+        `${API_URL}/api/accounting-csv`
+
+      );
+
+
+
+
+
+    const result =
+
+      await response.json();
+
+
+
+
+
+    if(!result.success){
+
+
+      alert(
+        "会計CSV取得失敗"
+      );
+
+
+      return;
+
+
+    }
+
+
+
+
+
+    downloadCSV(
+
+      result.data,
+
+      "会計データ.csv"
 
     );
 
@@ -556,37 +701,24 @@ async function exportAccountingCSV(){
 
 
 
-  const result =
-    await response.json();
+  }
+
+  catch(error){
 
 
+    console.error(
+      error
+    );
 
-
-
-  if(
-    !result.success
-  ){
 
     alert(
       "会計CSV出力失敗"
     );
 
 
-    return;
 
   }
 
-
-
-
-
-  downloadCSV(
-
-    result.data,
-
-    "会計データ.csv"
-
-  );
 
 
 }
