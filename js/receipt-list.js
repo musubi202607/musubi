@@ -670,3 +670,71 @@ async function exportAccountingCSV(){
 
 
 }
+
+// =========================
+// 領収書取消
+// =========================
+
+async function cancelReceipt(no){
+
+  if(
+    !confirm(
+      "この領収書を取消しますか？"
+    )
+  ){
+    return;
+  }
+
+  try{
+
+    const response =
+      await fetch(
+
+        `${API_URL}/api/receipt-cancel`,
+
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":"application/json"
+          },
+
+          body:JSON.stringify({
+            no:no
+          })
+
+        }
+
+      );
+
+    const result =
+      await response.json();
+
+    if(!result.success){
+
+      alert(
+        "取消に失敗しました"
+      );
+
+      return;
+    }
+
+    alert(
+      "取消しました"
+    );
+
+    loadReceipts();
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    alert(
+      "取消に失敗しました"
+    );
+
+  }
+
+}
