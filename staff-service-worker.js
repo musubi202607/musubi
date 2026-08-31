@@ -1,4 +1,4 @@
-const CACHE_NAME = "musubi-staff-v7";
+const CACHE_NAME = "musubi-staff-v8";
 
 const FILES = [
   "staff.html",
