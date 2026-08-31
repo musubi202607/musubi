@@ -1397,12 +1397,13 @@ function displayOCRResult(data){
 
     );
 
+    displayReceiptDetails(
+    data.details || []
+    );
 
 }
 
-displayReceiptDetails(
-    data.details || []
-);
+
 
 
 // =========================
