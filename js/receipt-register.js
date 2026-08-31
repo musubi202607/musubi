@@ -1400,11 +1400,9 @@ function displayOCRResult(data){
 
 }
 
-
-
-
-
-
+displayReceiptDetails(
+    data.details || []
+);
 
 
 // =========================
@@ -1928,6 +1926,81 @@ async function testReceiptUpload(){
 
 
     }
+
+
+}
+
+// =========================
+// 明細表示
+// 複数税率対応
+// =========================
+
+function displayReceiptDetails(details){
+
+    const body =
+        document.getElementById(
+            "receipt-details-body"
+        );
+
+
+    if(!body){
+        return;
+    }
+
+
+    body.innerHTML = "";
+
+
+    details.forEach(detail=>{
+
+
+        const tr =
+            document.createElement(
+                "tr"
+            );
+
+
+        tr.innerHTML = `
+
+<td>
+<input
+class="detail-tax-rate"
+value="${detail.taxRate || ""}"
+>
+</td>
+
+
+<td>
+<input
+class="detail-amount"
+type="number"
+value="${detail.amount || 0}"
+>
+</td>
+
+
+<td>
+<input
+class="detail-category"
+value="${detail.category || ""}"
+>
+</td>
+
+
+<td>
+<input
+class="detail-item"
+value="${detail.item || ""}"
+>
+</td>
+
+`;
+
+
+        body.appendChild(tr);
+
+
+    });
 
 
 }
