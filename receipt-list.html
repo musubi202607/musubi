@@ -71,6 +71,7 @@ style="
 display:flex;
 gap:10px;
 margin-bottom:20px;
+flex-wrap:wrap;
 "
 >
 
@@ -142,17 +143,47 @@ margin-bottom:20px;
 </select>
 
 
+
+<!-- =========================
+確認状態フィルター追加
+========================= -->
+
+<select id="search-check">
+
+<option value="">
+全て
+</option>
+
+<option value="未確認">
+未確認のみ
+</option>
+
+<option value="確認済">
+確認済のみ
+</option>
+
+<option value="取消">
+取消のみ
+</option>
+
+</select>
+
+
+
 <button id="search-button">
 検索
 </button>
+
 
 <button id="receipt-csv-button">
 領収書CSV
 </button>
 
+
 <button id="accounting-csv-button">
 会計CSV
 </button>
+
 
 </div>
 
