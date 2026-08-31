@@ -247,6 +247,8 @@ async function loadReceipts(){
 
 // =========================
 // 領収書表示
+// 展開表示対応
+// 明細表示対応
 // =========================
 
 function displayReceipts(data){
@@ -256,9 +258,12 @@ function displayReceipts(data){
       "receipt-list"
     );
 
+
   if(!area){
     return;
   }
+
+
 
   if(!data.length){
 
@@ -266,32 +271,51 @@ function displayReceipts(data){
       "データがありません";
 
     return;
+
   }
+
+
 
   area.innerHTML = "";
 
+
+
   data.forEach(item=>{
+
 
     const div =
       document.createElement(
         "div"
       );
 
+
+
     div.className =
       "receipt-card";
 
+
+
     const canceled =
-       item.check === "取消";
+      item.check === "取消";
 
 
     const confirmed =
-       item.check === "確認済";
+      item.check === "確認済";
+
+
+
+
 
     div.innerHTML =
 
 `
 <div>
-<b>${item.date || ""}</b>
+
+<b>
+${item.date || ""}
+</b>
+
+
 ${
 canceled
 ?
@@ -303,67 +327,531 @@ confirmed
 :
 '<span style="color:orange;margin-left:10px;">【未確認】</span>'
 }
+
 </div>
 
-<div>
+
+
+
+
+<div style="
+font-size:18px;
+font-weight:bold;
+margin-top:8px;
+">
+
 ${item.supplier || ""}
+
 </div>
 
+
+
+
+
 <div>
+
 ${item.category || ""}
+
 </div>
 
-<div>
-${Number(item.amount || 0).toLocaleString()}円
-</div>
+
+
+
 
 <div>
+
+${Number(
+item.amount || 0
+).toLocaleString()}円
+
+</div>
+
+
+
+
+
+<div>
+
 ${item.paymentMethod || ""}
+
 </div>
 
-<div style="margin-top:10px;display:flex;gap:8px;">
 
-${
-item.imageUrl
-?
-`<a href="${item.imageUrl}" target="_blank">画像</a>`
-:
-""
-}
+
+
+
+<div style="
+margin-top:10px;
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+">
+
+
+
+
+
+<button
+onclick="toggleReceiptDetail('${item.no}')"
+>
+
+詳細表示
+
+</button>
+
+
+
+
 
 ${
 !canceled && !confirmed
 ?
 `
-<button onclick="confirmReceipt('${item.no}')">
+
+<button
+onclick="confirmReceipt('${item.no}')"
+>
+
 確認
+
 </button>
+
 `
 :
 ""
 }
+
+
+
+
 
 
 ${
 !canceled
 ?
 `
-<button onclick="cancelReceipt('${item.no}')">
+
+<button
+onclick="cancelReceipt('${item.no}')"
+>
+
 取消
+
 </button>
+
 `
 :
 ""
 }
 
+
+
 </div>
+
+
+
+
+
+
+<!-- =========================
+詳細
+========================= -->
+
+
+<div
+id="detail-${item.no}"
+style="
+display:none;
+margin-top:15px;
+padding:12px;
+background:#f5f5f5;
+border-radius:8px;
+"
+>
+
+
+
+
+
+<div>
+
+<b>
+領収書番号：
+</b>
+
+${item.no || ""}
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+税込金額：
+</b>
+
+${Number(
+item.amount || 0
+).toLocaleString()}円
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+税額：
+</b>
+
+${Number(
+item.tax || 0
+).toLocaleString()}円
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+税率：
+</b>
+
+${item.taxRate || ""}
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+インボイス番号：
+</b>
+
+${item.invoiceNo || "なし"}
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+支払方法：
+</b>
+
+${item.paymentMethod || ""}
+
+</div>
+
+
+
+
+
+<div>
+
+<b>
+登録者：
+</b>
+
+${item.registeredBy || ""}
+
+</div>
+
+
+
+
+
+
+
+<!-- =========================
+明細表示
+========================= -->
+
+
+${
+item.details &&
+item.details.length
+?
+`
+
+<div style="
+margin-top:15px;
+">
+
+<b>
+明細
+</b>
+
+
+
+
+<table
+style="
+width:100%;
+margin-top:8px;
+border-collapse:collapse;
+font-size:14px;
+"
+>
+
+
+<tr>
+
+
+<th
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+税率
+</th>
+
+
+
+<th
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+金額
+</th>
+
+
+
+<th
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+科目
+</th>
+
+
+
+<th
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+摘要
+</th>
+
+
+
+</tr>
+
+
+
+
+${
+item.details.map(detail=>{
+
+
+return `
+
+<tr>
+
+
+<td
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+
+${detail.taxRate || ""}
+
+</td>
+
+
+
+<td
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+
+${Number(
+detail.amount || 0
+).toLocaleString()}円
+
+</td>
+
+
+
+<td
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+
+${detail.category || ""}
+
+</td>
+
+
+
+<td
+style="
+border:1px solid #ccc;
+padding:5px;
+"
+>
+
+${detail.item || ""}
+
+</td>
+
+
+
+</tr>
+
 `;
+
+
+
+}).join("")
+
+}
+
+
+
+
+</table>
+
+
+</div>
+
+
+`
+:
+""
+
+}
+
+
+
+
+
+
+<div style="
+margin-top:15px;
+">
+
+<b>
+OCR：
+</b>
+
+<br>
+
+${item.ocrText || ""}
+
+</div>
+
+
+
+
+
+
+
+${
+item.imageUrl
+?
+`
+
+<div style="
+margin-top:10px;
+">
+
+<a
+href="${item.imageUrl}"
+target="_blank"
+>
+
+領収書画像を開く
+
+</a>
+
+
+</div>
+
+`
+:
+""
+}
+
+
+
+
+
+</div>
+
+
+`;
+
+
 
     area.appendChild(
       div
     );
 
+
   });
+
+
+}
+
+// =========================
+// 詳細開閉
+// =========================
+
+function toggleReceiptDetail(no){
+
+
+  const area =
+    document.getElementById(
+      "detail-" + no
+    );
+
+
+  if(!area){
+    return;
+  }
+
+
+  if(area.style.display === "none"){
+
+    area.style.display =
+      "block";
+
+  }
+  else{
+
+    area.style.display =
+      "none";
+
+  }
+
 
 }
 
