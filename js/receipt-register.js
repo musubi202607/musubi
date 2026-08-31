@@ -1602,6 +1602,10 @@ async function saveExpense(){
                 ocrData?.ocrText || "",
 
 
+            details:
+
+               ocrData?.details || [],
+
             learnVendor:
 
                 document.getElementById(
