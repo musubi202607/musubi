@@ -1285,7 +1285,7 @@ function displayOCRResult(data){
 
         formatDisplayDate(
 
-            data.tradeDate
+            data.tradeDate || data.date
 
         )
 
