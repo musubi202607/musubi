@@ -946,48 +946,28 @@ async function executeOCR(imageUrl){
 
         ocrData = {
 
+    ...ocrData,
 
-            ...ocrData,
+    category:
+        vendor.category ||
+        ocrData.category,
 
+    paymentMethod:
+        vendor.paymentMethod ||
+        ocrData.paymentMethod,
 
+    taxRate:
+        convertTaxRate(
+            vendor.taxRate ||
+            ocrData.taxRate
+        ),
 
-            category:
+    invoiceNo:
+        ocrData.invoiceNo ||
+        vendor.invoiceNo ||
+        ""
 
-                vendor.category ||
-
-                ocrData.category,
-
-
-
-            paymentMethod:
-
-                vendor.paymentMethod ||
-
-                ocrData.paymentMethod,
-
-
-
-            taxRate:
-
-                convertTaxRate(
-
-                    vendor.taxRate ||
-
-                    ocrData.taxRate
-
-                ),
-
-
-
-            invoiceNo:
-
-                vendor.invoiceNo ||
-
-                ocrData.invoiceNo
-
-
-
-        };
+};
 
 
     }
@@ -1149,30 +1129,20 @@ async function getVendorMaster(supplier){
 
 
         const result =
-
-            parseJSON(
-
-                text
-
-            );
+          parseJSON(
+            text
+          );
 
 
+    if(
+        !result ||
+        !result.success ||
+     !result.data
+    ){
 
+      return null;
 
-
-        if(
-
-            !result.success ||
-
-            !result.data
-
-        ){
-
-
-            return null;
-
-
-        }
+    }
 
 
 
