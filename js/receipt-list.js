@@ -281,7 +281,11 @@ function displayReceipts(data){
       "receipt-card";
 
     const canceled =
-      item.check === "取消";
+       item.check === "取消";
+
+
+    const confirmed =
+       item.check === "確認済";
 
     div.innerHTML =
 
