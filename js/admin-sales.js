@@ -1421,52 +1421,108 @@ function mergeProducts(
 
   ];
 
+
   list.forEach(item=>{
+
 
     const name =
       item.name || "";
 
+
+    if(!name){
+      return;
+    }
+
+
     if(!result[name]){
+
 
       result[name] = {
 
-        name,
 
+        name:name,
+
+
+        // =========================
         // 商品カテゴリ
+        // APIから取得した販売時カテゴリ優先
+        // =========================
         category:
-         getCategoryName(item),
+          item.category ||
+          getCategoryName(item),
+
+
         qty:0,
+
 
         amount:0,
 
+
         cost:0,
+
 
         costTotal:0,
 
+
         grossProfit:0
+
 
       };
 
+
     }
+
+
 
     result[name].qty +=
       safeNumber(item.qty);
 
+
+
     result[name].amount +=
       safeNumber(item.amount);
+
+
 
     result[name].cost +=
       safeNumber(item.cost);
 
+
+
     result[name].costTotal +=
       safeNumber(item.costTotal);
+
+
 
     result[name].grossProfit +=
       safeNumber(item.grossProfit);
 
+
+
+    // =========================
+    // カテゴリ補正
+    // 同じ商品名でもカテゴリが空の場合対応
+    // =========================
+    if(
+      !result[name].category ||
+      result[name].category === "その他"
+    ){
+
+      if(item.category){
+
+        result[name].category =
+          item.category;
+
+      }
+
+    }
+
+
   });
 
+
   return Object.values(result);
+
 
 }
 
