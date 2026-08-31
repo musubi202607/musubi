@@ -1329,7 +1329,7 @@ function displayOCRResult(data){
 
         "amount",
 
-        data.amount
+        data.amount || data.total
 
     );
 
