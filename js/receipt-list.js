@@ -292,7 +292,17 @@ function displayReceipts(data){
 `
 <div>
 <b>${item.date || ""}</b>
-${canceled ? '<span style="color:red;margin-left:10px;">【取消】</span>' : ""}
+${
+canceled
+?
+'<span style="color:red;margin-left:10px;">【取消】</span>'
+:
+confirmed
+?
+'<span style="color:green;margin-left:10px;">【確認済】</span>'
+:
+'<span style="color:orange;margin-left:10px;">【未確認】</span>'
+}
 </div>
 
 <div>
@@ -322,11 +332,26 @@ item.imageUrl
 }
 
 ${
+!canceled && !confirmed
+?
+`
+<button onclick="confirmReceipt('${item.no}')">
+確認
+</button>
+`
+:
+""
+}
+
+
+${
 !canceled
 ?
-`<button onclick="cancelReceipt('${item.no}')">
+`
+<button onclick="cancelReceipt('${item.no}')">
 取消
-</button>`
+</button>
+`
 :
 ""
 }
@@ -740,5 +765,71 @@ async function cancelReceipt(no){
     );
 
   }
+
+}
+
+async function confirmReceipt(no){
+
+ if(
+  !confirm(
+   "確認済みにしますか？"
+  )
+ ){
+  return;
+ }
+
+
+ try{
+
+ const response =
+ await fetch(
+  `${API_URL}/api/receipt-confirm`,
+  {
+   method:"POST",
+   headers:{
+    "Content-Type":
+     "application/json"
+   },
+   body:
+    JSON.stringify({
+     no:no
+    })
+  }
+ );
+
+
+ const result =
+  await response.json();
+
+
+ if(!result.success){
+
+  alert(
+   "確認失敗"
+  );
+
+  return;
+
+ }
+
+
+ alert(
+  "確認しました"
+ );
+
+
+ loadReceipts();
+
+
+ }
+ catch(error){
+
+ console.error(error);
+
+ alert(
+  "確認失敗"
+ );
+
+ }
 
 }
