@@ -140,7 +140,6 @@ document.addEventListener(
 async function loadReceipts(){
 
 
-
   const year =
     document.getElementById(
       "search-year"
@@ -157,6 +156,18 @@ async function loadReceipts(){
 
 
 
+  // =========================
+  // 確認状態フィルター
+  // =========================
+
+  const check =
+    document.getElementById(
+      "search-check"
+    )
+    ?.value || "";
+
+
+
 
 
   try{
@@ -166,7 +177,7 @@ async function loadReceipts(){
 
       await fetch(
 
-        `${API_URL}/api/receipts?year=${year}&month=${month}`
+        `${API_URL}/api/receipts?year=${year}&month=${month}&check=${check}`
 
       );
 
@@ -236,15 +247,6 @@ async function loadReceipts(){
 
 
 }
-
-
-
-
-
-
-
-
-
 // =========================
 // 領収書表示
 // 展開・明細表示対応
