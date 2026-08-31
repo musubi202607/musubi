@@ -1,4 +1,4 @@
-const CACHE_NAME = "musubi-pwa-v2.1";
+const CACHE_NAME = "musubi-pwa-v2.2";
 
 
 const CACHE_FILES = [
