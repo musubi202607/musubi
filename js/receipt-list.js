@@ -168,50 +168,68 @@ async function loadReceipts(){
 
 
 
+  const url =
+    `${API_URL}/api/receipts` +
+    `?year=${encodeURIComponent(year)}` +
+    `&month=${encodeURIComponent(month)}` +
+    `&check=${encodeURIComponent(check)}`;
+
+
+
+  console.log(
+    "Receipt Request URL",
+    url
+  );
+
 
 
   try{
 
 
     const response =
-
       await fetch(
-
-        `${API_URL}/api/receipts?year=${year}&month=${month}&check=${check}`
-
+        url
       );
 
 
 
-
-
     const result =
-
       await response.json();
 
 
 
-
-
     console.log(
-
       "Receipt List",
-
       result
-
     );
 
 
+
+    if(!result.success){
+
+      console.error(
+        "receipt api error",
+        result
+      );
+
+
+      document
+        .getElementById(
+          "receipt-list"
+        )
+        .innerHTML =
+        "取得失敗";
+
+
+      return;
+
+    }
 
 
 
     displayReceipts(
-
       result.data || []
-
     );
-
-
 
 
 
@@ -220,33 +238,26 @@ async function loadReceipts(){
   catch(error){
 
 
-
     console.error(
-
       "receipt list error",
-
       error
-
     );
 
 
 
     document
-
       .getElementById(
         "receipt-list"
       )
-
       .innerHTML =
-
       "取得失敗";
-
 
 
   }
 
 
 }
+
 // =========================
 // 領収書表示
 // 展開・明細表示対応
