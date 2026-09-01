@@ -101,75 +101,326 @@ async function loadOrderItems(){
 
 }
 
+// =========================
+// 注文送信
+// 商品ID対応版
+// =========================
 async function sendOrder(){
 
   const sessionId =
     localStorage.getItem("sessionId");
 
-  console.log("sessionId=", sessionId);
+
+  console.log(
+    "sessionId=",
+    sessionId
+  );
+
+
 
   const customerName =
-    document.getElementById("customerName").value;
+    document.getElementById(
+      "customerName"
+    ).value;
+
 
   const customerTel =
-    document.getElementById("customerTel").value;
-  
+    document.getElementById(
+      "customerTel"
+    ).value;
+
+
+
   const pickupTime =
-    document.getElementById("pickupTime").value;
-      if(!pickupTime){
-       alert("受取時間を選択してください");
-       return;
-      }
-  
-  
-  const memo =
-    document.getElementById("memo").value;
-
-  const payload = {
-    sessionId,
-    customerName,
-    customerTel,
-    pickupTime,
-    memo
-  };
-
-  console.log(payload);
-
-  const res =
-    await fetch(
-      API_URL + "/api/order",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(payload)
-      }
-    );
-
-  const json =
-    await res.json();
-
-  console.log(json);
-
-  if(json.success){
-  sessionStorage.setItem(
-    "orderNo",
-    json.orderNo
-  );
-  sessionStorage.setItem(
-    "pickupTime",
     document.getElementById(
       "pickupTime"
-    ).value
-  );
-   alert("注文完了");
-  location.href =
-    "complete.html";
-  }else{
+    ).value;
+
+
+
+  if(!pickupTime){
+
     alert(
-      "注文送信エラー"
+      "受取時間を選択してください"
     );
+
+    return;
+
   }
+
+
+
+  const memo =
+    document.getElementById(
+      "memo"
+    ).value;
+
+
+
+
+  // =========================
+  // カート取得
+  // =========================
+
+  const cartRes =
+    await fetch(
+      API_URL +
+      "/api/cart?sessionId=" +
+      sessionId
+    );
+
+
+  const cart =
+    await cartRes.json();
+
+
+
+  if(
+    !cart.length
+  ){
+
+    alert(
+      "カートが空です"
+    );
+
+    return;
+
+  }
+
+
+
+
+  // =========================
+  // 商品マスタ取得
+  // =========================
+
+  const productsRes =
+    await fetch(
+      API_URL +
+      "/api/products"
+    );
+
+
+  const products =
+    await productsRes.json();
+
+
+
+
+  // =========================
+  // 注文商品作成
+  // 商品ID保持
+  // =========================
+
+  const items =
+
+    cart.map(item=>{
+
+
+      const product =
+
+        products.find(
+
+          p =>
+
+          String(p.id) ===
+          String(item.id)
+
+        );
+
+
+
+      if(!product){
+
+        return null;
+
+      }
+
+
+
+      return {
+
+
+        // 商品ID
+        id:
+          item.id,
+
+
+        // 商品名
+        name:
+          product.name,
+
+
+        // 数量
+        qty:
+          Number(item.qty),
+
+
+        // 単価
+        price:
+          Number(product.price)
+
+
+      };
+
+
+    })
+    .filter(Boolean);
+
+
+
+
+  if(
+    !items.length
+  ){
+
+    alert(
+      "商品情報取得エラー"
+    );
+
+    return;
+
+  }
+
+
+
+
+  // =========================
+  // 送信データ
+  // =========================
+
+  const payload = {
+
+
+    sessionId,
+
+
+    customerName,
+
+
+    customerTel,
+
+
+    pickupTime,
+
+
+    memo,
+
+
+    items
+
+
+  };
+
+
+
+  console.log(
+    "ORDER PAYLOAD",
+    payload
+  );
+
+
+
+
+
+  // =========================
+  // 注文送信
+  // =========================
+
+  const res =
+
+    await fetch(
+
+      API_URL +
+      "/api/order",
+
+      {
+
+        method:
+          "POST",
+
+
+        headers:{
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+
+        body:
+          JSON.stringify(
+            payload
+          )
+
+      }
+
+    );
+
+
+
+
+  const json =
+
+    await res.json();
+
+
+
+
+  console.log(
+    json
+  );
+
+
+
+
+  if(
+    json.success
+  ){
+
+
+    sessionStorage.setItem(
+
+      "orderNo",
+
+      json.orderNo
+
+    );
+
+
+
+    sessionStorage.setItem(
+
+      "pickupTime",
+
+      pickupTime
+
+    );
+
+
+
+    alert(
+      "注文完了"
+    );
+
+
+
+    location.href =
+      "complete.html";
+
+
+
+  }else{
+
+
+    alert(
+
+      "注文送信エラー"
+
+    );
+
+
+  }
+
 
 }
