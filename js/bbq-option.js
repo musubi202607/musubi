@@ -786,19 +786,3 @@ async function sendBbqOptionOrder(){
 
 
 }
-
-// =========================
-// 初期化確認
-// =========================
-window.addEventListener(
-  "DOMContentLoaded",
-  ()=>{
-
-    loadReservations();
-
-    loadBbqOptions();
-
-    renderCart();
-
-  }
-);
