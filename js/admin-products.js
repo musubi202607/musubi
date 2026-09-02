@@ -245,9 +245,27 @@ async function loadProducts(){
         location.search
       ).get("from") === "kitchen";
 
-    data
-      .filter(item => item.id)
-      .sort((a,b)=>{
+    const showStopped =
+  document.getElementById(
+    "showStoppedProducts"
+  )?.checked || false;
+
+
+data
+  .filter(item => {
+
+    if(!item.id){
+      return false;
+    }
+
+    if(showStopped){
+      return true;
+    }
+
+    return item.status === "販売中";
+
+  })
+  .sort((a,b)=>{
 
         // キッチンカーから開いた場合だけ
         if(fromKitchen){
