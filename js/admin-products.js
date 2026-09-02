@@ -499,10 +499,10 @@ async function loadProducts(){
                 </option>
 
                 <option
-                  value="bbq-option"
-                  ${item.type==="bbq-option"?"selected":""}
+                  value="bbq_option"
+                  ${item.type==="bbq_option"?"selected":""}
                 >
-                  bbq-option
+                  bbq_option
                 </option>
 
                 <option
