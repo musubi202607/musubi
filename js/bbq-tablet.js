@@ -549,7 +549,7 @@ async function loadBbqOptions(){
   product.status !== "販売中" ||
   product.tablet !== "○" ||
   (
-    product.type !== "bbq-option" &&
+    product.type !== "bbq_option" &&
     product.type !== "drink"
   )
 ){
@@ -612,7 +612,7 @@ onclick="addToCart(${product.id},'${product.name}',${product.price})">
 </div>`;
 
 
-      if(product.type==="bbq-option"){
+      if(product.type==="bbq_option"){
         optionGrid.innerHTML+=card;
       }
 
