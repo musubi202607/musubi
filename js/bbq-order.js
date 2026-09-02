@@ -235,36 +235,30 @@ async function sendBbqOrder() {
 
     const orderData = {
 
+  orderType:
+    'BBQ',
 
-      orderType:
-        'BBQ',
+  productId:
+    data.productId || "",
 
+  useDate:
+    data.date,
 
-      useDate:
-        data.date,
+  plan:
+    data.productName,
 
+  unitPrice:
+    Number(data.price || 0),
 
-      plan:
-        data.productName,
+  people,
 
+  customerName,
 
-      unitPrice:
-        Number(data.price || 0),
+  customerTel,
 
+  memo
 
-      people,
-
-
-      customerName,
-
-
-      customerTel,
-
-
-      memo
-
-
-    };
+};
 
 
 
