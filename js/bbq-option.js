@@ -282,7 +282,7 @@ async function loadBbqOptions(){
 
 
         if(
-          product.type !== "bbq-option" &&
+          product.type !== "bbq_option" &&
           product.type !== "drink" &&
           product.type !== "onigiri-drink"
         ){
@@ -354,7 +354,7 @@ ${product.price}
 `;
 
 
-        if(product.type==="bbq-option"){
+        if(product.type==="bbq_option"){
 
           optionGrid.innerHTML += card;
 
@@ -448,12 +448,17 @@ function addToCart(
 
     bbqCart.push({
 
-      id,
-      name,
-      price:Number(price),
-      qty
+  productId:id,
 
-    });
+  id,
+
+  name,
+
+  price:Number(price),
+
+  qty
+
+});
 
   }
 
