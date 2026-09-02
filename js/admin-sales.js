@@ -1386,7 +1386,7 @@ function getCategoryName(item){
     case "bbq":
       return "BBQ";
 
-    case "bbq-option":
+    case "bbq_option":
       return "BBQオプション";
 
     case "drink":
