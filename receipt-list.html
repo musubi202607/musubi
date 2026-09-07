@@ -17,9 +17,7 @@
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -33,13 +31,9 @@
 
 </header>
 
-
-
 <main class="container">
 
-
 <div class="shop-info-card">
-
 
 <a
 id="back-btn"
@@ -57,14 +51,9 @@ border-radius:8px;
 ← 戻る
 </a>
 
-
-
-
 <h2>
 検索
 </h2>
-
-
 
 <div
 style="
@@ -72,9 +61,11 @@ display:flex;
 gap:10px;
 margin-bottom:20px;
 flex-wrap:wrap;
+align-items:center;
 "
 >
 
+<!-- 年 -->
 
 <select id="search-year">
 
@@ -84,7 +75,7 @@ flex-wrap:wrap;
 
 </select>
 
-
+<!-- 月 -->
 
 <select id="search-month">
 
@@ -92,61 +83,54 @@ flex-wrap:wrap;
 月
 </option>
 
-<option value="1">
-1月
-</option>
+<option value="1">1月</option>
+<option value="2">2月</option>
+<option value="3">3月</option>
+<option value="4">4月</option>
+<option value="5">5月</option>
+<option value="6">6月</option>
+<option value="7">7月</option>
+<option value="8">8月</option>
+<option value="9">9月</option>
+<option value="10">10月</option>
+<option value="11">11月</option>
+<option value="12">12月</option>
 
-<option value="2">
-2月
-</option>
+</select>
 
-<option value="3">
-3月
-</option>
+<!-- 勘定科目 -->
 
-<option value="4">
-4月
-</option>
+<select id="search-category">
 
-<option value="5">
-5月
-</option>
-
-<option value="6">
-6月
-</option>
-
-<option value="7">
-7月
-</option>
-
-<option value="8">
-8月
-</option>
-
-<option value="9">
-9月
-</option>
-
-<option value="10">
-10月
-</option>
-
-<option value="11">
-11月
-</option>
-
-<option value="12">
-12月
+<option value="">
+勘定科目
 </option>
 
 </select>
 
+<!-- 事業区分 -->
 
+<select id="search-business">
 
-<!-- =========================
-確認状態フィルター追加
-========================= -->
+<option value="">
+事業区分
+</option>
+
+<option value="店舗">
+店舗
+</option>
+
+<option value="キッチンカー">
+キッチンカー
+</option>
+
+<option value="共通">
+共通
+</option>
+
+</select>
+
+<!-- 確認状態 -->
 
 <select id="search-check">
 
@@ -168,51 +152,101 @@ flex-wrap:wrap;
 
 </select>
 
-
-
 <button id="search-button">
 検索
 </button>
 
+</div>
 
-<button id="receipt-csv-button">
-領収書CSV
-</button>
+<!-- =========================
+検索結果集計
+========================= -->
 
+<div
+id="receipt-summary"
+style="
+display:flex;
+gap:30px;
+margin-bottom:20px;
+padding:12px;
+background:#f5f5f5;
+border-radius:8px;
+font-weight:bold;
+"
+>
 
-<button id="accounting-csv-button">
-会計CSV
-</button>
+<div>
 
+検索結果：
+
+<span id="receipt-count">
+
+0
+
+</span>
+
+件
 
 </div>
 
+<div>
 
+合計金額：
 
+<span id="receipt-total">
 
+0
+
+</span>
+
+円
+
+</div>
+
+</div>
+
+<!-- CSV -->
+
+<div
+style="
+display:flex;
+gap:10px;
+margin-bottom:20px;
+"
+>
+
+<button id="receipt-csv-button">
+
+領収書CSV
+
+</button>
+
+<button id="accounting-csv-button">
+
+会計CSV
+
+</button>
+
+</div>
 
 <h2>
+
 領収書一覧
+
 </h2>
 
-
-<div id="receipt-list">
+<div
+id="receipt-list">
 
 読み込み中...
 
 </div>
 
-
-
 </div>
-
 
 </main>
 
-
-
 <script>
-
 
 // =========================
 // 戻る先設定
@@ -223,17 +257,13 @@ new URLSearchParams(
 location.search
 );
 
-
 const from =
 params.get("from");
-
 
 const backBtn =
 document.getElementById(
 "back-btn"
 );
-
-
 
 if(from === "staff"){
 
@@ -254,14 +284,7 @@ backBtn.href =
 
 }
 
-
 </script>
-
-
 
 <script src="js/receipt-list.js"></script>
 
-
-</body>
-
-</html>
