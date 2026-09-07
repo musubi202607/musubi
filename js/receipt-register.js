@@ -33,7 +33,7 @@ let receiptImageUrl = "";
 
 let ocrData = null;
 
-
+let isSaving = false;
 
 
 
@@ -1445,304 +1445,190 @@ function formatDisplayDate(date){
 // =========================
 // 経費登録
 // =========================
-
 async function saveExpense(){
 
+    if(isSaving){
+        return;
+    }
+
+    isSaving = true;
+
+    const saveButton =
+        document.getElementById(
+            "save-expense"
+        );
+
+    if(saveButton){
+
+        saveButton.disabled = true;
+        saveButton.textContent = "登録中...";
+
+    }
 
     try{
 
-
         const getValue = id => {
 
-
             const el =
-
-                document.getElementById(
-                    id
-                );
-
+                document.getElementById(id);
 
             return el
-
-                ?
-
-                el.value.trim()
-
-                :
-
-                "";
-
+                ? el.value.trim()
+                : "";
 
         };
 
-
-
-
-
         const data = {
 
-
             businessType:
-
                 getValue(
                     "business-type"
                 ),
 
-
             category:
-
                 getValue(
                     "category"
                 ),
 
-
             supplier:
-
                 getValue(
                     "supplier"
                 ),
 
-
             date:
-
                 getValue(
                     "trade-date"
                 ),
 
-
             amount:
-
                 Number(
-
                     getValue(
                         "amount"
-                    )
-
-                    ||
-
-                    0
-
+                    ) || 0
                 ),
-
 
             tax:
-
                 Number(
-
                     getValue(
                         "tax"
-                    )
-
-                    ||
-
-                    0
-
+                    ) || 0
                 ),
 
-
             taxRate:
-
                 getValue(
                     "tax-rate"
                 ),
 
-
             invoiceNo:
-
                 getValue(
                     "invoice-no"
                 ),
 
-
             paymentMethod:
-
                 getValue(
                     "payment-method"
                 ),
 
-
             imageUrl:
-
                 receiptImageUrl,
 
-
             ocrText:
-
                 ocrData?.ocrText || "",
 
-
             details:
-
-               ocrData?.details || [],
+                ocrData?.details || [],
 
             learnVendor:
-
                 document.getElementById(
                     "learn-vendor"
                 )
-
                 ?
-
                 document.getElementById(
                     "learn-vendor"
                 ).checked
-
                 :
-
                 false,
 
-
             registeredBy:
-
                 "staff"
 
-
         };
-
-
-
-
-
-
 
         // =========================
         // 入力チェック
         // =========================
 
-
         if(!ocrData){
 
-
             alert(
-
                 "先にOCR解析してください"
-
             );
-
 
             return;
 
-
         }
-
-
 
         if(!data.businessType){
 
-
             alert(
-
                 "事業区分を入力してください"
-
             );
-
 
             return;
 
-
         }
-
-
 
         if(!data.category){
 
-
             alert(
-
                 "勘定科目を入力してください"
-
             );
-
 
             return;
 
-
         }
-
-
 
         if(!data.amount){
 
-
             alert(
-
                 "金額を入力してください"
-
             );
-
 
             return;
 
-
         }
 
-
-
-
-
-
-
         const response =
-
-
             await fetch(
-
                 `${API_URL}/api/expenses`,
-
                 {
 
-
                     method:
-
                         "POST",
-
-
 
                     headers:{
 
-
                         "Content-Type":
-
                             "application/json"
-
 
                     },
 
-
-
                     body:
-
                         JSON.stringify({
 
-
                             mode:
-
                                 "saveExpense",
-
 
                             ...data
 
-
                         })
-
 
                 }
 
-
             );
-
-
-
-
-
-
-        const text =
+                const text =
 
             await response.text();
-
-
-
-
 
         console.log(
 
@@ -1752,10 +1638,6 @@ async function saveExpense(){
 
         );
 
-
-
-
-
         const result =
 
             parseJSON(
@@ -1764,13 +1646,7 @@ async function saveExpense(){
 
             );
 
-
-
-
-
-
         if(!result.success){
-
 
             throw new Error(
 
@@ -1780,14 +1656,7 @@ async function saveExpense(){
 
             );
 
-
         }
-
-
-
-
-
-
 
         alert(
 
@@ -1795,19 +1664,11 @@ async function saveExpense(){
 
         );
 
-
-
         location.reload();
-
-
-
-
 
     }
 
     catch(error){
-
-
 
         console.error(
 
@@ -1817,26 +1678,29 @@ async function saveExpense(){
 
         );
 
-
-
         alert(
 
             "保存に失敗しました"
 
         );
 
+    }
+
+    finally{
+
+        isSaving = false;
+
+        if(saveButton){
+
+            saveButton.disabled = false;
+
+            saveButton.textContent = "登録";
+
+        }
 
     }
 
-
 }
-
-
-
-
-
-
-
 
 // =========================
 // Cloudinaryアップロード確認
