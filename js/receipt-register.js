@@ -1645,7 +1645,18 @@ async function saveExpense(){
                 text
 
             );
+        if(result.duplicate){
 
+    alert(
+        "この領収書はすでに登録されています\nNo:" + result.no
+    );
+
+    location.reload();
+
+    return;
+
+}
+        
         if(!result.success){
 
             throw new Error(
