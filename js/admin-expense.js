@@ -59,13 +59,30 @@ function displaySummary(data){
 
   document.getElementById("expense-total").innerHTML=`
 
-<h3>合計：${Number(data.total||0).toLocaleString()} 円</h3>
+<h2>合計：${Number(data.total||0).toLocaleString()} 円</h2>
 
-<div class="receipt-card">
-<div>領収書件数：${data.count||0} 件</div>
-<div>確認済：${data.confirmed||0} 件</div>
-<div>未確認：${data.unchecked||0} 件</div>
-<div>取消：${data.canceled||0} 件</div>
+<div class="summary-grid">
+
+<div class="summary-card">
+<h3>領収書件数</h3>
+<p>${data.count||0}</p>
+</div>
+
+<div class="summary-card">
+<h3>確認済</h3>
+<p>${data.confirmed||0}</p>
+</div>
+
+<div class="summary-card">
+<h3>未確認</h3>
+<p>${data.unchecked||0}</p>
+</div>
+
+<div class="summary-card">
+<h3>取消</h3>
+<p>${data.canceled||0}</p>
+</div>
+
 </div>
 
 `;
@@ -77,68 +94,76 @@ function displaySummary(data){
   // 勘定科目別
   // =========================
 
-  area.innerHTML+="<h3>勘定科目別</h3>";
+  area.innerHTML+='<div class="summary-section"><h3>勘定科目別</h3>';
 
   data.items.forEach(item=>{
 
     area.innerHTML+=`
-    <div class="receipt-card">
-      <div>${item.category}</div>
-      <div>${Number(item.amount).toLocaleString()} 円</div>
+    <div class="summary-item">
+      <div class="summary-item-name">${item.category}</div>
+      <div class="summary-item-amount">${Number(item.amount).toLocaleString()} 円</div>
     </div>
     `;
 
   });
+
+  area.innerHTML+="</div>";
 
   // =========================
   // 支払方法別
   // =========================
 
-  area.innerHTML+="<h3>支払方法別</h3>";
+  area.innerHTML+='<div class="summary-section"><h3>支払方法別</h3>';
 
   data.paymentItems.forEach(item=>{
 
     area.innerHTML+=`
-    <div class="receipt-card">
-      <div>${item.payment}</div>
-      <div>${Number(item.amount).toLocaleString()} 円</div>
+    <div class="summary-item">
+      <div class="summary-item-name">${item.payment}</div>
+      <div class="summary-item-amount">${Number(item.amount).toLocaleString()} 円</div>
     </div>
     `;
 
   });
+
+  area.innerHTML+="</div>";
 
   // =========================
   // 税率別
   // =========================
 
-  area.innerHTML+="<h3>税率別</h3>";
+  area.innerHTML+='<div class="summary-section"><h3>税率別</h3>';
 
   data.taxItems.forEach(item=>{
 
     area.innerHTML+=`
-    <div class="receipt-card">
-      <div>${item.tax}</div>
-      <div>${Number(item.amount).toLocaleString()} 円</div>
+    <div class="summary-item">
+      <div class="summary-item-name">${item.tax}</div>
+      <div class="summary-item-amount">${Number(item.amount).toLocaleString()} 円</div>
     </div>
     `;
 
   });
+
+  area.innerHTML+="</div>";
 
   // =========================
   // 事業区分別
   // =========================
 
-  area.innerHTML+="<h3>事業区分別</h3>";
+  area.innerHTML+='<div class="summary-section"><h3>事業区分別</h3>';
 
   data.businessItems.forEach(item=>{
 
     area.innerHTML+=`
-    <div class="receipt-card">
-      <div>${item.business}</div>
-      <div>${Number(item.amount).toLocaleString()} 円</div>
+    <div class="summary-item">
+      <div class="summary-item-name">${item.business}</div>
+      <div class="summary-item-amount">${Number(item.amount).toLocaleString()} 円</div>
     </div>
     `;
 
   });
+
+  area.innerHTML+="</div>";
 
 }
