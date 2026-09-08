@@ -18,6 +18,19 @@ document.addEventListener("DOMContentLoaded",()=>{
     year.value=now.getFullYear();
   }
 
+  const params=new URLSearchParams(location.search);
+  const check=params.get("check");
+
+  if(check){
+
+  const searchCheck=document.getElementById("search-check");
+
+  if(searchCheck){
+  searchCheck.value=check;
+  }
+
+  }
+
   const searchButton=document.getElementById("search-button");
   if(searchButton){
     searchButton.addEventListener("click",loadReceipts);
