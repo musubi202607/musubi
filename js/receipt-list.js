@@ -9,6 +9,10 @@ const year=document.getElementById("search-year");
 const now=new Date();
 
 
+// =========================
+// 年設定
+// =========================
+
 if(year){
 
 for(let y=now.getFullYear();y>=2025;y--){
@@ -22,32 +26,60 @@ year.appendChild(option);
 
 }
 
-year.value=now.getFullYear();
-
 }
 
 
+// =========================
 // URLパラメータ取得
+// =========================
+
 const params=new URLSearchParams(location.search);
 
-const check=params.get("check");
+const paramYear=params.get("year");
+const paramMonth=params.get("month");
+const paramCheck=params.get("check");
 
 
-if(check){
+// 年引継ぎ
 
-const searchCheck=document.getElementById("search-check");
+if(paramYear && year){
 
-if(searchCheck){
-
-searchCheck.value=check;
-
-}
+year.value=paramYear;
 
 }
 
 
+// 月引継ぎ
 
-const searchButton=document.getElementById("search-button");
+const month=
+document.getElementById("search-month");
+
+if(paramMonth && month){
+
+month.value=paramMonth;
+
+}
+
+
+// 状態引継ぎ
+
+const check=
+document.getElementById("search-check");
+
+if(paramCheck && check){
+
+check.value=paramCheck;
+
+}
+
+
+// =========================
+// ボタン設定
+// =========================
+
+const searchButton=
+document.getElementById("search-button");
+
 
 if(searchButton){
 
@@ -60,7 +92,9 @@ loadReceipts
 
 
 
-const receiptCsvButton=document.getElementById("receipt-csv-button");
+const receiptCsvButton=
+document.getElementById("receipt-csv-button");
+
 
 if(receiptCsvButton){
 
@@ -73,7 +107,9 @@ exportReceiptCSV
 
 
 
-const accountingCsvButton=document.getElementById("accounting-csv-button");
+const accountingCsvButton=
+document.getElementById("accounting-csv-button");
+
 
 if(accountingCsvButton){
 
@@ -85,10 +121,14 @@ exportAccountingCSV
 }
 
 
+// 初回表示
+
 loadReceipts();
 
 
 });
+
+
 
 
 // =========================
@@ -97,11 +137,17 @@ loadReceipts();
 
 async function loadReceipts(){
 
-const year=document.getElementById("search-year")?.value||"";
+const year=
+document.getElementById("search-year")?.value || "";
 
-const month=document.getElementById("search-month")?.value||"";
 
-const check=document.getElementById("search-check")?.value||"";
+const month=
+document.getElementById("search-month")?.value || "";
+
+
+const check=
+document.getElementById("search-check")?.value || "";
+
 
 
 const url=
@@ -111,18 +157,24 @@ const url=
 `&check=${encodeURIComponent(check)}`;
 
 
+
 console.log(
 "Receipt Request URL",
 url
 );
 
 
+
 try{
 
 
-const response=await fetch(url);
+const response=
+await fetch(url);
 
-const result=await response.json();
+
+const result=
+await response.json();
+
 
 
 console.log(
@@ -134,7 +186,9 @@ result
 
 if(!result.success){
 
-document.getElementById("receipt-list").innerHTML=
+document.getElementById(
+"receipt-list"
+).innerHTML=
 "取得失敗";
 
 return;
@@ -144,7 +198,7 @@ return;
 
 
 displayReceipts(
-result.data||[]
+result.data || []
 );
 
 
@@ -158,7 +212,9 @@ error
 );
 
 
-document.getElementById("receipt-list").innerHTML=
+document.getElementById(
+"receipt-list"
+).innerHTML=
 "取得失敗";
 
 
@@ -167,14 +223,15 @@ document.getElementById("receipt-list").innerHTML=
 
 }
 
-
 // =========================
 // 領収書表示
 // =========================
 
 function displayReceipts(data){
 
-const area=document.getElementById("receipt-list");
+const area=
+document.getElementById("receipt-list");
+
 
 if(!area)return;
 
@@ -192,17 +249,26 @@ return;
 area.innerHTML="";
 
 
+
 data.forEach(item=>{
 
 
-const div=document.createElement("div");
+const div=
+document.createElement("div");
 
-div.className="receipt-card";
+
+div.className=
+"receipt-card";
 
 
-const canceled=item.check==="取消";
 
-const confirmed=item.check==="確認済";
+const canceled=
+item.check==="取消";
+
+
+const confirmed=
+item.check==="確認済";
+
 
 
 let status="";
@@ -213,17 +279,21 @@ if(canceled){
 status=
 '<span style="color:red;">【取消】</span>';
 
-}else if(confirmed){
+}
+else if(confirmed){
 
 status=
 '<span style="color:green;">【確認済】</span>';
 
-}else{
+}
+else{
 
 status=
 '<span style="color:orange;">【未確認】</span>';
 
 }
+
+
 
 
 div.innerHTML=`
@@ -254,36 +324,56 @@ ${item.paymentMethod||""}
 </div>
 
 
+
 <div class="receipt-buttons">
+
 
 <button onclick="toggleReceiptDetail('${item.no}',this)">
 詳細表示
 </button>
 
 
-${!canceled&&!confirmed?`
-
+${
+!canceled&&!confirmed
+?
+`
 <button onclick="confirmReceipt('${item.no}')">
 確認
 </button>
+`
+:
+""
+}
 
-`:""}
 
 
-${!canceled?`
-
+${
+!canceled
+?
+`
 <button onclick="cancelReceipt('${item.no}')">
 取消
 </button>
+`
+:
+""
+}
 
-`:""}
 
 
 </div>
 
 
+
+
 <div id="detail-${item.no}"
-style="display:none;margin-top:15px;padding:12px;background:#f5f5f5;border-radius:8px;">
+style="
+display:none;
+margin-top:15px;
+padding:12px;
+background:#f5f5f5;
+border-radius:8px;
+">
 
 
 <div>
@@ -316,24 +406,37 @@ style="display:none;margin-top:15px;padding:12px;background:#f5f5f5;border-radiu
 </div>
 
 
-<div>
+
+<div style="margin-top:10px;">
+
 <b>OCR内容</b><br>
+
 ${item.ocrText||""}
+
 </div>
 
 
-${item.imageUrl?`
 
+${
+item.imageUrl
+?
+`
 <div style="margin-top:10px;">
+
 <a href="${item.imageUrl}" target="_blank">
 領収書画像を開く
 </a>
-</div>
-
-`:""}
-
 
 </div>
+`
+:
+""
+}
+
+
+
+</div>
+
 
 `;
 
@@ -341,18 +444,22 @@ ${item.imageUrl?`
 area.appendChild(div);
 
 
+
 });
 
 
 }
 
+
+
 // =========================
 // 詳細開閉
 // =========================
 
 function toggleReceiptDetail(no,button){
 
-const area=document.getElementById(
+const area=
+document.getElementById(
 "detail-"+no
 );
 
@@ -360,26 +467,37 @@ const area=document.getElementById(
 if(!area)return;
 
 
+
 if(area.style.display==="none"){
+
 
 area.style.display="block";
 
+
 if(button){
+
 button.textContent="閉じる";
+
 }
+
 
 }else{
 
+
 area.style.display="none";
 
+
 if(button){
+
 button.textContent="詳細表示";
-}
 
 }
 
+
 }
 
+
+}
 
 // =========================
 // CSV共通ダウンロード
@@ -387,19 +505,16 @@ button.textContent="詳細表示";
 
 function downloadCSV(data,filename){
 
-
-const csv=data.map(row=>{
-
+const csv=
+data.map(row=>{
 
 return row.map(value=>{
-
 
 if(value===null || value===undefined){
 
 return "";
 
 }
-
 
 return '"' +
 String(value)
@@ -415,24 +530,25 @@ String(value)
 
 
 
-const blob=new Blob(
-
+const blob=
+new Blob(
 [
 "\uFEFF"+csv
 ],
-
 {
 type:"text/csv;charset=utf-8;"
 }
-
 );
 
 
 
-const url=URL.createObjectURL(blob);
+const url=
+URL.createObjectURL(blob);
 
 
-const link=document.createElement("a");
+
+const link=
+document.createElement("a");
 
 
 link.href=url;
@@ -456,7 +572,6 @@ URL.revokeObjectURL(url);
 
 async function exportReceiptCSV(){
 
-
 const year=
 document.getElementById("search-year")?.value||"";
 
@@ -468,14 +583,15 @@ document.getElementById("search-month")?.value||"";
 try{
 
 
-const response=await fetch(
-
+const response=
+await fetch(
 `${API_URL}/api/receipt-csv?year=${year}&month=${month}`
-
 );
 
 
-const result=await response.json();
+
+const result=
+await response.json();
 
 
 
@@ -492,11 +608,8 @@ return;
 
 
 downloadCSV(
-
 result.data,
-
 "領収書一覧.csv"
-
 );
 
 
@@ -519,6 +632,7 @@ alert(
 
 
 
+
 // =========================
 // 会計CSV出力
 // =========================
@@ -529,14 +643,15 @@ async function exportAccountingCSV(){
 try{
 
 
-const response=await fetch(
-
+const response=
+await fetch(
 `${API_URL}/api/accounting-csv`
-
 );
 
 
-const result=await response.json();
+
+const result=
+await response.json();
 
 
 
@@ -553,11 +668,8 @@ return;
 
 
 downloadCSV(
-
 result.data,
-
 "会計データ.csv"
-
 );
 
 
@@ -578,143 +690,61 @@ alert(
 
 }
 
-// =========================
-// 詳細開閉
-// =========================
 
-function toggleReceiptDetail(no,button){
-
-const area=document.getElementById(
-"detail-"+no
-);
-
-
-if(!area)return;
-
-
-if(area.style.display==="none"){
-
-area.style.display="block";
-
-if(button){
-button.textContent="閉じる";
-}
-
-}else{
-
-area.style.display="none";
-
-if(button){
-button.textContent="詳細表示";
-}
-
-}
-
-}
 
 
 // =========================
-// CSV共通ダウンロード
+// 領収書取消
 // =========================
 
-function downloadCSV(data,filename){
+async function cancelReceipt(no){
 
 
-const csv=data.map(row=>{
+if(
+!confirm(
+"この領収書を取消しますか？"
+)
+){
 
-
-return row.map(value=>{
-
-
-if(value===null || value===undefined){
-
-return "";
+return;
 
 }
 
 
-return '"' +
-String(value)
-.replace(/"/g,'""')
-+
-'"';
+
+try{
 
 
-}).join(",");
-
-
-}).join("\n");
-
-
-
-const blob=new Blob(
-
-[
-"\uFEFF"+csv
-],
-
+const response=
+await fetch(
+`${API_URL}/api/receipt-cancel`,
 {
-type:"text/csv;charset=utf-8;"
-}
 
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify({
+no:no
+})
+
+}
 );
 
 
 
-const url=URL.createObjectURL(blob);
-
-
-const link=document.createElement("a");
-
-
-link.href=url;
-
-link.download=filename;
-
-
-link.click();
-
-
-URL.revokeObjectURL(url);
-
-
-}
-
-
-
-// =========================
-// 領収書CSV出力
-// =========================
-
-async function exportReceiptCSV(){
-
-
-const year=
-document.getElementById("search-year")?.value||"";
-
-
-const month=
-document.getElementById("search-month")?.value||"";
-
-
-try{
-
-
-const response=await fetch(
-
-`${API_URL}/api/receipt-csv?year=${year}&month=${month}`
-
-);
-
-
-const result=await response.json();
+const result=
+await response.json();
 
 
 
 if(!result.success){
 
 alert(
-"領収書CSV取得失敗"
+"取消に失敗しました"
 );
 
 return;
@@ -723,13 +753,12 @@ return;
 
 
 
-downloadCSV(
-
-result.data,
-
-"領収書一覧.csv"
-
+alert(
+"取消しました"
 );
+
+
+loadReceipts();
 
 
 
@@ -740,7 +769,7 @@ console.error(error);
 
 
 alert(
-"領収書CSV出力失敗"
+"取消に失敗しました"
 );
 
 
@@ -751,31 +780,59 @@ alert(
 
 
 
+
 // =========================
-// 会計CSV出力
+// 領収書確認済
 // =========================
 
-async function exportAccountingCSV(){
+async function confirmReceipt(no){
+
+
+if(
+!confirm(
+"確認済みにしますか？"
+)
+){
+
+return;
+
+}
+
 
 
 try{
 
 
-const response=await fetch(
+const response=
+await fetch(
+`${API_URL}/api/receipt-confirm`,
+{
 
-`${API_URL}/api/accounting-csv`
+method:"POST",
 
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify({
+no:no
+})
+
+}
 );
 
 
-const result=await response.json();
+
+const result=
+await response.json();
 
 
 
 if(!result.success){
 
 alert(
-"会計CSV取得失敗"
+"確認失敗"
 );
 
 return;
@@ -784,13 +841,13 @@ return;
 
 
 
-downloadCSV(
-
-result.data,
-
-"会計データ.csv"
-
+alert(
+"確認しました"
 );
+
+
+
+loadReceipts();
 
 
 
@@ -801,7 +858,7 @@ console.error(error);
 
 
 alert(
-"会計CSV出力失敗"
+"確認失敗"
 );
 
 
