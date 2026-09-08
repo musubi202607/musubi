@@ -18,43 +18,31 @@
 <body>
 
 <header>
-
 <div class="container header-inner">
-
 <h1>経費集計</h1>
-
 </div>
-
 </header>
+
 
 <main class="container">
 
 <div class="shop-info-card">
 
-<a href="admin.html"
-style="
-display:inline-block;
-margin-bottom:15px;
-padding:10px 15px;
-background:#666;
-color:white;
-text-decoration:none;
-border-radius:8px;
-">
+
+<a href="admin.html" class="back-button">
 ← 戻る
 </a>
 
+
 <h2>月別集計</h2>
 
-<div
-style="
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
-">
 
-<select id="search-year"></select>
+<div class="expense-search">
+
+
+<select id="search-year">
+</select>
+
 
 <select id="search-month">
 
@@ -73,23 +61,32 @@ flex-wrap:wrap;
 
 </select>
 
+
 <button id="search-button">
 表示
 </button>
 
+
 </div>
+
 
 <h2>集計結果</h2>
 
-<div id="expense-total"></div>
 
-<hr style="margin:20px 0;">
+<div id="expense-total"
+class="expense-summary-total">
+</div>
 
-<div id="expense-items"></div>
+
+<div id="expense-items"
+class="expense-summary-list">
+</div>
+
 
 </div>
 
 </main>
+
 
 <script src="js/admin-expense.js"></script>
 
