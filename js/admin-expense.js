@@ -5,32 +5,32 @@
 
 document.addEventListener("DOMContentLoaded",()=>{
 
-  const now=new Date();
-  const year=document.getElementById("search-year");
+const now=new Date();
+const year=document.getElementById("search-year");
 
-  for(let y=now.getFullYear();y>=2025;y--){
+for(let y=now.getFullYear();y>=2025;y--){
 
-    const option=document.createElement("option");
-    option.value=y;
-    option.textContent=y+"年";
-    year.appendChild(option);
+const option=document.createElement("option");
+option.value=y;
+option.textContent=y+"年";
+year.appendChild(option);
 
-  }
+}
 
-  year.value=now.getFullYear();
+year.value=now.getFullYear();
 
-  document.getElementById("search-month").value=
-    now.getMonth()+1;
-
-
-  document.getElementById("search-button")
-    .addEventListener(
-      "click",
-      loadSummary
-    );
+document.getElementById("search-month").value=
+now.getMonth()+1;
 
 
-  loadSummary();
+document.getElementById("search-button")
+.addEventListener(
+"click",
+loadSummary
+);
+
+
+loadSummary();
 
 });
 
@@ -41,40 +41,40 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 async function loadSummary(){
 
-  const year=
-    document.getElementById("search-year").value;
+const year=
+document.getElementById("search-year").value;
 
-  const month=
-    document.getElementById("search-month").value;
-
-
-  const response=
-    await fetch(
-      `${API_URL}/api/expense-summary?year=${year}&month=${month}`
-    );
+const month=
+document.getElementById("search-month").value;
 
 
-  const result=
-    await response.json();
+const response=
+await fetch(
+`${API_URL}/api/expense-summary?year=${year}&month=${month}`
+);
 
 
-  console.log(
-    "Expense Summary",
-    result
-  );
+const result=
+await response.json();
 
 
-  if(!result.success){
-
-    alert("取得失敗");
-    return;
-
-  }
+console.log(
+"Expense Summary",
+result
+);
 
 
-  displaySummary(
-    result.data
-  );
+if(!result.success){
+
+alert("取得失敗");
+return;
+
+}
+
+
+displaySummary(
+result.data
+);
 
 }
 
@@ -86,13 +86,9 @@ async function loadSummary(){
 function displaySummary(data){
 
 
-  // =========================
-  // 合計
-  // =========================
-
-  document.getElementById(
-    "expense-total"
-  ).innerHTML=`
+document.getElementById(
+"expense-total"
+).innerHTML=`
 
 <h2>
 合計：${Number(data.total||0).toLocaleString()} 円
@@ -102,20 +98,15 @@ function displaySummary(data){
 
 
 
-  // =========================
-  // 件数カード
-  // =========================
-
-  document.getElementById(
-    "expense-links"
-  ).innerHTML=`
+document.getElementById(
+"expense-links"
+).innerHTML=`
 
 <div class="summary-grid">
 
 
 <div class="summary-card"
-onclick="location.href='receipt-list.html'"
->
+onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}'">
 
 <h3>
 領収書件数
@@ -130,8 +121,7 @@ ${data.count||0} 件
 
 
 <div class="summary-card"
-onclick="location.href='receipt-list.html?check=確認済'"
->
+onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=確認済'">
 
 <h3>
 確認済
@@ -146,8 +136,7 @@ ${data.confirmed||0} 件
 
 
 <div class="summary-card"
-onclick="location.href='receipt-list.html?check=未確認'"
->
+onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=未確認'">
 
 <h3>
 未確認
@@ -162,8 +151,7 @@ ${data.unchecked||0} 件
 
 
 <div class="summary-card"
-onclick="location.href='receipt-list.html?check=取消'"
->
+onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=取消'">
 
 <h3>
 取消
@@ -182,24 +170,24 @@ ${data.canceled||0} 件
 
 
 
-  const area=
-    document.getElementById(
-      "expense-items"
-    );
+const area=
+document.getElementById(
+"expense-items"
+);
 
 
-  area.innerHTML="";
+area.innerHTML="";
 
 
 
-  // =========================
-  // 共通表示
-  // =========================
+// =========================
+// 共通表示
+// =========================
 
-  const createSection=(title,list,name)=>{
+const createSection=(title,list,name)=>{
 
 
-    let html=`
+let html=`
 
 <div class="summary-section">
 
@@ -210,10 +198,10 @@ ${title}
 `;
 
 
-    (list||[]).forEach(item=>{
+(list||[]).forEach(item=>{
 
 
-      html+=`
+html+=`
 
 <div class="summary-item">
 
@@ -231,66 +219,66 @@ ${Number(item.amount||0).toLocaleString()} 円
 
 `;
 
-    });
+});
 
 
-    html+="</div>";
+html+="</div>";
 
-    return html;
+return html;
 
-  };
-
-
-
-  // =========================
-  // 勘定科目別
-  // =========================
-
-  area.innerHTML+=
-    createSection(
-      "勘定科目別",
-      data.items,
-      "category"
-    );
+};
 
 
 
-  // =========================
-  // 支払方法別
-  // =========================
+// =========================
+// 勘定科目別
+// =========================
 
-  area.innerHTML+=
-    createSection(
-      "支払方法別",
-      data.paymentItems,
-      "payment"
-    );
-
-
-
-  // =========================
-  // 税率別
-  // =========================
-
-  area.innerHTML+=
-    createSection(
-      "税率別",
-      data.taxItems,
-      "tax"
-    );
+area.innerHTML+=
+createSection(
+"勘定科目別",
+data.items,
+"category"
+);
 
 
 
-  // =========================
-  // 事業区分別
-  // =========================
+// =========================
+// 支払方法別
+// =========================
 
-  area.innerHTML+=
-    createSection(
-      "事業区分別",
-      data.businessItems,
-      "business"
-    );
+area.innerHTML+=
+createSection(
+"支払方法別",
+data.paymentItems,
+"payment"
+);
+
+
+
+// =========================
+// 税率別
+// =========================
+
+area.innerHTML+=
+createSection(
+"税率別",
+data.taxItems,
+"tax"
+);
+
+
+
+// =========================
+// 事業区分別
+// =========================
+
+area.innerHTML+=
+createSection(
+"事業区分別",
+data.businessItems,
+"business"
+);
 
 
 }
