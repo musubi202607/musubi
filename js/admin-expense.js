@@ -87,6 +87,36 @@ function displaySummary(data){
 
 `;
 
+  document.getElementById("expense-links").innerHTML=`
+
+<div class="summary-grid">
+
+<div class="summary-card" onclick="location.href='receipt-list.html'" style="cursor:pointer;">
+<h3>領収書件数</h3>
+<p>${data.count||0} 件</p>
+</div>
+
+
+<div class="summary-card" onclick="location.href='receipt-list.html?check=確認済'" style="cursor:pointer;">
+<h3>確認済</h3>
+<p>${data.confirmed||0} 件</p>
+</div>
+
+
+<div class="summary-card" onclick="location.href='receipt-list.html?check=未確認'" style="cursor:pointer;">
+<h3>未確認</h3>
+<p>${data.unchecked||0} 件</p>
+</div>
+
+
+<div class="summary-card" onclick="location.href='receipt-list.html?check=取消'" style="cursor:pointer;">
+<h3>取消</h3>
+<p>${data.canceled||0} 件</p>
+</div>
+
+</div>
+
+`;
   const area=document.getElementById("expense-items");
   area.innerHTML="";
 
