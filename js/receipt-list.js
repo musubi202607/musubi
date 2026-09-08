@@ -76,6 +76,10 @@ if(paramCheck && check){
 
 check.value=paramCheck;
 
+}else if(check){
+
+check.value="未確認";
+
 }
 
 
