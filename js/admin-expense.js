@@ -144,7 +144,12 @@ document.getElementById(
 <div class="summary-grid">
 
 
-<div class="summary-card">
+<div class="summary-card"
+onclick="
+location.href='receipt-list.html?year=${data.year}&month=${data.month}'
+"
+style="cursor:pointer;"
+>
 
 <h3>
 有効件数
@@ -172,7 +177,12 @@ ${data.confirmed||0} 件
 
 
 
-<div class="summary-card">
+<div class="summary-card"
+onclick="
+location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=未確認'
+"
+style="cursor:pointer;"
+>
 
 <h3>
 未確認
@@ -260,13 +270,17 @@ html+=`
 list.forEach(item=>{
 
 
-let label=item[name]||"未分類";
+let label=
+item[name] || "未分類";
 
 
 // 税率表示変更
+
 if(name==="tax"){
 
-const rate=Number(label);
+const rate=
+Number(label);
+
 
 if(rate>0 && rate<1){
 
