@@ -111,7 +111,6 @@ alert("集計取得失敗");
 function displaySummary(data){
 
 
-
 // =========================
 // 合計
 // =========================
@@ -148,7 +147,7 @@ document.getElementById(
 <div class="summary-card">
 
 <h3>
-登録件数
+有効件数
 </h3>
 
 <p>
@@ -190,7 +189,7 @@ ${data.unchecked||0} 件
 <div class="summary-card">
 
 <h3>
-取消
+取消済
 </h3>
 
 <p>
@@ -240,6 +239,7 @@ ${title}
 
 if(!list || !list.length){
 
+
 html+=`
 
 <div class="summary-item">
@@ -252,10 +252,31 @@ html+=`
 
 `;
 
+
+
 }else{
 
 
 list.forEach(item=>{
+
+
+let label=item[name]||"未分類";
+
+
+// 税率表示変更
+if(name==="tax"){
+
+const rate=Number(label);
+
+if(rate>0 && rate<1){
+
+label=
+Math.round(rate*100)+"%";
+
+}
+
+}
+
 
 
 html+=`
@@ -264,7 +285,7 @@ html+=`
 
 
 <div>
-${item[name]||"未分類"}
+${label}
 </div>
 
 
@@ -308,6 +329,7 @@ data.items,
 
 
 
+
 // =========================
 // 支払方法別
 // =========================
@@ -321,6 +343,7 @@ data.paymentItems,
 
 
 
+
 // =========================
 // 税率別
 // =========================
@@ -331,6 +354,7 @@ createSection(
 data.taxItems,
 "tax"
 );
+
 
 
 
