@@ -42,7 +42,6 @@ const paramCheck=params.get("check");
 
 // =========================
 // 初期値設定
-// URL指定があれば優先
 // =========================
 
 if(paramYear && year){
@@ -122,7 +121,6 @@ exportAccountingCSV
 
 loadReceipts();
 
-
 });
 
 
@@ -178,9 +176,15 @@ return;
 }
 
 
-displayReceipts(
-result.data || []
-);
+const data=result.data || [];
+
+
+// 検索結果集計
+
+updateReceiptSummary(data);
+
+
+displayReceipts(data);
 
 
 }catch(error){
@@ -199,12 +203,67 @@ document.getElementById("receipt-list").innerHTML=
 
 
 // =========================
+// 検索結果集計
+// =========================
+
+function updateReceiptSummary(data){
+
+const count=
+document.getElementById("receipt-count");
+
+const total=
+document.getElementById("receipt-total");
+
+
+if(count){
+
+count.textContent=
+data.length;
+
+}
+
+
+if(total){
+
+const sum=
+data.reduce(
+(acc,item)=>{
+
+// 取消は集計対象外
+
+if(item.check==="取消"){
+
+return acc;
+
+}
+
+
+return acc+
+Number(item.amount||0);
+
+
+},
+0
+);
+
+
+total.textContent=
+sum.toLocaleString();
+
+}
+
+}
+
+
+// =========================
 // 領収書表示
 // =========================
 
 function displayReceipts(data){
 
-const area=document.getElementById("receipt-list");
+const area=
+document.getElementById("receipt-list");
+
 
 if(!area)return;
 
@@ -224,14 +283,21 @@ area.innerHTML="";
 
 data.forEach(item=>{
 
-const div=document.createElement("div");
 
-div.className="receipt-card";
+const div=
+document.createElement("div");
 
 
-const canceled=item.check==="取消";
+div.className=
+"receipt-card";
 
-const confirmed=item.check==="確認済";
+
+const canceled=
+item.check==="取消";
+
+
+const confirmed=
+item.check==="確認済";
 
 
 let status="";
@@ -242,12 +308,14 @@ if(canceled){
 status=
 '<span style="color:red;">【取消】</span>';
 
-}else if(confirmed){
+}
+else if(confirmed){
 
 status=
 '<span style="color:green;">【確認済】</span>';
 
-}else{
+}
+else{
 
 status=
 '<span style="color:orange;">【未確認】</span>';
@@ -255,7 +323,12 @@ status=
 }
 
 
-const taxRate=formatTaxRate(item.taxRate);
+// 税率表示
+
+const taxRate=
+formatTaxRate(item.taxRate);
+
+
 
 div.innerHTML=`
 
@@ -394,7 +467,9 @@ item.imageUrl
 
 </div>
 
+
 `;
+
 
 area.appendChild(div);
 
@@ -412,14 +487,22 @@ area.appendChild(div);
 function formatTaxRate(value){
 
 if(value===null || value===undefined || value===""){
+
 return "";
+
 }
+
 
 let rate=Number(value);
 
+
 if(rate<=1){
-rate=rate*100;
+
+rate=
+rate*100;
+
 }
+
 
 return rate+"%";
 
@@ -445,22 +528,30 @@ if(area.style.display==="none"){
 
 area.style.display="block";
 
+
 if(button){
+
 button.textContent="閉じる";
+
 }
+
 
 }else{
 
+
 area.style.display="none";
 
+
 if(button){
+
 button.textContent="詳細表示";
+
 }
+
 
 }
 
 }
-
 
 // =========================
 // CSV共通ダウンロード
@@ -528,6 +619,7 @@ URL.revokeObjectURL(url);
 
 }
 
+
 // =========================
 // 領収書CSV出力
 // =========================
@@ -537,11 +629,13 @@ async function exportReceiptCSV(){
 const year=
 document.getElementById("search-year")?.value||"";
 
+
 const month=
 document.getElementById("search-month")?.value||"";
 
 
 try{
+
 
 const response=
 await fetch(
@@ -549,8 +643,10 @@ await fetch(
 );
 
 
+
 const result=
 await response.json();
+
 
 
 if(!result.success){
@@ -564,10 +660,12 @@ return;
 }
 
 
+
 downloadCSV(
 result.data,
 "領収書一覧.csv"
 );
+
 
 
 }catch(error){
@@ -579,6 +677,7 @@ alert(
 );
 
 }
+
 
 }
 
@@ -592,14 +691,17 @@ async function exportAccountingCSV(){
 
 try{
 
+
 const response=
 await fetch(
 `${API_URL}/api/accounting-csv`
 );
 
 
+
 const result=
 await response.json();
+
 
 
 if(!result.success){
@@ -613,10 +715,12 @@ return;
 }
 
 
+
 downloadCSV(
 result.data,
 "会計データ.csv"
 );
+
 
 
 }catch(error){
@@ -639,6 +743,7 @@ alert(
 
 async function cancelReceipt(no){
 
+
 if(
 !confirm(
 "この領収書を取消しますか？"
@@ -650,7 +755,9 @@ return;
 }
 
 
+
 try{
+
 
 const response=
 await fetch(
@@ -672,8 +779,10 @@ no:no
 );
 
 
+
 const result=
 await response.json();
+
 
 
 if(!result.success){
@@ -687,21 +796,27 @@ return;
 }
 
 
+
 alert(
 "取消しました"
 );
 
 
+
 loadReceipts();
+
 
 
 }catch(error){
 
+
 console.error(error);
+
 
 alert(
 "取消に失敗しました"
 );
+
 
 }
 
@@ -725,6 +840,7 @@ if(
 return;
 
 }
+
 
 
 try{
@@ -758,11 +874,14 @@ await response.json();
 
 if(!result.success){
 
+
 alert(
 "確認失敗"
 );
 
+
 return;
+
 
 }
 
@@ -780,11 +899,14 @@ loadReceipts();
 
 }catch(error){
 
+
 console.error(error);
+
 
 alert(
 "確認失敗"
 );
+
 
 }
 
