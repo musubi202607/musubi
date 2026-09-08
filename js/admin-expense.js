@@ -6,18 +6,25 @@
 document.addEventListener("DOMContentLoaded",()=>{
 
 const now=new Date();
+
 const year=document.getElementById("search-year");
+
 
 for(let y=now.getFullYear();y>=2025;y--){
 
 const option=document.createElement("option");
+
 option.value=y;
+
 option.textContent=y+"年";
+
 year.appendChild(option);
 
 }
 
+
 year.value=now.getFullYear();
+
 
 document.getElementById("search-month").value=
 now.getMonth()+1;
@@ -32,6 +39,7 @@ loadSummary
 
 loadSummary();
 
+
 });
 
 
@@ -44,8 +52,12 @@ async function loadSummary(){
 const year=
 document.getElementById("search-year").value;
 
+
 const month=
 document.getElementById("search-month").value;
+
+
+try{
 
 
 const response=
@@ -64,9 +76,11 @@ result
 );
 
 
+
 if(!result.success){
 
 alert("取得失敗");
+
 return;
 
 }
@@ -75,6 +89,17 @@ return;
 displaySummary(
 result.data
 );
+
+
+
+}catch(error){
+
+console.error(error);
+
+alert("集計取得失敗");
+
+}
+
 
 }
 
@@ -86,17 +111,32 @@ result.data
 function displaySummary(data){
 
 
+
+// =========================
+// 合計
+// =========================
+
 document.getElementById(
 "expense-total"
 ).innerHTML=`
 
 <h2>
-合計：${Number(data.total||0).toLocaleString()} 円
+${data.year}年${data.month}月
+</h2>
+
+<h2>
+合計：
+${Number(data.total||0).toLocaleString()} 円
 </h2>
 
 `;
 
 
+
+
+// =========================
+// 件数表示
+// =========================
 
 document.getElementById(
 "expense-links"
@@ -105,11 +145,10 @@ document.getElementById(
 <div class="summary-grid">
 
 
-<div class="summary-card"
-onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}'">
+<div class="summary-card">
 
 <h3>
-領収書件数
+登録件数
 </h3>
 
 <p>
@@ -120,8 +159,7 @@ ${data.count||0} 件
 
 
 
-<div class="summary-card"
-onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=確認済'">
+<div class="summary-card">
 
 <h3>
 確認済
@@ -135,8 +173,7 @@ ${data.confirmed||0} 件
 
 
 
-<div class="summary-card"
-onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=未確認'">
+<div class="summary-card">
 
 <h3>
 未確認
@@ -150,8 +187,7 @@ ${data.unchecked||0} 件
 
 
 
-<div class="summary-card"
-onclick="location.href='receipt-list.html?year=${data.year}&month=${data.month}&check=取消'">
+<div class="summary-card">
 
 <h3>
 取消
@@ -170,6 +206,8 @@ ${data.canceled||0} 件
 
 
 
+
+
 const area=
 document.getElementById(
 "expense-items"
@@ -177,6 +215,7 @@ document.getElementById(
 
 
 area.innerHTML="";
+
 
 
 
@@ -198,15 +237,34 @@ ${title}
 `;
 
 
-(list||[]).forEach(item=>{
 
+if(!list || !list.length){
 
 html+=`
 
 <div class="summary-item">
 
 <div>
-${item[name]}
+なし
+</div>
+
+</div>
+
+`;
+
+}else{
+
+
+list.forEach(item=>{
+
+
+html+=`
+
+<div class="summary-item">
+
+
+<div>
+${item[name]||"未分類"}
 </div>
 
 
@@ -222,11 +280,18 @@ ${Number(item.amount||0).toLocaleString()} 円
 });
 
 
+}
+
+
+
 html+="</div>";
+
 
 return html;
 
+
 };
+
 
 
 
