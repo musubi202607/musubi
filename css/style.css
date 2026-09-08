@@ -2598,3 +2598,118 @@ transform:translateY(-2px);
 box-shadow:0 4px 12px rgba(0,0,0,.15);
 
 }
+
+/* =========================
+   経費集計
+========================= */
+
+.expense-search{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+
+.expense-summary-total{
+  margin-bottom:20px;
+}
+
+
+.expense-summary-total h2{
+  margin:0;
+  padding:15px;
+  background:#f5f5f5;
+  border-radius:10px;
+}
+
+
+/* 件数カード */
+
+.expense-summary-links .summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:25px;
+}
+
+
+.summary-card{
+  padding:15px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  text-align:center;
+  cursor:pointer;
+}
+
+
+.summary-card h3{
+  margin:0 0 10px;
+  font-size:15px;
+}
+
+
+.summary-card p{
+  margin:0;
+  font-size:24px;
+  font-weight:bold;
+}
+
+
+
+/* 詳細集計 */
+
+.expense-summary-list{
+  margin-top:20px;
+}
+
+
+.summary-section{
+  margin-bottom:25px;
+}
+
+
+.summary-section h3{
+  border-left:5px solid #666;
+  padding-left:10px;
+  margin-bottom:10px;
+}
+
+
+.summary-item{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 15px;
+  margin-bottom:8px;
+  background:#f8f8f8;
+  border-radius:8px;
+}
+
+
+.summary-item-name{
+  font-weight:bold;
+}
+
+
+.summary-item-amount{
+  font-weight:bold;
+}
+
+
+
+/* スマホ対応 */
+
+@media(max-width:600px){
+
+  .expense-summary-links .summary-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+
+  .summary-card p{
+    font-size:20px;
+  }
+
+}
