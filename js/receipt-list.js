@@ -122,6 +122,19 @@ exportAccountingCSV
 
 }
 
+const blueReturnButton=
+document.getElementById(
+"blue-return-button"
+);
+
+if(blueReturnButton){
+
+blueReturnButton.addEventListener(
+"click",
+exportBlueReturnCSV
+);
+
+}
 
 loadReceipts();
 
@@ -914,5 +927,60 @@ alert(
 
 }
 
+
+}
+
+// =========================
+// 青色申告CSV出力
+// =========================
+
+async function exportBlueReturnCSV(){
+
+const year=
+document.getElementById("search-year")?.value||"";
+
+
+const month=
+document.getElementById("search-month")?.value||"";
+
+
+try{
+
+const response=
+await fetch(
+`${API_URL}/api/blue-return-csv?year=${year}&month=${month}`
+);
+
+
+const result=
+await response.json();
+
+
+if(!result.success){
+
+alert(
+"青色申告CSV取得失敗"
+);
+
+return;
+
+}
+
+
+downloadCSV(
+result.data,
+`青色申告仕訳_${year}年${month}月.csv`
+);
+
+
+}catch(error){
+
+console.error(error);
+
+alert(
+"青色申告CSV出力失敗"
+);
+
+}
 
 }
