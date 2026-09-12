@@ -406,6 +406,9 @@ const orders =
 
       return {
 
+        productId:
+          product.id,
+        
         productName:
           product.name,
 
