@@ -389,6 +389,8 @@ document.getElementById(
 "paymentStatus"
 ).value;
 
+const idempotencyKey =
+  crypto.randomUUID();
 
 const orders =
 
@@ -411,6 +413,9 @@ const orders =
         
         productName:
           product.name,
+
+        type:
+          product.type || "kitchen",
 
         qty:
           item.qty,
@@ -453,15 +458,17 @@ const orders =
 
           body:
 
-JSON.stringify({
+           JSON.stringify({
 
-  carNumber,
+            idempotencyKey,
 
-  paymentStatus,
+            carNumber,
 
-  orders
+            paymentStatus,
 
-})
+            orders
+
+          })
 
         }
 
