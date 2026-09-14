@@ -17,7 +17,15 @@ let cart = [];
 // =========================
 
 let isSubmitting = false;
+const idempotencyKey =
+  crypto.randomUUID();
 
+const body = {
+
+  name:
+    document.getElementById(
+      "customerName"
+    ).value,
 
 // =========================
 // 初期化
@@ -517,7 +525,8 @@ async function submitStaffOrder(){
 
   const body = {
 
-
+    idempotencyKey,
+    
     name:
       document.getElementById(
         "customerName"
