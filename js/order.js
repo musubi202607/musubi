@@ -281,48 +281,24 @@ async function sendOrder(){
     return;
 
   }
-
-
-
-
   // =========================
   // 送信データ
   // =========================
-
+  const idempotencyKey =
+  crypto.randomUUID();
   const payload = {
-
-
+    idempotencyKey,
     sessionId,
-
-
     customerName,
-
-
     customerTel,
-
-
     pickupTime,
-
-
     memo,
-
-
     items
-
-
   };
-
-
-
   console.log(
     "ORDER PAYLOAD",
     payload
   );
-
-
-
-
-
   // =========================
   // 注文送信
   // =========================
