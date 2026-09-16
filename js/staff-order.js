@@ -20,13 +20,6 @@ let isSubmitting = false;
 const idempotencyKey =
   crypto.randomUUID();
 
-const body = {
-
-  name:
-    document.getElementById(
-      "customerName"
-    ).value,
-
 // =========================
 // 初期化
 // =========================
