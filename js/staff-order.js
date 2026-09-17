@@ -1,40 +1,30 @@
 // =========================
 // 商品データ
 // =========================
-
 let products = [];
-
 
 // =========================
 // 注文データ
 // =========================
-
 let cart = [];
-
 
 // =========================
 // 二重送信防止
 // =========================
-
 let isSubmitting = false;
-const idempotencyKey =
-  crypto.randomUUID();
 
 // =========================
 // 初期化
 // =========================
-
 window.onload = async () => {
 
   await loadProducts();
 
 };
 
-
 // =========================
 // 商品取得
 // =========================
-
 async function loadProducts(){
 
   try{
@@ -44,10 +34,8 @@ async function loadProducts(){
         API_URL + "/api/products"
       );
 
-
     const data =
       await response.json();
-
 
     products = data
       .filter(item =>
@@ -65,11 +53,9 @@ async function loadProducts(){
           Number(b.sort || 9999)
       );
 
-
     renderProducts();
 
     updateTotal();
-
 
   }catch(err){
 
@@ -83,11 +69,9 @@ async function loadProducts(){
 
 }
 
-
 // =========================
 // 商品表示
 // =========================
-
 function renderProducts(){
 
   const list =
@@ -95,19 +79,15 @@ function renderProducts(){
       "productList"
     );
 
-
   let html = "";
-
 
   // =========================
   // おにぎり
   // =========================
-
   const onigiri =
     products.filter(
       p => p.type === "onigiri"
     );
-
 
   if(onigiri.length){
 
@@ -121,7 +101,6 @@ function renderProducts(){
 
     `;
 
-
     onigiri.forEach(item=>{
 
       html +=
@@ -131,16 +110,13 @@ function renderProducts(){
 
   }
 
-
   // =========================
   // ドリンク
   // =========================
-
   const drinks =
     products.filter(
       p => p.type === "drink"
     );
-
 
   if(drinks.length){
 
@@ -154,7 +130,6 @@ function renderProducts(){
 
     `;
 
-
     drinks.forEach(item=>{
 
       html +=
@@ -164,7 +139,6 @@ function renderProducts(){
 
   }
 
-
   list.innerHTML = html;
 
 }
@@ -172,7 +146,6 @@ function renderProducts(){
 // =========================
 // 商品カード
 // =========================
-
 function createProductCard(item){
 
   return `
@@ -189,13 +162,11 @@ function createProductCard(item){
 
   </div>
 
-
   <div class="staff-product-price">
 
     ${Number(item.price).toLocaleString()}円
 
   </div>
-
 
   <div class="qty-area">
 
@@ -208,7 +179,6 @@ function createProductCard(item){
 
     </button>
 
-
     <div
       class="qty-number qty-zero"
       id="qty_${item.id}"
@@ -217,7 +187,6 @@ function createProductCard(item){
       0
 
     </div>
-
 
     <button
       class="qty-btn"
@@ -228,9 +197,7 @@ function createProductCard(item){
 
     </button>
 
-
   </div>
-
 
 </div>
 
@@ -238,22 +205,17 @@ function createProductCard(item){
 
 }
 
-
 // =========================
 // 数量変更
 // =========================
-
 function changeQty(id, diff){
-
 
   let item =
     cart.find(
       x => x.id === id
     );
 
-
   if(!item){
-
 
     if(diff < 0){
 
@@ -261,12 +223,10 @@ function changeQty(id, diff){
 
     }
 
-
     const product =
       products.find(
         x => x.id === id
       );
-
 
     item = {
 
@@ -284,15 +244,11 @@ function changeQty(id, diff){
 
     };
 
-
     cart.push(item);
-
 
   }
 
-
   item.qty += diff;
-
 
   if(item.qty < 0){
 
@@ -300,91 +256,67 @@ function changeQty(id, diff){
 
   }
 
-
   cart =
     cart.filter(
       x => x.qty > 0
     );
-
-
 
   const qtyLabel =
     document.getElementById(
       "qty_" + id
     );
 
-
   const card =
     document.getElementById(
       "card_" + id
     );
 
-
-
   qtyLabel.textContent =
     item.qty;
-
-
 
   qtyLabel.classList.remove(
     "qty-pop"
   );
 
-
   void qtyLabel.offsetWidth;
-
 
   qtyLabel.classList.add(
     "qty-pop"
   );
 
-
-
   if(item.qty === 0){
-
 
     qtyLabel.classList.add(
       "qty-zero"
     );
 
-
     card.classList.remove(
       "selected"
     );
 
-
   }else{
-
 
     qtyLabel.classList.remove(
       "qty-zero"
     );
 
-
     card.classList.add(
       "selected"
     );
 
-
   }
-
 
   updateTotal();
 
-
 }
-
 
 // =========================
 // 商品カードクリック
 // =========================
-
 function cardClick(event,id){
-
 
   // ＋－ボタン押下時は
   // カードクリック処理をしない
-
   if(
     event.target.closest("button")
   ){
@@ -393,69 +325,52 @@ function cardClick(event,id){
 
   }
 
-
   changeQty(
     id,
     1
   );
-
 
 }
 
 // =========================
 // 合計更新
 // =========================
-
 function updateTotal(){
 
   let total = 0;
 
   let count = 0;
 
-
   cart.forEach(item=>{
-
 
     total +=
       item.price * item.qty;
 
-
     count +=
       item.qty;
 
-
   });
-
-
 
   document.getElementById(
     "totalPrice"
   ).textContent =
     total.toLocaleString();
 
-
-
   document.getElementById(
     "totalCount"
   ).textContent =
     count + "点";
 
-
 }
-
-
 
 // =========================
 // 注文登録
 // =========================
-
 async function submitStaffOrder(){
-
 
   // =========================
   // 二重送信防止
   // =========================
-
   if(isSubmitting){
 
     console.log(
@@ -466,87 +381,64 @@ async function submitStaffOrder(){
 
   }
 
-
   const items =
     cart.map(item => ({
-
 
       productId:
         item.id,
 
-
       name:
         item.name,
-
 
       price:
         item.price,
 
-
       quantity:
         item.qty,
-
 
       amount:
         item.price * item.qty
 
-
     }));
 
-
-
-
-
   if(items.length === 0){
-
 
     alert(
       "商品を選択してください"
     );
 
-
     return;
-
 
   }
 
-
-
   isSubmitting = true;
 
-
-
+  // ★注文ごとに新しいキーを発行
   const body = {
 
-    idempotencyKey,
-    
+    idempotencyKey:
+      crypto.randomUUID(),
+
     name:
       document.getElementById(
         "customerName"
       ).value,
-
 
     note:
       document.getElementById(
         "note"
       ).value,
 
-
     unpaid:
       document.getElementById(
         "unpaidCheck"
       ).checked,
 
-
     items
-
 
   };
 
-
-
   try{
-
 
     const res =
       await fetch(
@@ -558,42 +450,41 @@ async function submitStaffOrder(){
 
           method:"POST",
 
-
           headers:{
-
 
             "Content-Type":
               "application/json"
 
-
           },
-
 
           body:
             JSON.stringify(body)
-
 
         }
 
       );
 
-
-
     const result =
       await res.json();
 
+    // 重複送信
+    if(result.duplicate){
 
+      alert(
+        "同じ注文が送信されたため登録をスキップしました"
+      );
+
+      return;
+
+    }
 
     if(result.success){
-
 
       showComplete(
         result.orderNo
       );
 
-
     }else{
-
 
       alert(
 
@@ -602,145 +493,100 @@ async function submitStaffOrder(){
 
       );
 
-
     }
-
-
 
   }catch(e){
 
-
     console.error(e);
-
 
     alert(
       "通信エラー"
     );
 
-
   }
   finally{
 
-
-    // 必ず解除
-
     isSubmitting = false;
 
-
   }
-
 
 }
 
 // =========================
 // 完了画面表示
 // =========================
-
 function showComplete(orderNo){
-
 
   document.getElementById(
     "completeOrderNo"
   ).textContent =
     orderNo;
 
-
-
   document.getElementById(
     "completeModal"
   ).style.display =
     "flex";
 
-
 }
-
 
 // =========================
 // 次の注文
 // =========================
-
 function resetOrder(){
-
 
   document.getElementById(
     "completeModal"
   ).style.display =
     "none";
 
-
-
   // カート初期化
-
   cart = [];
 
-
-
   products.forEach(item => {
-
 
     const qty =
       document.getElementById(
         "qty_" + item.id
       );
 
-
     if(qty){
-
 
       qty.textContent =
         0;
-
 
       qty.classList.add(
         "qty-zero"
       );
 
-
     }
-
-
 
     const card =
       document.getElementById(
         "card_" + item.id
       );
 
-
     if(card){
-
 
       card.classList.remove(
         "selected"
       );
 
-
     }
-
 
   });
 
-
-
   updateTotal();
-
-
 
   document.getElementById(
     "customerName"
   ).value = "";
 
-
-
   document.getElementById(
     "note"
   ).value = "";
-
-
 
   document.getElementById(
     "unpaidCheck"
   ).checked = false;
 
-
 }
-
