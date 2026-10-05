@@ -235,6 +235,9 @@ async function sendBbqOrder() {
 
     const orderData = {
 
+  idempotencyKey:
+    crypto.randomUUID(),
+
   orderType:
     'BBQ',
 
