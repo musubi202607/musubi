@@ -35,6 +35,8 @@ let ocrData = null;
 
 let isSaving = false;
 
+let isOCRRunning = false;
+
 
 
 // =========================
@@ -740,7 +742,19 @@ async function uploadReceiptImage(){
 // =========================
 
 async function executeReceiptOCR(){
+    if(isOCRRunning){
+        return;
+    }
 
+    isOCRRunning = true;
+
+    const button =
+        document.getElementById("ocr-button");
+
+    if(button){
+        button.disabled = true;
+        button.textContent = "OCR解析中...";
+    }
 
     try{
 
@@ -816,6 +830,16 @@ async function executeReceiptOCR(){
 
     }
 
+    finally{
+
+    isOCRRunning = false;
+
+    if(button){
+        button.disabled = false;
+        button.textContent = "OCR解析";
+    }
+
+    }
 
 }
 
