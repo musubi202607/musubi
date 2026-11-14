@@ -742,6 +742,7 @@ async function uploadReceiptImage(){
 // =========================
 
 async function executeReceiptOCR(){
+
     if(isOCRRunning){
         return;
     }
@@ -751,98 +752,84 @@ async function executeReceiptOCR(){
     const button =
         document.getElementById("ocr-button");
 
+    const loading =
+        document.getElementById("ocr-loading");
+
     if(button){
+
         button.disabled = true;
+
         button.textContent = "OCR解析中...";
+
+    }
+
+    if(loading){
+
+        loading.style.display = "block";
+
     }
 
     try{
 
-
         if(!receiptImageUrl){
 
-
             const upload =
-
                 await uploadReceiptImage();
 
-
-
             receiptImageUrl =
-
                 upload.url;
 
-
-
             console.log(
-
                 "Receipt Image URL",
-
                 receiptImageUrl
-
             );
-
 
         }
 
-
-
-
-
         await executeOCR(
-
             receiptImageUrl
-
         );
-
-
-
-
 
         alert(
-
             "OCR解析が完了しました。内容を確認してください。"
-
         );
-
 
     }
 
     catch(error){
 
-
         console.error(
-
             "OCR error",
-
             error
-
         );
-
-
 
         alert(
-
             "OCRに失敗しました"
-
         );
-
 
     }
 
     finally{
 
-    isOCRRunning = false;
+        isOCRRunning = false;
 
-    if(button){
-        button.disabled = false;
-        button.textContent = "OCR解析";
-    }
+        if(button){
+
+            button.disabled = false;
+
+            button.textContent = "OCR解析する";
+
+        }
+
+        if(loading){
+
+            loading.style.display = "none";
+
+        }
 
     }
 
 }
-
 // =========================
 // OCR API
 // =========================
