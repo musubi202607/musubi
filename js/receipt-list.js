@@ -340,57 +340,39 @@ function downloadCSV(data, filename) {
 }
 
 // =========================
-// 青色申告CSV出力（範囲指定版・確定版）
+// 青色申告CSV出力（その年の1年分を一括出力）
 // =========================
-async function exportBlueReturnCSV() {
-  const startDate = document.getElementById("csv-start-date")?.value || "";
-  const endDate = document.getElementById("csv-end-date")?.value || "";
+async function exportBlueReturnCSV(){
 
-  if (!startDate || !endDate) {
-    alert("開始日と終了日を指定してください。");
-    return;
-  }
-  if (startDate > endDate) {
-    alert("開始日は終了日以前の日付を指定してください。");
+  const year = document.getElementById("search-year")?.value || "";
+  if (!year) {
+    alert("年を選択してください");
     return;
   }
 
-  const btn = document.getElementById("blue-return-button");
-  const origText = btn ? btn.textContent : "";
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "出力中...";
-  }
+  // ★「month」はあえて送らず、year（年）だけ送る！
+  try{
+    const response = await fetch(
+      `${API_URL}/api/blue-return-csv?year=${year}`
+    );
 
-  try {
-    // ★重要: month や year を送らず、範囲指定の日付だけを送信する
-    const params = new URLSearchParams({
-      startDate: startDate,
-      endDate: endDate
-    });
-
-    const response = await fetch(`${API_URL}/api/blue-return-csv?${params.toString()}`);
     const result = await response.json();
 
-    if (!result.success) {
-      alert("青色申告CSV取得失敗: " + (result.error || "データがありません"));
+    if(!result.success){
+      alert("青色申告CSV取得失敗");
       return;
     }
 
-    const filename = `青色申告仕訳_${startDate}_${endDate}.csv`;
-    downloadCSV(result.data, filename);
+    downloadCSV(
+      result.data,
+      `青色申告仕訳_${year}年分.csv`
+    );
 
-  } catch (error) {
+  }catch(error){
     console.error(error);
     alert("青色申告CSV出力失敗");
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = origText;
-    }
   }
 }
-
 // =========================
 // 領収書CSV出力（範囲指定対応）
 // =========================
