@@ -184,9 +184,7 @@ async function executeOCR(imageUrl) {
 
     const result = await response.json();
 
-    // ★★★ ここでGASから届いた「生データ」を画面に強制表示します ★★★
-    alert("【GASからの返答】\n" + JSON.stringify(result, null, 2));
-
+    
     // GAS側でエラーが起きていた場合はストップする
     const innerData = result.data;
     if (innerData && (innerData.error || innerData.success === false)) {
