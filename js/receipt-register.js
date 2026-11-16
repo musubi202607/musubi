@@ -171,7 +171,11 @@ async function executeReceiptOCR() {
     }
 }
 
+// =========================
+// OCR API (原因特定デバッグ版)
+// =========================
 async function executeOCR(imageUrl) {
+
     const response = await fetch(`${API_URL}/api/ocr`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -179,14 +183,23 @@ async function executeOCR(imageUrl) {
     });
 
     const result = await response.json();
+
+    // ★★★ ここでGASから届いた「生データ」を画面に強制表示します ★★★
+    alert("【GASからの返答】\n" + JSON.stringify(result, null, 2));
+
+    // GAS側でエラーが起きていた場合はストップする
+    const innerData = result.data;
+    if (innerData && (innerData.error || innerData.success === false)) {
+        throw new Error("GAS内部エラー: " + (innerData.error || innerData.message));
+    }
+
     if (!result.success) {
         throw new Error(result.message || "OCR失敗");
     }
 
-    ocrData = result.data;
-    ocrData.taxRate = convertTaxRate(ocrData.taxRate);
+    // データの階層を自動判定してセット
+    ocrData = (innerData && innerData.supplier !== undefined) ? innerData : (innerData?.data || innerData);
 
-    // 画面にセット
     displayOCRResult(ocrData);
 }
 
