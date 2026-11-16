@@ -340,13 +340,11 @@ function downloadCSV(data, filename) {
 }
 
 // =========================
-// 青色申告CSV出力（範囲指定）
+// 青色申告CSV出力（範囲指定版・確定版）
 // =========================
 async function exportBlueReturnCSV() {
   const startDate = document.getElementById("csv-start-date")?.value || "";
   const endDate = document.getElementById("csv-end-date")?.value || "";
-  const year = document.getElementById("search-year")?.value || "";
-  const month = document.getElementById("search-month")?.value || "";
 
   if (!startDate || !endDate) {
     alert("開始日と終了日を指定してください。");
@@ -365,11 +363,10 @@ async function exportBlueReturnCSV() {
   }
 
   try {
+    // ★重要: month や year を送らず、範囲指定の日付だけを送信する
     const params = new URLSearchParams({
       startDate: startDate,
-      endDate: endDate,
-      year: year,
-      month: month
+      endDate: endDate
     });
 
     const response = await fetch(`${API_URL}/api/blue-return-csv?${params.toString()}`);
