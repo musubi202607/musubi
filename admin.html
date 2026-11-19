@@ -390,7 +390,7 @@ function triggerCSVDownload(csvData, filename) {
 }
 
 // ==========================================
-// ① 売上仕訳CSVダウンロード処理（確実に動く実績URL）
+// ① 売上仕訳CSVダウンロード処理（青色申告専用）
 // ==========================================
 async function downloadBlueReturnSales() {
   const year = document.getElementById("export-year").value;
@@ -403,15 +403,14 @@ async function downloadBlueReturnSales() {
   try {
     const token = localStorage.getItem("adminToken") || "";
 
-    // ★実績のある /api/sales/csv を呼び出す
-    const response = await fetch(`${API_URL}/api/sales/csv`, {
+    // ★確実に青色申告用日計CSVが返ってくる専用エンドポイントを叩く
+    const response = await fetch(`${API_URL}/api/blue-return-sales-csv`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
-        mode: "getBlueReturnSalesCSV",
         startDate: `${year}-01-01`,
         endDate: `${year}-12-31`
       })
@@ -483,8 +482,8 @@ async function downloadBlueReturnExpense() {
 }
 
 // ==========================================
-// ③ 決算書転記用 年間収支サマリー（売上＋経費＋利益）
-// 実績のあるエンドポイントで売上と経費を確実に取得して結合！
+// ③ 決算書転記用 年間収支サマリー（完全修正・安全設計版）
+// ヘッダー名から動的に列インデックスを検知して確実に集計します！
 // ==========================================
 async function downloadBlueReturnAnnualSummary() {
   const year = document.getElementById("export-year").value;
@@ -497,15 +496,14 @@ async function downloadBlueReturnAnnualSummary() {
   try {
     const token = localStorage.getItem("adminToken") || "";
 
-    // 1. 売上データ取得（実績のある /api/sales/csv を利用！）
-    const salesPromise = fetch(`${API_URL}/api/sales/csv`, {
+    // 1. 売上データ取得（★blue-return-sales-csv を呼び出す）
+    const salesPromise = fetch(`${API_URL}/api/blue-return-sales-csv`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
-        mode: "getBlueReturnSalesCSV",
         startDate: `${year}-01-01`,
         endDate: `${year}-12-31`
       })
@@ -517,7 +515,6 @@ async function downloadBlueReturnAnnualSummary() {
 
     const [salesResult, expenseResult] = await Promise.all([salesPromise, expensePromise]);
 
-    // エラーハンドリング：何が失敗したか明確に表示
     if (!salesResult.success) {
       alert("売上データの取得に失敗しました:\n" + (salesResult.message || salesResult.error || "データなし"));
       return;
@@ -531,42 +528,48 @@ async function downloadBlueReturnAnnualSummary() {
     const expenseList = expenseResult.data || expenseResult.csv || [];
 
     // ------------------------------------------
-    // A. 売上集計（事業区分別：店舗、キッチンカー、BBQ）
-    // salesList ヘッダー:
-    // [0]仕訳No, [1]取引日, [2]借方科目, [3]借方金額(税込), [4]貸方科目,
-    // [5]貸方金額(税込), [6]税率, [7]消費税額(内税), [8]税区分, [9]事業区分, [10]摘要
+    // A. 売上集計（ヘッダー名を自動検知する安全ロジック）
     // ------------------------------------------
     const salesSummary = {};
     let totalSalesAmount = 0;
     let totalSalesTax = 0;
     let totalSalesCount = 0;
 
-    for (let i = 1; i < salesList.length; i++) {
-      const row = salesList[i];
-      let bType = String(row[9] || "店舗").trim();
-      // 「おにぎり」を「店舗」に統一
-      if (bType === "おにぎり") bType = "店舗";
+    if (salesList.length > 1) {
+      const sHeaders = salesList[0];
+      // 列位置を自動判定（万が一の列ズレを100%防止）
+      let colBusinessType = sHeaders.indexOf("事業区分");
+      let colAmount = sHeaders.indexOf("借方金額(税込)");
+      let colTax = sHeaders.indexOf("消費税額(内税)");
 
-      const amt = Number(row[3] || 0);
-      const tax = Number(row[7] || 0);
+      // 見つからなければデフォルト位置
+      if (colBusinessType === -1) colBusinessType = 9;
+      if (colAmount === -1) colAmount = 3;
+      if (colTax === -1) colTax = 7;
 
-      if (!salesSummary[bType]) {
-        salesSummary[bType] = { count: 0, amount: 0, tax: 0 };
+      for (let i = 1; i < salesList.length; i++) {
+        const row = salesList[i];
+        let bType = String(row[colBusinessType] || "店舗").trim();
+        if (bType === "おにぎり") bType = "店舗";
+
+        const amt = Number(row[colAmount] || 0);
+        const tax = Number(row[colTax] || 0);
+
+        if (!salesSummary[bType]) {
+          salesSummary[bType] = { count: 0, amount: 0, tax: 0 };
+        }
+        salesSummary[bType].count += 1;
+        salesSummary[bType].amount += amt;
+        salesSummary[bType].tax += tax;
+
+        totalSalesAmount += amt;
+        totalSalesTax += tax;
+        totalSalesCount += 1;
       }
-      salesSummary[bType].count += 1;
-      salesSummary[bType].amount += amt;
-      salesSummary[bType].tax += tax;
-
-      totalSalesAmount += amt;
-      totalSalesTax += tax;
-      totalSalesCount += 1;
     }
 
     // ------------------------------------------
-    // B. 経費集計（科目別：仕入高、消耗品費...）
-    // expenseList ヘッダー:
-    // [0]仕訳No, [1]取引日, [2]借方勘定科目, [3]借方金額(税込), [4]貸方勘定科目,
-    // [5]貸方金額(税込), [6]税区分, [7]税率, [8]消費税額(内税)...
+    // B. 経費集計（ヘッダー名を自動検知する安全ロジック）
     // ------------------------------------------
     const expenseSummary = {};
     let totalExpenseAmount = 0;
@@ -576,33 +579,44 @@ async function downloadBlueReturnAnnualSummary() {
     let totalCostOfGoods = 0; // 仕入高（売上原価）
     let totalCostTax = 0;
 
-    for (let i = 1; i < expenseList.length; i++) {
-      const row = expenseList[i];
-      const category = String(row[2] || "雑費").trim();
-      const amt = Number(row[3] || 0);
-      const tax = Number(row[8] || 0);
+    if (expenseList.length > 1) {
+      const eHeaders = expenseList[0];
+      let colCategory = eHeaders.indexOf("借方勘定科目");
+      let colAmount = eHeaders.indexOf("借方金額(税込)");
+      let colTax = eHeaders.indexOf("消費税額(内税)");
 
-      if (!expenseSummary[category]) {
-        expenseSummary[category] = {
-          category: category,
-          accountType: (category === "仕入高") ? "売上原価" : "経費",
-          count: 0,
-          amount: 0,
-          tax: 0
-        };
-      }
-      expenseSummary[category].count += 1;
-      expenseSummary[category].amount += amt;
-      expenseSummary[category].tax += tax;
+      if (colCategory === -1) colCategory = 2;
+      if (colAmount === -1) colAmount = 3;
+      if (colTax === -1) colTax = 8;
 
-      if (category === "仕入高") {
-        totalCostOfGoods += amt;
-        totalCostTax += tax;
-      } else {
-        totalExpenseAmount += amt;
-        totalExpenseTax += tax;
+      for (let i = 1; i < expenseList.length; i++) {
+        const row = expenseList[i];
+        const category = String(row[colCategory] || "雑費").trim();
+        const amt = Number(row[colAmount] || 0);
+        const tax = Number(row[colTax] || 0);
+
+        if (!expenseSummary[category]) {
+          expenseSummary[category] = {
+            category: category,
+            accountType: (category === "仕入高") ? "売上原価" : "経費",
+            count: 0,
+            amount: 0,
+            tax: 0
+          };
+        }
+        expenseSummary[category].count += 1;
+        expenseSummary[category].amount += amt;
+        expenseSummary[category].tax += tax;
+
+        if (category === "仕入高") {
+          totalCostOfGoods += amt;
+          totalCostTax += tax;
+        } else {
+          totalExpenseAmount += amt;
+          totalExpenseTax += tax;
+        }
+        totalExpenseCount += 1;
       }
-      totalExpenseCount += 1;
     }
 
     // 経費を並び替え（仕入高を先頭、あとは金額順）
@@ -612,7 +626,7 @@ async function downloadBlueReturnAnnualSummary() {
       return b.amount - a.amount;
     });
 
-    // 差引利益（所得金額） = 売上総額 - 仕入高 - 経費総額
+    // 差引所得金額（年間利益）
     const netProfit = totalSalesAmount - totalCostOfGoods - totalExpenseAmount;
 
     // ------------------------------------------
@@ -653,7 +667,7 @@ async function downloadBlueReturnAnnualSummary() {
     // 3. 経費セクション
     alertText += `◆ 経費科目\n`;
     sortedExpenseList.forEach(item => {
-      if (item.category === "仕入高") return; // 仕入高は上に出力済み
+      if (item.category === "仕入高") return;
       summaryCsv.push(["【経費】", item.category, item.count, item.amount, item.tax, `決算書「${item.category}」欄`]);
       alertText += `・${item.category}: ${item.amount.toLocaleString()}円\n`;
     });
