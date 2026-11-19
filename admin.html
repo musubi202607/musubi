@@ -57,7 +57,9 @@
   padding: 25px;
   border-radius: 12px;
   width: 90%;
-  max-width: 480px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -129,9 +131,23 @@
   font-size: 15px;
 }
 
+.btn-download-summary {
+  width: 100%;
+  padding: 11px;
+  background: #ffc107;
+  color: #212529;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
+
 .btn-download-sales:disabled,
-.btn-download-expense:disabled {
+.btn-download-expense:disabled,
+.btn-download-summary:disabled {
   background: #aaa;
+  color: #fff;
   cursor: not-allowed;
 }
 </style>
@@ -271,7 +287,7 @@
       </select>
     </div>
 
-    <!-- 売上出力 -->
+    <!-- ① 売上出力 -->
     <div class="output-box">
       <h4>📊 売上データ（日計仕訳帳）</h4>
       <p>日計集約・8%軽減/10%標準・消費税額(内税) 自動計算</p>
@@ -280,14 +296,24 @@
       </button>
     </div>
 
-    <!-- 経費出力 -->
+    <!-- ② 経費仕訳出力（会計ソフト取込用） -->
     <div class="output-box">
-      <h4>🧾 経費データ（仕訳帳）</h4>
-      <p>確認済み経費・日付順昇順ソート・仕訳No連番採番済み</p>
+      <h4>🧾 経費仕訳帳（会計ソフト用）</h4>
+      <p>確認済み経費・日付順ソート・登録元No＋元行No・商品名摘要</p>
       <button type="button" id="btn-export-expense" class="btn-download-expense" onclick="downloadBlueReturnExpense()">
-        経費CSVをダウンロード
+        経費仕訳CSVをダウンロード
       </button>
     </div>
+
+    <!-- ③ 科目別年間集計出力（決算書転記用） -->
+    <div class="output-box" style="background:#fff3cd; border-color:#ffeeba;">
+      <h4 style="color:#856404;">📋 科目別集計表（決算書・e-Tax転記用）</h4>
+      <p style="color:#856404;">仕入高・消耗品費等の年間合計と内税額（申告用紙に直接書き写せます）</p>
+      <button type="button" id="btn-export-summary" class="btn-download-summary" onclick="downloadBlueReturnCategorySummary()">
+        科目別集計表CSVをダウンロード
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -366,7 +392,7 @@ function triggerCSVDownload(csvData, filename) {
 }
 
 // ==========================================
-// 売上CSVダウンロード処理（青色申告専用）
+// ① 売上CSVダウンロード処理（青色申告専用）
 // ==========================================
 async function downloadBlueReturnSales() {
   const year = document.getElementById("export-year").value;
@@ -379,7 +405,6 @@ async function downloadBlueReturnSales() {
   try {
     const token = localStorage.getItem("adminToken") || "";
 
-    // 青色申告専用エンドポイントへリクエスト
     const response = await fetch(`${API_URL}/api/blue-return-sales-csv`, {
       method: "POST",
       headers: {
@@ -421,7 +446,7 @@ async function downloadBlueReturnSales() {
 }
 
 // ==========================================
-// 経費CSVダウンロード処理（青色申告専用）
+// ② 経費仕訳帳CSVダウンロード処理（青色申告専用）
 // ==========================================
 async function downloadBlueReturnExpense() {
   const year = document.getElementById("export-year").value;
@@ -432,7 +457,6 @@ async function downloadBlueReturnExpense() {
   btn.textContent = "集計中...";
 
   try {
-    // 経費CSV取得API（yearのみを渡して1年分を一括出力）
     const response = await fetch(`${API_URL}/api/blue-return-csv?year=${year}`);
     const result = await response.json();
     console.log("経費レスポンス:", result);
@@ -454,6 +478,60 @@ async function downloadBlueReturnExpense() {
   } catch (error) {
     console.error(error);
     alert("通信エラー：経費CSV出力に失敗しました。");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+
+// ==========================================
+// ③ 科目別集計表CSVダウンロード処理（決算書転記用）
+// ==========================================
+async function downloadBlueReturnCategorySummary() {
+  const year = document.getElementById("export-year").value;
+  const btn = document.getElementById("btn-export-summary");
+  const origText = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = "集計中...";
+
+  try {
+    const token = localStorage.getItem("adminToken") || "";
+
+    const response = await fetch(`${API_URL}/api/blue-return-category-summary`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ year: year })
+    });
+
+    const result = await response.json();
+    console.log("科目別集計レスポンス:", result);
+
+    if (!result.success) {
+      alert("科目別集計取得失敗:\n" + (result.message || "データがありません"));
+      return;
+    }
+
+    // 画面アラートで決算書の主要科目サマリーを即座に確認
+    let previewText = `【${year}年 科目別年間集計（決算書転記用）】\n----------------------------\n`;
+    if (result.data && Array.isArray(result.data)) {
+      result.data.forEach(item => {
+        previewText += `・${item.category} [${item.accountType}]: ${item.totalAmount.toLocaleString()}円 (${item.count}件)\n`;
+      });
+    }
+    const grandTotalStr = result.grandTotal ? result.grandTotal.amount.toLocaleString() : "0";
+    previewText += `----------------------------\n経費・仕入 年間総額: ${grandTotalStr}円\n\nCSVをダウンロードします。`;
+
+    alert(previewText);
+
+    triggerCSVDownload(result.csv, `青色申告_科目別集計表_${year}年分.csv`);
+
+  } catch (error) {
+    console.error(error);
+    alert("通信エラー：科目別集計表の出力に失敗しました。");
   } finally {
     btn.disabled = false;
     btn.textContent = origText;
