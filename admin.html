@@ -390,7 +390,7 @@ function triggerCSVDownload(csvData, filename) {
 }
 
 // ==========================================
-// ① 売上仕訳CSVダウンロード処理
+// ① 売上仕訳CSVダウンロード処理（確実に動く実績URL）
 // ==========================================
 async function downloadBlueReturnSales() {
   const year = document.getElementById("export-year").value;
@@ -402,13 +402,16 @@ async function downloadBlueReturnSales() {
 
   try {
     const token = localStorage.getItem("adminToken") || "";
-    const response = await fetch(`${API_URL}/api/blue-return-sales-csv`, {
+
+    // ★実績のある /api/sales/csv を呼び出す
+    const response = await fetch(`${API_URL}/api/sales/csv`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
+        mode: "getBlueReturnSalesCSV",
         startDate: `${year}-01-01`,
         endDate: `${year}-12-31`
       })
@@ -481,7 +484,7 @@ async function downloadBlueReturnExpense() {
 
 // ==========================================
 // ③ 決算書転記用 年間収支サマリー（売上＋経費＋利益）
-// 売上（店舗・キッチンカー別）と科目別経費を完全に結合して出力
+// 実績のあるエンドポイントで売上と経費を確実に取得して結合！
 // ==========================================
 async function downloadBlueReturnAnnualSummary() {
   const year = document.getElementById("export-year").value;
@@ -494,14 +497,15 @@ async function downloadBlueReturnAnnualSummary() {
   try {
     const token = localStorage.getItem("adminToken") || "";
 
-    // 1. 売上データ取得
-    const salesPromise = fetch(`${API_URL}/api/blue-return-sales-csv`, {
+    // 1. 売上データ取得（実績のある /api/sales/csv を利用！）
+    const salesPromise = fetch(`${API_URL}/api/sales/csv`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
+        mode: "getBlueReturnSalesCSV",
         startDate: `${year}-01-01`,
         endDate: `${year}-12-31`
       })
@@ -513,13 +517,18 @@ async function downloadBlueReturnAnnualSummary() {
 
     const [salesResult, expenseResult] = await Promise.all([salesPromise, expensePromise]);
 
-    const salesList = salesResult.csv || salesResult.data || [];
-    const expenseList = expenseResult.data || expenseResult.csv || [];
-
-    if (salesList.length <= 1 && expenseList.length <= 1) {
-      alert(`${year}年の売上および経費データがありませんでした。`);
+    // エラーハンドリング：何が失敗したか明確に表示
+    if (!salesResult.success) {
+      alert("売上データの取得に失敗しました:\n" + (salesResult.message || salesResult.error || "データなし"));
       return;
     }
+    if (!expenseResult.success) {
+      alert("経費データの取得に失敗しました:\n" + (expenseResult.message || expenseResult.error || "データなし"));
+      return;
+    }
+
+    const salesList = salesResult.csv || salesResult.data || [];
+    const expenseList = expenseResult.data || expenseResult.csv || [];
 
     // ------------------------------------------
     // A. 売上集計（事業区分別：店舗、キッチンカー、BBQ）
@@ -535,7 +544,9 @@ async function downloadBlueReturnAnnualSummary() {
     for (let i = 1; i < salesList.length; i++) {
       const row = salesList[i];
       let bType = String(row[9] || "店舗").trim();
-      if (bType === "おにぎり") bType = "店舗(おにぎり)";
+      // 「おにぎり」を「店舗」に統一
+      if (bType === "おにぎり") bType = "店舗";
+
       const amt = Number(row[3] || 0);
       const tax = Number(row[7] || 0);
 
