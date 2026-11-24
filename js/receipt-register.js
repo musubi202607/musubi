@@ -1,5 +1,5 @@
 // ==========================================
-// 領収書登録 フロントエンドスクリプト (最適化版)
+// 領収書登録 フロントエンドスクリプト (最適化・税区分対応版)
 // ==========================================
 
 // Cloudinary設定
@@ -155,7 +155,7 @@ async function executeReceiptOCR() {
             receiptImageUrl = upload.url;
         }
 
-        // ★ 選択されたAIモデル（gemini または groq）を取得
+        // 選択されたAIモデル（gemini または groq）を取得
         const aiModelElement = document.getElementById("ai-model");
         const aiModel = aiModelElement ? aiModelElement.value : "gemini";
 
@@ -185,7 +185,7 @@ async function executeOCR(imageUrl, aiModel = "gemini") {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
             imageUrl: imageUrl,
-            aiModel: aiModel // ★ バックエンドに "gemini" か "groq" を送信
+            aiModel: aiModel 
         })
     });
 
@@ -232,6 +232,9 @@ function displayOCRResult(data) {
     displayReceiptDetails(data.details || []);
 }
 
+// =========================
+// 明細テーブル描画（税区分対応）
+// =========================
 function displayReceiptDetails(details) {
     const body = document.getElementById("receipt-details-body");
     if (!body) return;
@@ -239,8 +242,16 @@ function displayReceiptDetails(details) {
 
     details.forEach(detail => {
         const tr = document.createElement("tr");
+        const taxType = detail.taxType || "税抜";
+
         tr.innerHTML = `
-            <td><input class="detail-tax-rate" value="${detail.taxRate || ""}"></td>
+            <td><input class="detail-tax-rate" value="${detail.taxRate || ""}" style="width:50px;"></td>
+            <td>
+                <select class="detail-tax-type">
+                    <option value="税抜" ${taxType === "税抜" ? "selected" : ""}>税抜</option>
+                    <option value="税込" ${taxType === "税込" ? "selected" : ""}>税込</option>
+                </select>
+            </td>
             <td><input class="detail-amount" type="number" value="${detail.amount || 0}"></td>
             <td><input class="detail-category" value="${detail.category || ""}"></td>
             <td><input class="detail-item" value="${detail.item || ""}"></td>
@@ -280,6 +291,19 @@ async function saveExpense() {
             return el ? el.value.trim() : "";
         };
 
+        // 画面上の明細テーブルから最新データを取得
+        const details = [];
+        const rows = document.querySelectorAll("#receipt-details-body tr");
+        rows.forEach(row => {
+            details.push({
+                taxRate: row.querySelector(".detail-tax-rate")?.value || "",
+                taxType: row.querySelector(".detail-tax-type")?.value || "税抜",
+                amount: Number(row.querySelector(".detail-amount")?.value || 0),
+                category: row.querySelector(".detail-category")?.value || "",
+                item: row.querySelector(".detail-item")?.value || ""
+            });
+        });
+
         const data = {
             businessType: getValue("business-type"),
             category: getValue("category"),
@@ -292,7 +316,7 @@ async function saveExpense() {
             paymentMethod: getValue("payment-method"),
             imageUrl: receiptImageUrl,
             ocrText: ocrData?.ocrText || "",
-            details: ocrData?.details || [],
+            details: details.length > 0 ? details : (ocrData?.details || []),
             learnVendor: document.getElementById("learn-vendor") ? document.getElementById("learn-vendor").checked : false,
             registeredBy: "staff"
         };
