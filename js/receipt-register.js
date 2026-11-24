@@ -155,8 +155,12 @@ async function executeReceiptOCR() {
             receiptImageUrl = upload.url;
         }
 
-        // GAS側でマスタ補正まで完結させて取得する
-        await executeOCR(receiptImageUrl);
+        // ★ 選択されたAIモデル（gemini または groq）を取得
+        const aiModelElement = document.getElementById("ai-model");
+        const aiModel = aiModelElement ? aiModelElement.value : "gemini";
+
+        // GAS側へAIモデル情報を渡して実行
+        await executeOCR(receiptImageUrl, aiModel);
         alert("OCR解析が完了しました。内容を確認してください。");
     } catch (error) {
         console.error("OCR error", error);
@@ -172,19 +176,21 @@ async function executeReceiptOCR() {
 }
 
 // =========================
-// OCR API (原因特定デバッグ版)
+// OCR API (AIモデル送信対応)
 // =========================
-async function executeOCR(imageUrl) {
+async function executeOCR(imageUrl, aiModel = "gemini") {
 
     const response = await fetch(`${API_URL}/api/ocr`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: imageUrl })
+        body: JSON.stringify({ 
+            imageUrl: imageUrl,
+            aiModel: aiModel // ★ バックエンドに "gemini" か "groq" を送信
+        })
     });
 
     const result = await response.json();
 
-    
     // GAS側でエラーが起きていた場合はストップする
     const innerData = result.data;
     if (innerData && (innerData.error || innerData.success === false)) {
